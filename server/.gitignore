@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.log
+.DS_Store
+
+# Firestore service account key (DO NOT COMMIT)
+firestore-key.json
+*-key.json
