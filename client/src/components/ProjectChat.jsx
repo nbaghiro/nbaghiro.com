@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import AnswerText from "./AnswerText";
+import ChatThread from "./ChatThread";
 
 export const TOOL_LABELS = {
     list_files: "Listing",
@@ -102,101 +102,22 @@ export function useChat(endpoint, labels = TOOL_LABELS) {
     return { turns, busy, ask };
 }
 
-/** The project popup's chat: intro, suggestions, log and input */
-export function ChatPanel({ endpoint, intro, suggestions, placeholder, inputLabel }) {
-    const { turns, busy, ask } = useChat(endpoint);
-    const [input, setInput] = useState("");
-    const logRef = useRef(null);
-
-    useEffect(() => {
-        logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
-    }, [turns]);
-
-    const submit = (text) => {
-        setInput("");
-        ask(text);
-    };
-
-    return (
-        <div className="chat" role="tabpanel">
-            <p className="chat-intro">{intro}</p>
-
-            {turns.length === 0 && (
-                <div className="suggestions">
-                    {suggestions.map((q) => (
-                        <button key={q} type="button" onClick={() => submit(q)} disabled={busy}>
-                            {q}
-                        </button>
-                    ))}
-                </div>
-            )}
-
-            {turns.length > 0 && (
-                <div className="chat-log" ref={logRef} aria-live="polite">
-                    {turns.map((turn, i) =>
-                        turn.role === "user" ? (
-                            <p key={i} className="bubble bubble-user">
-                                {turn.content}
-                            </p>
-                        ) : (
-                            <div key={i} className="bubble bubble-answer">
-                                {turn.activity?.length > 0 && (
-                                    <p className="activity">
-                                        {busy && i === turns.length - 1 && !turn.files?.length
-                                            ? turn.activity[turn.activity.length - 1]
-                                            : `Read the code in ${turn.activity.length} steps`}
-                                    </p>
-                                )}
-                                {turn.content ? (
-                                    <AnswerText text={turn.content} />
-                                ) : (
-                                    !turn.error && <p className="thinking">Looking through the code...</p>
-                                )}
-                                {turn.error && <p className="chat-error">{turn.error}</p>}
-                            </div>
-                        )
-                    )}
-                </div>
-            )}
-
-            <form
-                className="chat-form"
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    submit(input);
-                }}
-            >
-                <label htmlFor="chat-input" className="visually-hidden">
-                    {inputLabel}
-                </label>
-                <input
-                    id="chat-input"
-                    type="text"
-                    value={input}
-                    maxLength={500}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder={placeholder}
-                    disabled={busy}
-                />
-                <button type="submit" disabled={busy || !input.trim()}>
-                    Ask
-                </button>
-            </form>
-            <p className="chat-note">Answers can be wrong. Limited to a few questions per visitor each day.</p>
-        </div>
-    );
-}
-
 /** "Ask the code" tab: Claude reads this project's public repo on the server */
 function ProjectChat({ project }) {
+    const { turns, busy, ask } = useChat(`/api/projects/${project.id}/chat`);
     return (
-        <ChatPanel
-            endpoint={`/api/projects/${project.id}/chat`}
-            intro={`Questions are answered by Claude, which reads the public source of ${project.name} on GitHub and links the files it used.`}
-            suggestions={project.questions}
-            placeholder={`Ask about the ${project.name} source`}
-            inputLabel={`Ask about ${project.name}`}
-        />
+        <div role="tabpanel" className="project-chat">
+            <ChatThread
+                turns={turns}
+                busy={busy}
+                onSend={ask}
+                greeting={`Ask me how ${project.name} is built. I read its public source on GitHub before answering, and link the files I used.`}
+                suggestions={project.questions}
+                placeholder={`Ask about the ${project.name} source`}
+                note="Answers come from an AI and can be wrong. A few questions per visitor each day."
+                variant="embedded"
+            />
+        </div>
     );
 }
 
