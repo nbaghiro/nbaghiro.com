@@ -4,8 +4,8 @@ import Mark from "./Mark";
 import { useChat } from "./ProjectChat";
 import "./AgentDialog.css";
 
-// Where finished project briefs go. carefullabs.com does not receive mail yet; change this once it does.
-const BRIEF_EMAIL = "hello@carefullabs.com";
+// Where finished project briefs go
+const BRIEF_EMAIL = "naib.baghirov@gmail.com";
 
 const NAIB_AGENT = {
     endpoint: "/api/agent/chat",
