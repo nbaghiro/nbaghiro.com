@@ -1,0 +1,506 @@
+.overworld {
+    position: relative;
+    height: calc(100vh - var(--header-height));
+    min-height: 620px;
+    overflow: hidden;
+}
+
+.stage {
+    position: absolute;
+    inset: 0;
+}
+
+.stage-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.stage-lines .paths {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-dasharray: 2 9;
+    stroke-linecap: round;
+    opacity: 0.2;
+}
+
+/* Backdrop: dot grid, contours, orbits, stars. Faint on purpose. */
+.backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Dot grid, fading toward the edges; on its own layer so the fade stays off the contours */
+.backdrop::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(237, 234, 226, 0.1) 1px, transparent 1.3px);
+    background-size: 28px 28px;
+    background-position: 14px 14px;
+    -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 48%, #000 35%, transparent 100%);
+    mask-image: radial-gradient(ellipse 75% 70% at 50% 48%, #000 35%, transparent 100%);
+}
+
+.backdrop-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.backdrop .contours path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1;
+    stroke-linejoin: round;
+}
+
+.backdrop .orbits circle {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1;
+    stroke-dasharray: 1 7;
+    stroke-linecap: round;
+    transform-box: view-box;
+    transform-origin: 50% 48.07%;
+    animation: orbit 140s linear infinite;
+}
+
+.backdrop .orbits .orbit-reverse {
+    animation-direction: reverse;
+}
+
+.backdrop .sky circle {
+    fill: var(--ink);
+    animation: twinkle 5s ease-in-out infinite;
+}
+
+.backdrop .sparkles path {
+    stroke: var(--glow);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    animation: twinkle 6s ease-in-out infinite;
+}
+
+/* A thin streak crosses the top of the sky now and then */
+.shooting-star {
+    position: absolute;
+    left: 18%;
+    top: 8%;
+    width: 140px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(237, 234, 226, 0.8));
+    opacity: 0;
+    transform: rotate(-18deg);
+    animation: shoot 17s ease-in infinite;
+    animation-delay: 4s;
+}
+
+.shooting-star-late {
+    left: 58%;
+    top: 22%;
+    width: 110px;
+    animation-duration: 23s;
+    animation-delay: 13s;
+}
+
+/* Home: the large portrait in the middle, with a speech bubble */
+.home {
+    position: absolute;
+    z-index: 1;
+    width: clamp(140px, 15vw, 220px);
+    transform: translate(-50%, -50%);
+}
+
+.home-bubble {
+    position: absolute;
+    left: calc(100% + 30px);
+    top: 10%;
+    width: 250px;
+    padding: 16px 18px;
+    background: #0b0b0b;
+    color: var(--ink);
+    border: 1px solid rgba(237, 234, 226, 0.6);
+    border-radius: 14px;
+    /* Fainter outlines around it, like the layered strokes of the mark */
+    box-shadow:
+        0 0 0 4px var(--bg),
+        0 0 0 5px rgba(237, 234, 226, 0.22),
+        0 0 0 9px var(--bg),
+        0 0 0 10px rgba(237, 234, 226, 0.09);
+    font-family: var(--font-hand);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Tail: a square turned 45 degrees with two edges outlined, joining the border */
+.home-bubble::before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 26px;
+    width: 14px;
+    height: 14px;
+    background: #0b0b0b;
+    border-left: 1px solid rgba(237, 234, 226, 0.6);
+    border-bottom: 1px solid rgba(237, 234, 226, 0.6);
+    transform: rotate(45deg);
+}
+
+/* The home portrait: Naib's face, with the agent orbit around it */
+.home-portrait {
+    position: relative;
+}
+
+.home-character {
+    position: relative;
+    z-index: 1;
+}
+
+/* The agent: an orbit of project nodes and slow pulses around the portrait */
+.agent-halo {
+    position: absolute;
+    inset: -22%;
+    z-index: 0;
+    pointer-events: none;
+    color: var(--ink);
+}
+
+.agent-orbit {
+    width: 100%;
+    height: 100%;
+    animation: agent-orbit 60s linear infinite;
+}
+
+.agent-pulse {
+    position: absolute;
+    inset: 18%;
+    border: 1px solid rgba(255, 214, 74, 0.5);
+    border-radius: 50%;
+    opacity: 0;
+    animation: agent-pulse 4.8s ease-out infinite;
+}
+
+.agent-pulse-late {
+    animation-delay: 2.4s;
+}
+
+@keyframes agent-orbit {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes agent-pulse {
+    0% { opacity: 0.7; transform: scale(0.9); }
+    100% { opacity: 0; transform: scale(1.35); }
+}
+
+.ask-agent {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 26px);
+    transform: translateX(-50%);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 18px 0 14px;
+    border: 1px solid rgba(255, 214, 74, 0.6);
+    border-radius: 999px;
+    background: #0b0b0b;
+    color: var(--ink);
+    font: 600 15px var(--font-read);
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px rgba(255, 214, 74, 0.18);
+    transition: background 0.15s, color 0.15s;
+}
+
+.ask-agent:hover {
+    background: var(--glow);
+    color: #000;
+}
+
+.agent-badge {
+    width: 26px;
+    height: 26px;
+    margin-left: -8px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(255, 214, 74, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .agent-orbit,
+    .agent-pulse {
+        animation: none;
+    }
+}
+
+/* Islands: a character on fading contour rings, then a line with status and links */
+.island {
+    position: absolute;
+    z-index: 1;
+    width: 200px;
+    transform: translate(-50%, calc(-1 * clamp(34px, 3vw, 44px)));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+/* The character and name open the project popup */
+.island-open {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.island-rings {
+    position: absolute;
+    left: 0;
+    top: clamp(44px, 4vw, 56px);
+    width: 200px;
+    height: 72px;
+    fill: none;
+    stroke: var(--island-color);
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.island-core {
+    fill: var(--island-color);
+    fill-opacity: 0.06;
+}
+
+.island-open:hover .island-rings,
+.island-open:focus-visible .island-rings {
+    opacity: 1;
+}
+
+.island-open:hover .island-core,
+.island-open:focus-visible .island-core {
+    fill-opacity: 0.16;
+}
+
+.island-open:focus-visible {
+    outline: 2px solid var(--glow);
+    outline-offset: 6px;
+    border-radius: 16px;
+}
+
+.island-character {
+    position: relative;
+    width: clamp(68px, 6.1vw, 88px);
+    animation-delay: var(--float-delay);
+}
+
+.island-name {
+    position: relative;
+    margin-top: 20px;
+    font-family: var(--font-hand);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--island-color);
+}
+
+/* Status, then the site and the code, on one quiet line */
+.island-meta {
+    position: relative;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.island-meta > * + *::before {
+    content: "·";
+    margin: 0 7px;
+    color: var(--ink-soft);
+    opacity: 0.6;
+}
+
+.island-meta a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    color: var(--ink-soft);
+    transition: color 0.15s;
+}
+
+.island-meta a:hover,
+.island-meta a:focus-visible {
+    color: var(--island-color);
+}
+
+/* Ambient motion, all of it off for reduced motion */
+.float-a {
+    animation: float-a 3.8s ease-in-out infinite;
+}
+
+.float-b {
+    animation: float-b 4.6s ease-in-out infinite;
+}
+
+/* Planes and their trails sit behind the avatars; islands and home are raised above them */
+.plane {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 0;
+    color: var(--ink);
+    pointer-events: none;
+    will-change: left, top, transform;
+}
+
+.plane-trail {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.plane-trail polyline {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.2;
+    stroke-dasharray: 1 7;
+    stroke-linecap: round;
+    stroke-opacity: 0.16;
+}
+
+@keyframes float-a {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-5px) rotate(-3deg); }
+}
+
+@keyframes float-b {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-4px) rotate(2.5deg); }
+}
+
+@keyframes orbit {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shoot {
+    0% { opacity: 0; translate: 0 0; }
+    1% { opacity: 1; }
+    5% { opacity: 0; translate: 260px 85px; }
+    100% { opacity: 0; translate: 260px 85px; }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .float-a,
+    .float-b,
+    .backdrop .orbits circle,
+    .backdrop .sky circle,
+    .backdrop .sparkles path {
+        animation: none;
+    }
+
+    .shooting-star {
+        display: none;
+    }
+}
+
+/* Narrow screens: the map becomes a list of islands under the portrait */
+@media (max-width: 860px) {
+    .overworld {
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+        padding: 24px 16px 48px;
+    }
+
+    .stage {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 40px 12px;
+    }
+
+    .stage-lines,
+    .plane,
+    .plane-trail {
+        display: none;
+    }
+
+    .home {
+        position: static;
+        grid-column: 1 / -1;
+        width: 100%;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .home-portrait {
+        width: 150px;
+    }
+
+    .ask-agent {
+        position: static;
+        transform: none;
+    }
+
+    .home-bubble {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: auto;
+        max-width: 340px;
+    }
+
+    .home-bubble::before {
+        left: calc(50% - 8px);
+        top: -8px;
+        border-bottom: 0;
+        border-top: 1px solid rgba(237, 234, 226, 0.6);
+    }
+
+    .island {
+        position: relative;
+        left: auto !important;
+        top: auto !important;
+        width: 100%;
+        max-width: 200px;
+        justify-self: center;
+        transform: none;
+    }
+
+    .island-rings {
+        left: 50%;
+        width: min(100%, 170px);
+        transform: translateX(-50%);
+    }
+}

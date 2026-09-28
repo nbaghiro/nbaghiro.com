@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Geometric style B: Hexagonal/honeycomb -->
+  <circle cx="100" cy="100" r="95" fill="#0a0a0a"/>
+  <g fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="miter">
+    <!-- Hair region - hexagons -->
+    <polygon points="100,32 85,40 85,55 100,63 115,55 115,40"/>
+    <polygon points="85,40 70,48 70,63 85,71 100,63 100,48" opacity="0.8"/>
+    <polygon points="115,40 130,48 130,63 115,71 100,63 100,48" opacity="0.8"/>
+    <polygon points="70,48 58,56 58,71 70,79 85,71 85,56" opacity="0.6"/>
+    <polygon points="130,48 142,56 142,71 130,79 115,71 115,56" opacity="0.6"/>
+
+    <!-- Forehead hex -->
+    <polygon points="100,63 85,71 85,86 100,94 115,86 115,71"/>
+
+    <!-- Eye region hexes -->
+    <polygon points="72,79 58,87 58,102 72,110 87,102 87,87"/>
+    <polygon points="128,79 142,87 142,102 128,110 113,102 113,87"/>
+
+    <!-- Eye centers -->
+    <polygon points="80,91 74,95 74,101 80,105 86,101 86,95" fill="#fff"/>
+    <polygon points="120,91 114,95 114,101 120,105 126,101 126,95" fill="#fff"/>
+
+    <!-- Nose region -->
+    <polygon points="100,94 87,102 87,117 100,125 113,117 113,102"/>
+
+    <!-- Cheek hexes -->
+    <polygon points="58,102 48,110 48,125 58,133 72,125 72,110" opacity="0.5"/>
+    <polygon points="142,102 152,110 152,125 142,133 128,125 128,110" opacity="0.5"/>
+
+    <!-- Mustache/mouth region -->
+    <polygon points="87,117 72,125 72,140 87,148 102,140 102,125" opacity="0.7"/>
+    <polygon points="113,117 128,125 128,140 113,148 98,140 98,125" opacity="0.7"/>
+
+    <!-- Beard hexes -->
+    <polygon points="72,140 58,148 58,163 72,171 87,163 87,148" opacity="0.4"/>
+    <polygon points="128,140 142,148 142,163 128,171 113,163 113,148" opacity="0.4"/>
+    <polygon points="100,148 87,156 87,171 100,179 113,171 113,156" opacity="0.35"/>
+
+    <!-- Jaw outline -->
+    <path d="M58,133 L48,145 L58,163 L72,171 L87,163 L100,179 L113,163 L128,171 L142,163 L152,145 L142,133" stroke-width="2"/>
+
+    <!-- Face outline -->
+    <path d="M58,87 L48,95 L48,110 L48,125 L48,145 L58,163" stroke-width="2"/>
+    <path d="M142,87 L152,95 L152,110 L152,125 L152,145 L142,163" stroke-width="2"/>
+    <path d="M58,71 L58,87" stroke-width="2"/>
+    <path d="M142,71 L142,87" stroke-width="2"/>
+  </g>
+</svg>

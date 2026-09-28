@@ -3,6 +3,8 @@
  * No authentication required!
  */
 
+import { resilientFetch } from "../../utils/httpClient.js";
+
 const BASE_URL = "https://openlibrary.org";
 const COVERS_URL = "https://covers.openlibrary.org";
 
@@ -60,7 +62,7 @@ export async function fetchSubjectBooks(subject, limit = 10) {
     console.log(`[OpenLibrary Cache] MISS for subject "${subject}"`);
     const url = `${BASE_URL}/subjects/${subject}.json?limit=${limit}`;
 
-    const response = await fetch(url);
+    const response = await resilientFetch(url);
 
     if (!response.ok) {
         throw new Error(
@@ -77,7 +79,22 @@ export async function fetchSubjectBooks(subject, limit = 10) {
 }
 
 /**
+ * Get book cover URL by OLID (Open Library ID)
+ * This method is preferred as it returns direct URLs without redirects
+ * @param {string} olid - Open Library ID (e.g., "OL46241W" from "/works/OL46241W")
+ * @param {string} size - Size: S, M, or L
+ * @returns {string}
+ */
+export function getCoverUrlByOLID(olid, size = "M") {
+    if (!olid) {
+        return null;
+    }
+    return `${COVERS_URL}/b/olid/${olid}-${size}.jpg`;
+}
+
+/**
  * Get book cover URL by cover ID
+ * Note: This can result in slow multi-redirect chains, prefer getCoverUrlByOLID
  * @param {number} coverId - Cover ID from Open Library
  * @param {string} size - Size: S, M, or L
  * @returns {string}
@@ -111,7 +128,7 @@ export function getCoverUrlByISBN(isbn, size = "M") {
 export async function searchBooks(query, limit = 10) {
     const url = `${BASE_URL}/search.json?q=${encodeURIComponent(query)}&limit=${limit}`;
 
-    const response = await fetch(url);
+    const response = await resilientFetch(url);
 
     if (!response.ok) {
         throw new Error(
@@ -130,7 +147,7 @@ export async function searchBooks(query, limit = 10) {
 export async function getBookByISBN(isbn) {
     const url = `${BASE_URL}/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`;
 
-    const response = await fetch(url);
+    const response = await resilientFetch(url);
 
     if (!response.ok) {
         throw new Error(

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Detailed style E: Cross-contour lines, 3D form -->
+  <circle cx="100" cy="100" r="95" fill="#0a0a0a"/>
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Face outline -->
+    <path d="M56 92 Q56 54 100 49 Q144 54 144 92 Q144 128 128 150 Q110 168 100 168 Q90 168 72 150 Q56 128 56 92" stroke-width="2"/>
+
+    <!-- Cross-contour lines across face (showing 3D form) -->
+    <path d="M60 75 Q100 70 140 75" stroke-width="0.6" opacity="0.25"/>
+    <path d="M58 90 Q100 84 142 90" stroke-width="0.6" opacity="0.25"/>
+    <path d="M58 105 Q100 98 142 105" stroke-width="0.6" opacity="0.25"/>
+    <path d="M60 120 Q100 112 140 120" stroke-width="0.6" opacity="0.25"/>
+    <path d="M65 135 Q100 126 135 135" stroke-width="0.6" opacity="0.25"/>
+    <path d="M75 150 Q100 142 125 150" stroke-width="0.6" opacity="0.25"/>
+
+    <!-- Hair -->
+    <path d="M56 85 Q54 40 100 35 Q146 40 144 85" stroke-width="2.5"/>
+    <path d="M66 60 Q88 45 100 48 Q112 45 134 60" stroke-width="1.5"/>
+    <!-- Hair contours -->
+    <path d="M62 72 Q100 62 138 72" stroke-width="0.6" opacity="0.3"/>
+    <path d="M60 80 Q100 72 140 80" stroke-width="0.6" opacity="0.3"/>
+
+    <!-- Ears -->
+    <ellipse cx="56" cy="100" rx="5" ry="11" stroke-width="1.5"/>
+    <ellipse cx="144" cy="100" rx="5" ry="11" stroke-width="1.5"/>
+
+    <!-- Eyebrows -->
+    <path d="M66 80 Q80 74 94 80" stroke-width="2.5"/>
+    <path d="M106 80 Q120 74 134 80" stroke-width="2.5"/>
+
+    <!-- Eyes with contour detail -->
+    <ellipse cx="80" cy="94" rx="11" ry="9" stroke-width="1.5"/>
+    <ellipse cx="120" cy="94" rx="11" ry="9" stroke-width="1.5"/>
+    <!-- Eye contours -->
+    <path d="M70 94 Q80 91 90 94" stroke-width="0.5" opacity="0.4"/>
+    <path d="M110 94 Q120 91 130 94" stroke-width="0.5" opacity="0.4"/>
+    <!-- Upper lids -->
+    <path d="M69 90 Q80 84 91 90" stroke-width="1.2"/>
+    <path d="M109 90 Q120 84 131 90" stroke-width="1.2"/>
+    <!-- Iris/pupil -->
+    <circle cx="80" cy="95" r="5.5" stroke-width="1"/>
+    <circle cx="120" cy="95" r="5.5" stroke-width="1"/>
+    <circle cx="80" cy="95" r="2.5" fill="#fff"/>
+    <circle cx="120" cy="95" r="2.5" fill="#fff"/>
+
+    <!-- Nose with form lines -->
+    <path d="M100 85 L97 108 Q100 115 103 108" stroke-width="1.5"/>
+    <!-- Nose contours -->
+    <path d="M95 95 Q100 93 105 95" stroke-width="0.5" opacity="0.3"/>
+    <path d="M94 100 Q100 97 106 100" stroke-width="0.5" opacity="0.3"/>
+    <path d="M93 105 Q100 102 107 105" stroke-width="0.5" opacity="0.3"/>
+
+    <!-- Mustache -->
+    <path d="M82 119 Q94 126 100 123 Q106 126 118 119" stroke-width="2"/>
+    <!-- Mustache contour -->
+    <path d="M84 121 Q100 126 116 121" stroke-width="0.5" opacity="0.3"/>
+
+    <!-- Mouth -->
+    <path d="M88 134 Q100 140 112 134" stroke-width="2"/>
+    <!-- Lip contour -->
+    <path d="M90 136 Q100 138 110 136" stroke-width="0.5" opacity="0.3"/>
+
+    <!-- Beard with form -->
+    <path d="M65 125 Q60 148 78 162 Q95 174 100 172 Q105 174 122 162 Q140 148 135 125" stroke-width="1.5" opacity="0.45"/>
+    <!-- Beard contours -->
+    <path d="M68 140 Q100 132 132 140" stroke-width="0.5" opacity="0.2"/>
+    <path d="M72 152 Q100 144 128 152" stroke-width="0.5" opacity="0.2"/>
+    <path d="M82 162 Q100 156 118 162" stroke-width="0.5" opacity="0.2"/>
+  </g>
+</svg>

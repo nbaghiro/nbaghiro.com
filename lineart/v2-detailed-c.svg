@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Detailed style C: Eye focus, expressive gaze -->
+  <circle cx="100" cy="100" r="95" fill="#0a0a0a"/>
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Face - lighter stroke -->
+    <path d="M58 92 Q58 55 100 50 Q142 55 142 92 Q142 128 128 148 Q110 166 100 166 Q90 166 72 148 Q58 128 58 92" stroke-width="1.5"/>
+
+    <!-- Hair - simplified -->
+    <path d="M58 85 Q55 42 100 38 Q145 42 142 85" stroke-width="2"/>
+    <path d="M68 60 Q88 46 100 48 Q112 46 132 60" stroke-width="1.5"/>
+
+    <!-- Ears minimal -->
+    <ellipse cx="58" cy="100" rx="5" ry="10" stroke-width="1"/>
+    <ellipse cx="142" cy="100" rx="5" ry="10" stroke-width="1"/>
+
+    <!-- Eyebrows - expressive arch -->
+    <path d="M65 78 Q80 70 95 78" stroke-width="2.5"/>
+    <path d="M105 78 Q120 70 135 78" stroke-width="2.5"/>
+
+    <!-- EYES - main focus, highly detailed -->
+    <!-- Left eye -->
+    <ellipse cx="80" cy="94" rx="14" ry="11" stroke-width="2"/>
+    <path d="M66 90 Q80 82 94 90" stroke-width="1.5"/>
+    <path d="M68 98 Q80 102 92 98" stroke-width="1" opacity="0.6"/>
+    <circle cx="80" cy="95" r="8" stroke-width="1.5"/>
+    <!-- Iris detail -->
+    <circle cx="80" cy="95" r="6" stroke-width="0.8"/>
+    <path d="M74 93 L80 95 L74 97" stroke-width="0.5"/>
+    <path d="M86 93 L80 95 L86 97" stroke-width="0.5"/>
+    <path d="M78 89 L80 95 L82 89" stroke-width="0.5"/>
+    <path d="M78 101 L80 95 L82 101" stroke-width="0.5"/>
+    <!-- Pupil with reflection -->
+    <circle cx="80" cy="95" r="3.5" fill="#fff"/>
+    <circle cx="77" cy="92" r="1.5" fill="#0a0a0a"/>
+
+    <!-- Right eye -->
+    <ellipse cx="120" cy="94" rx="14" ry="11" stroke-width="2"/>
+    <path d="M106 90 Q120 82 134 90" stroke-width="1.5"/>
+    <path d="M108 98 Q120 102 132 98" stroke-width="1" opacity="0.6"/>
+    <circle cx="120" cy="95" r="8" stroke-width="1.5"/>
+    <!-- Iris detail -->
+    <circle cx="120" cy="95" r="6" stroke-width="0.8"/>
+    <path d="M114 93 L120 95 L114 97" stroke-width="0.5"/>
+    <path d="M126 93 L120 95 L126 97" stroke-width="0.5"/>
+    <path d="M118 89 L120 95 L122 89" stroke-width="0.5"/>
+    <path d="M118 101 L120 95 L122 101" stroke-width="0.5"/>
+    <!-- Pupil with reflection -->
+    <circle cx="120" cy="95" r="3.5" fill="#fff"/>
+    <circle cx="117" cy="92" r="1.5" fill="#0a0a0a"/>
+
+    <!-- Nose - simple -->
+    <path d="M100 88 L97 108 Q100 114 103 108" stroke-width="1.5"/>
+
+    <!-- Mustache -->
+    <path d="M84 120 Q94 126 100 124 Q106 126 116 120" stroke-width="1.5"/>
+
+    <!-- Mouth - subtle -->
+    <path d="M90 134 Q100 139 110 134" stroke-width="1.5"/>
+
+    <!-- Beard - light suggestion -->
+    <path d="M68 125 Q64 145 78 158 Q92 168 100 166 Q108 168 122 158 Q136 145 132 125" stroke-width="1" opacity="0.35"/>
+  </g>
+</svg>

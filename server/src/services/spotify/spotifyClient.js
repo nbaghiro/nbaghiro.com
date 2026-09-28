@@ -3,6 +3,8 @@
  * Uses Client Credentials Flow (no user authentication)
  */
 
+import { resilientFetch } from "../../utils/httpClient.js";
+
 const AUTH_URL = "https://accounts.spotify.com/api/token";
 const API_BASE_URL = "https://api.spotify.com/v1";
 
@@ -67,7 +69,7 @@ async function getAccessToken() {
     // Create Basic auth header
     const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
-    const response = await fetch(AUTH_URL, {
+    const response = await resilientFetch(AUTH_URL, {
         method: "POST",
         headers: {
             Authorization: `Basic ${auth}`,
@@ -101,7 +103,7 @@ async function spotifyRequest(endpoint) {
 
     console.log(`[Spotify API] Request: ${url}`);
 
-    const response = await fetch(url, {
+    const response = await resilientFetch(url, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

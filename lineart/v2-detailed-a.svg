@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Detailed style A: Portrait focus, soft shading lines -->
+  <circle cx="100" cy="100" r="95" fill="#0a0a0a"/>
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Face with soft contours -->
+    <path d="M58 92 Q58 58 100 52 Q142 58 142 92 Q142 122 132 140 Q120 160 100 162 Q80 160 68 140 Q58 122 58 92" stroke-width="2"/>
+
+    <!-- Subtle face contour lines -->
+    <path d="M62 100 Q60 115 65 125" stroke-width="0.5" opacity="0.4"/>
+    <path d="M138 100 Q140 115 135 125" stroke-width="0.5" opacity="0.4"/>
+
+    <!-- Hair - flowing, detailed -->
+    <path d="M58 88 Q55 42 100 36 Q145 42 142 88" stroke-width="2.5"/>
+    <path d="M62 80 Q60 50 100 44 Q140 50 138 80" stroke-width="1.5" opacity="0.6"/>
+    <path d="M68 62 Q88 48 100 50 Q112 48 132 62" stroke-width="1.5"/>
+    <!-- Individual hair strands -->
+    <path d="M72 58 Q78 48 85 50" stroke-width="0.8"/>
+    <path d="M88 54 Q95 46 102 48" stroke-width="0.8"/>
+    <path d="M108 48 Q115 46 122 54" stroke-width="0.8"/>
+    <path d="M125 50 Q130 48 135 58" stroke-width="0.8"/>
+
+    <!-- Ears with detail -->
+    <path d="M58 92 Q52 92 52 102 Q52 112 58 112" stroke-width="1.5"/>
+    <path d="M54 96 Q50 102 54 108" stroke-width="0.8"/>
+    <path d="M142 92 Q148 92 148 102 Q148 112 142 112" stroke-width="1.5"/>
+
+    <!-- Eyebrows - natural hair texture -->
+    <path d="M68 80 Q78 74 92 80" stroke-width="2.5"/>
+    <path d="M70 79 L75 76" stroke-width="0.8"/><path d="M78 77 L83 75" stroke-width="0.8"/><path d="M86 76 L90 78" stroke-width="0.8"/>
+    <path d="M108 80 Q122 74 132 80" stroke-width="2.5"/>
+    <path d="M110 78 L115 76" stroke-width="0.8"/><path d="M118 75 L123 77" stroke-width="0.8"/><path d="M126 76 L130 79" stroke-width="0.8"/>
+
+    <!-- Eyes - detailed with depth -->
+    <ellipse cx="80" cy="94" rx="10" ry="8" stroke-width="1.5"/>
+    <ellipse cx="120" cy="94" rx="10" ry="8" stroke-width="1.5"/>
+    <!-- Upper lid crease -->
+    <path d="M70 88 Q80 84 90 88" stroke-width="1"/>
+    <path d="M110 88 Q120 84 130 88" stroke-width="1"/>
+    <!-- Lower lid -->
+    <path d="M72 98 Q80 100 88 98" stroke-width="0.6" opacity="0.5"/>
+    <path d="M112 98 Q120 100 128 98" stroke-width="0.6" opacity="0.5"/>
+    <!-- Iris detail -->
+    <circle cx="80" cy="95" r="5" stroke-width="1"/>
+    <circle cx="120" cy="95" r="5" stroke-width="1"/>
+    <circle cx="80" cy="95" r="2.5" fill="#fff"/>
+    <circle cx="120" cy="95" r="2.5" fill="#fff"/>
+    <!-- Iris texture -->
+    <path d="M77 92 L80 95 L77 98" stroke-width="0.4" opacity="0.5"/>
+    <path d="M117 92 L120 95 L117 98" stroke-width="0.4" opacity="0.5"/>
+
+    <!-- Nose - refined -->
+    <path d="M100 86 L98 106" stroke-width="1.5"/>
+    <path d="M98 106 Q95 112 93 110" stroke-width="1"/>
+    <path d="M98 106 Q100 114 102 106" stroke-width="1.5"/>
+    <path d="M102 106 Q105 112 107 110" stroke-width="1"/>
+
+    <!-- Mustache with texture -->
+    <path d="M84 118 Q92 124 100 122 Q108 124 116 118" stroke-width="1.8"/>
+    <path d="M86 117 Q92 120 98 119" stroke-width="0.6" opacity="0.5"/>
+    <path d="M102 119 Q108 120 114 117" stroke-width="0.6" opacity="0.5"/>
+
+    <!-- Mouth -->
+    <path d="M88 132 Q100 138 112 132" stroke-width="2"/>
+    <path d="M92 133 Q100 135 108 133" stroke-width="0.6" opacity="0.4"/>
+
+    <!-- Beard - soft gradient of lines -->
+    <path d="M66 122 Q62 142 74 156" stroke-width="1" opacity="0.5"/>
+    <path d="M72 125 Q68 145 82 158" stroke-width="0.8" opacity="0.4"/>
+    <path d="M134 122 Q138 142 126 156" stroke-width="1" opacity="0.5"/>
+    <path d="M128 125 Q132 145 118 158" stroke-width="0.8" opacity="0.4"/>
+    <path d="M82 156 Q92 165 100 164 Q108 165 118 156" stroke-width="0.8" opacity="0.4"/>
+    <path d="M88 145 Q100 150 112 145" stroke-width="0.5" opacity="0.3"/>
+  </g>
+</svg>

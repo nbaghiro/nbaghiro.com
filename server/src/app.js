@@ -12,27 +12,16 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Security middleware with CSP configured for external images
-app.use(
-    helmet({
-        contentSecurityPolicy: {
-            directives: {
-                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-                "img-src": [
-                    "'self'",
-                    "data:",
-                    "https://i.scdn.co", // Spotify album covers
-                    "https://covers.openlibrary.org", // Book covers
-                ],
-            },
-        },
-    })
-);
+// Render terminates TLS in front of the app; trust that one proxy hop so
+// req.ip is the visitor's address (used by the chat's per-visitor limit)
+app.set("trust proxy", 1);
+
+app.use(helmet());
 
 // CORS configuration
 app.use(
     cors({
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
+        origin: process.env.CLIENT_URL || "http://localhost:5283",
         credentials: true,
     })
 );
@@ -46,6 +35,11 @@ app.use(compression());
 
 // API routes
 app.use("/api", apiRoutes);
+
+// Unknown API paths are a JSON 404, not the web page
+app.use("/api", (req, res) => {
+    res.status(404).json({ error: "Not found" });
+});
 
 // Serve static files from React app in production
 if (process.env.NODE_ENV === "production") {

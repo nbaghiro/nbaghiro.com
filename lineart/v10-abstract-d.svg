@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Abstract style D: Minimalist abstract - essence only -->
+  <circle cx="100" cy="100" r="95" fill="#0a0a0a"/>
+  <g fill="none" stroke="#ffffff" stroke-linecap="round">
+
+    <!-- Single flowing line suggesting hair to jaw -->
+    <path d="M50 85
+             Q48 40 100 35
+             Q152 40 150 85
+             Q150 130 125 155
+             Q100 175 75 155
+             Q50 130 50 85"
+          stroke-width="2"/>
+
+    <!-- Hair essence - single curve -->
+    <path d="M65 60 Q100 42 135 60" stroke-width="1.5"/>
+
+    <!-- Eyebrows - simple strokes -->
+    <line x1="65" y1="82" x2="92" y2="78" stroke-width="2.5"/>
+    <line x1="108" y1="78" x2="135" y2="82" stroke-width="2.5"/>
+
+    <!-- Eyes - just dots -->
+    <circle cx="78" cy="95" r="5" fill="#fff"/>
+    <circle cx="122" cy="95" r="5" fill="#fff"/>
+
+    <!-- Nose - single line -->
+    <line x1="100" y1="90" x2="100" y2="115" stroke-width="1.5"/>
+
+    <!-- Mouth - single curve -->
+    <path d="M88 138 Q100 145 112 138" stroke-width="2"/>
+
+    <!-- Beard suggestion - single fading curve -->
+    <path d="M65 130 Q60 155 100 170 Q140 155 135 130"
+          stroke-width="1" opacity="0.3"/>
+  </g>
+
+  <!-- Accent: small geometric shapes -->
+  <circle cx="165" cy="45" r="3" fill="#ffffff" opacity="0.4"/>
+  <circle cx="35" cy="155" r="2" fill="#ffffff" opacity="0.3"/>
+</svg>

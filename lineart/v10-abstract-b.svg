@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Abstract style B: Negative space emphasis -->
+  <circle cx="100" cy="100" r="95" fill="#0a0a0a"/>
+
+  <!-- White filled shapes creating the portrait through negative space -->
+  <g fill="#ffffff" stroke="none">
+    <!-- Hair mass -->
+    <path d="M55,80 Q52,40 100,35 Q148,40 145,80 Q140,55 100,50 Q60,55 55,80 Z"/>
+
+    <!-- Left eyebrow -->
+    <path d="M65,78 Q80,70 95,78 Q80,82 65,78 Z"/>
+    <!-- Right eyebrow -->
+    <path d="M105,78 Q120,70 135,78 Q120,82 105,78 Z"/>
+  </g>
+
+  <!-- Face outline in negative -->
+  <g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round">
+    <!-- Outer face boundary -->
+    <path d="M55,95 Q55,130 72,152 Q90,170 100,170 Q110,170 128,152 Q145,130 145,95"/>
+
+    <!-- Inner face creates negative space -->
+    <path d="M60,95 Q60,125 75,145 Q90,160 100,160 Q110,160 125,145 Q140,125 140,95" stroke-width="1" opacity="0.3"/>
+  </g>
+
+  <!-- Features defined by outline only -->
+  <g fill="none" stroke="#ffffff" stroke-linecap="round">
+    <!-- Eyes - just outline defining space -->
+    <ellipse cx="80" cy="92" rx="12" ry="10" stroke-width="2"/>
+    <ellipse cx="120" cy="92" rx="12" ry="10" stroke-width="2"/>
+
+    <!-- Pupils as filled -->
+    <circle cx="80" cy="93" r="4" fill="#fff"/>
+    <circle cx="120" cy="93" r="4" fill="#fff"/>
+
+    <!-- Nose - minimal, space-defining -->
+    <path d="M100,85 L96,108" stroke-width="1.5"/>
+    <path d="M92,112 Q100,118 108,112" stroke-width="1.5"/>
+
+    <!-- Mouth -->
+    <path d="M88,135 Q100,145 112,135" stroke-width="2"/>
+
+    <!-- Beard - outlined negative space -->
+    <path d="M62,120 Q55,150 78,168 Q100,180 122,168 Q145,150 138,120"
+          stroke-width="1.5" stroke-dasharray="5,3" opacity="0.4"/>
+  </g>
+
+  <!-- Accent shapes -->
+  <g fill="#ffffff" opacity="0.15">
+    <circle cx="40" cy="60" r="8"/>
+    <circle cx="160" cy="140" r="6"/>
+    <rect x="155" y="55" width="10" height="10" rx="2"/>
+    <rect x="35" y="135" width="8" height="8" rx="2"/>
+  </g>
+</svg>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Geometric style D: Art Deco inspired -->
+  <circle cx="100" cy="100" r="95" fill="#0a0a0a"/>
+  <g fill="none" stroke="#ffffff" stroke-linejoin="miter">
+    <!-- Outer decorative frame -->
+    <polygon points="100,15 50,45 35,100 50,155 100,185 150,155 165,100 150,45" stroke-width="1" opacity="0.3"/>
+    <polygon points="100,25 55,52 42,100 55,148 100,175 145,148 158,100 145,52" stroke-width="1" opacity="0.2"/>
+
+    <!-- Hair - deco sunburst -->
+    <path d="M55,80 L100,35 L145,80" stroke-width="2.5"/>
+    <line x1="100" y1="35" x2="100" y2="55" stroke-width="1.5"/>
+    <line x1="75" y1="42" x2="82" y2="58" stroke-width="1.5"/>
+    <line x1="125" y1="42" x2="118" y2="58" stroke-width="1.5"/>
+    <line x1="60" y1="55" x2="72" y2="65" stroke-width="1.5"/>
+    <line x1="140" y1="55" x2="128" y2="65" stroke-width="1.5"/>
+    <!-- Hair arch -->
+    <path d="M55,80 Q55,50 100,42 Q145,50 145,80" stroke-width="2"/>
+
+    <!-- Face outline - angular deco -->
+    <path d="M55,80 L52,105 L55,130 L70,150 L100,165 L130,150 L145,130 L148,105 L145,80" stroke-width="2"/>
+
+    <!-- Symmetrical deco patterns on cheeks -->
+    <path d="M55,95 L65,95 L65,115 L55,115" stroke-width="1" opacity="0.4"/>
+    <path d="M145,95 L135,95 L135,115 L145,115" stroke-width="1" opacity="0.4"/>
+    <line x1="55" y1="105" x2="65" y2="105" stroke-width="1" opacity="0.4"/>
+    <line x1="135" y1="105" x2="145" y2="105" stroke-width="1" opacity="0.4"/>
+
+    <!-- Eyebrows - angular -->
+    <polyline points="65,78 80,72 95,78" stroke-width="2.5"/>
+    <polyline points="135,78 120,72 105,78" stroke-width="2.5"/>
+
+    <!-- Eyes - deco diamond style -->
+    <polygon points="80,85 90,92 80,100 70,92" stroke-width="2"/>
+    <polygon points="120,85 130,92 120,100 110,92" stroke-width="2"/>
+    <!-- Inner eye -->
+    <polygon points="80,88 85,92 80,96 75,92" fill="#fff"/>
+    <polygon points="120,88 125,92 120,96 115,92" fill="#fff"/>
+
+    <!-- Nose - geometric -->
+    <polygon points="100,85 95,105 100,115 105,105" stroke-width="1.5"/>
+    <line x1="100" y1="85" x2="100" y2="115" stroke-width="1"/>
+
+    <!-- Mustache - deco curves -->
+    <path d="M82,120 L90,118 L100,122 L110,118 L118,120" stroke-width="2"/>
+    <path d="M85,122 Q92,126 100,124 Q108,126 115,122" stroke-width="1"/>
+
+    <!-- Mouth - angular -->
+    <polyline points="88,135 100,142 112,135" stroke-width="2"/>
+
+    <!-- Beard - deco stepped pattern -->
+    <path d="M65,130 L60,145 L70,155 L85,160 L100,165 L115,160 L130,155 L140,145 L135,130" stroke-width="1.5" opacity="0.5"/>
+    <path d="M70,138 L68,148 L78,155 L100,160 L122,155 L132,148 L130,138" stroke-width="1" opacity="0.35"/>
+    <line x1="100" y1="145" x2="100" y2="165" stroke-width="0.8" opacity="0.3"/>
+    <line x1="85" y1="148" x2="85" y2="160" stroke-width="0.8" opacity="0.3"/>
+    <line x1="115" y1="148" x2="115" y2="160" stroke-width="0.8" opacity="0.3"/>
+
+    <!-- Decorative corner accents -->
+    <path d="M30,30 L40,30 L40,40" stroke-width="1.5" opacity="0.3"/>
+    <path d="M170,30 L160,30 L160,40" stroke-width="1.5" opacity="0.3"/>
+    <path d="M30,170 L40,170 L40,160" stroke-width="1.5" opacity="0.3"/>
+    <path d="M170,170 L160,170 L160,160" stroke-width="1.5" opacity="0.3"/>
+  </g>
+</svg>

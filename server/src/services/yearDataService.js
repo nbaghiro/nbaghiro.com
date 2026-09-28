@@ -81,69 +81,89 @@ export async function getYearlyData(yearOffset = 0) {
     const sampleWeeks = Math.min(weeksToAggregate, 12);
     const sampleInterval = Math.floor(weeksToAggregate / sampleWeeks);
 
-    for (let i = 0; i < sampleWeeks; i++) {
-        const weekNum = weekOffset + i * sampleInterval;
-        const weekDates = getWeekDates(weekNum);
+    // Build list of weeks to fetch
+    const weeksToFetch = Array.from({ length: sampleWeeks }, (_, i) => ({
+        weekNum: weekOffset + i * sampleInterval,
+    }));
 
-        console.log(
-            `[Year Data] Sampling week ${i + 1}/${sampleWeeks} (week #${weekNum})`
-        );
+    console.log(
+        `[Year Data] Fetching ${sampleWeeks} weeks in parallel...`
+    );
 
-        try {
-            // Fetch weekly data
-            const [music, places, books, activity] = await Promise.all([
-                getWeeklyMusic(weekNum),
-                getWeeklyPlaces(weekNum),
-                getWeeklyBooks(weekNum),
-                getWeeklyActivity(weekNum, weekDates.start),
-            ]);
+    // Fetch all weeks in parallel for better performance
+    const weekResults = await Promise.all(
+        weeksToFetch.map(async ({ weekNum }) => {
+            const weekDates = getWeekDates(weekNum);
 
-            // Aggregate music
-            aggregatedMusic.totalSongs += music.songs || 0;
-            aggregatedMusic.totalArtists += music.artists || 0;
-            aggregatedMusic.totalSessions += music.sessions || 0;
+            try {
+                const [music, places, books, activity] = await Promise.all([
+                    getWeeklyMusic(weekNum),
+                    getWeeklyPlaces(weekNum),
+                    getWeeklyBooks(weekNum),
+                    getWeeklyActivity(weekNum, weekDates.start),
+                ]);
 
-            // Parse time string (e.g., "2h 15m" or "45m")
-            const timeStr = music.totalTime || "0m";
-            const hourMatch = timeStr.match(/(\d+)h/);
-            const minMatch = timeStr.match(/(\d+)m/);
-            const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
-            const minutes = minMatch ? parseInt(minMatch[1]) : 0;
-            aggregatedMusic.totalMinutes += hours * 60 + minutes;
-
-            // Collect unique albums
-            if (music.topAlbums && music.topAlbums.length > 0) {
-                aggregatedMusic.topAlbums.push(...music.topAlbums.slice(0, 2));
+                return { success: true, music, places, books, activity, weekNum };
+            } catch (error) {
+                console.error(`[Year Data] Error fetching week ${weekNum}:`, error);
+                return { success: false, weekNum };
             }
+        })
+    );
 
-            // Aggregate activity
-            aggregatedActivity.totalSteps += activity.steps || 0;
-            aggregatedActivity.totalDistance += activity.distance || 0;
-            aggregatedActivity.totalRuns += activity.summary?.runs || 0;
-            aggregatedActivity.totalRunDistance +=
-                activity.summary?.runDistance || 0;
-            aggregatedActivity.totalBikes += activity.summary?.bikes || 0;
-            aggregatedActivity.totalBikeDistance +=
-                activity.summary?.bikeDistance || 0;
-            aggregatedActivity.totalWalks += activity.summary?.walks || 0;
-            aggregatedActivity.totalWalkDistance +=
-                activity.summary?.walkDistance || 0;
+    console.log(
+        `[Year Data] Fetched ${weekResults.filter(r => r.success).length}/${sampleWeeks} weeks successfully`
+    );
 
-            // Aggregate places
-            aggregatedPlaces.totalUniquePlaces += places.uniquePlaces || 0;
-            aggregatedPlaces.totalVisits += places.totalVisits || 0;
-            if (places.location) {
-                aggregatedPlaces.placesByNeighborhood[places.location] =
-                    (aggregatedPlaces.placesByNeighborhood[places.location] ||
-                        0) + (places.uniquePlaces || 0);
-            }
+    // Aggregate results from all weeks
+    for (const result of weekResults) {
+        if (!result.success) continue;
 
-            // Aggregate books
-            aggregatedBooks.totalBooksFinished += books.finished?.length || 0;
-            aggregatedBooks.totalBooksStarted += books.started?.length || 0;
-        } catch (error) {
-            console.error(`[Year Data] Error fetching week ${weekNum}:`, error);
+        const { music, places, books, activity } = result;
+
+        // Aggregate music
+        aggregatedMusic.totalSongs += music.songs || 0;
+        aggregatedMusic.totalArtists += music.artists || 0;
+        aggregatedMusic.totalSessions += music.sessions || 0;
+
+        // Parse time string (e.g., "2h 15m" or "45m")
+        const timeStr = music.totalTime || "0m";
+        const hourMatch = timeStr.match(/(\d+)h/);
+        const minMatch = timeStr.match(/(\d+)m/);
+        const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+        const minutes = minMatch ? parseInt(minMatch[1]) : 0;
+        aggregatedMusic.totalMinutes += hours * 60 + minutes;
+
+        // Collect unique albums
+        if (music.topAlbums && music.topAlbums.length > 0) {
+            aggregatedMusic.topAlbums.push(...music.topAlbums.slice(0, 2));
         }
+
+        // Aggregate activity
+        aggregatedActivity.totalSteps += activity.steps || 0;
+        aggregatedActivity.totalDistance += activity.distance || 0;
+        aggregatedActivity.totalRuns += activity.summary?.runs || 0;
+        aggregatedActivity.totalRunDistance +=
+            activity.summary?.runDistance || 0;
+        aggregatedActivity.totalBikes += activity.summary?.bikes || 0;
+        aggregatedActivity.totalBikeDistance +=
+            activity.summary?.bikeDistance || 0;
+        aggregatedActivity.totalWalks += activity.summary?.walks || 0;
+        aggregatedActivity.totalWalkDistance +=
+            activity.summary?.walkDistance || 0;
+
+        // Aggregate places
+        aggregatedPlaces.totalUniquePlaces += places.uniquePlaces || 0;
+        aggregatedPlaces.totalVisits += places.totalVisits || 0;
+        if (places.location) {
+            aggregatedPlaces.placesByNeighborhood[places.location] =
+                (aggregatedPlaces.placesByNeighborhood[places.location] ||
+                    0) + (places.uniquePlaces || 0);
+        }
+
+        // Aggregate books
+        aggregatedBooks.totalBooksFinished += books.finished?.length || 0;
+        aggregatedBooks.totalBooksStarted += books.started?.length || 0;
     }
 
     // Extrapolate to full year

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Detailed style D: Sketch-like, multiple loose strokes -->
+  <circle cx="100" cy="100" r="95" fill="#0a0a0a"/>
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Face - multiple sketch lines -->
+    <path d="M56 92 Q56 54 100 49 Q144 54 144 92 Q144 128 129 149 Q112 167 100 167 Q88 167 71 149 Q56 128 56 92" stroke-width="1.5"/>
+    <path d="M58 94 Q58 58 100 52 Q142 58 142 94" stroke-width="0.8" opacity="0.4"/>
+    <path d="M142 94 Q142 126 128 146" stroke-width="0.8" opacity="0.4"/>
+    <path d="M58 94 Q58 126 72 146" stroke-width="0.8" opacity="0.4"/>
+
+    <!-- Hair - loose, sketchy -->
+    <path d="M56 84 Q54 40 100 35 Q146 40 144 84" stroke-width="2"/>
+    <path d="M58 82 Q56 44 100 38 Q144 44 142 82" stroke-width="1" opacity="0.5"/>
+    <path d="M60 80 Q58 48 100 42" stroke-width="0.8" opacity="0.3"/>
+    <!-- Messy hair strokes -->
+    <path d="M68 58 Q82 44 98 48" stroke-width="1.2"/>
+    <path d="M70 55 Q85 42 100 46" stroke-width="0.8" opacity="0.6"/>
+    <path d="M102 46 Q118 42 132 58" stroke-width="1.2"/>
+    <path d="M100 48 Q115 44 128 55" stroke-width="0.8" opacity="0.6"/>
+    <path d="M75 52 L80 46" stroke-width="0.6"/>
+    <path d="M90 50 L94 44" stroke-width="0.6"/>
+    <path d="M108 44 L112 50" stroke-width="0.6"/>
+    <path d="M122 46 L126 52" stroke-width="0.6"/>
+
+    <!-- Ears sketchy -->
+    <path d="M56 92 Q50 92 50 102 Q50 112 56 112" stroke-width="1.2"/>
+    <path d="M144 92 Q150 92 150 102 Q150 112 144 112" stroke-width="1.2"/>
+
+    <!-- Eyebrows - multiple strokes -->
+    <path d="M66 80 Q80 74 94 80" stroke-width="2"/>
+    <path d="M68 79 Q80 74 92 79" stroke-width="1" opacity="0.5"/>
+    <path d="M106 80 Q120 74 134 80" stroke-width="2"/>
+    <path d="M108 79 Q120 74 132 79" stroke-width="1" opacity="0.5"/>
+
+    <!-- Eyes - sketched -->
+    <ellipse cx="80" cy="94" rx="10" ry="8" stroke-width="1.5"/>
+    <ellipse cx="80" cy="94" rx="9" ry="7" stroke-width="0.6" opacity="0.4"/>
+    <ellipse cx="120" cy="94" rx="10" ry="8" stroke-width="1.5"/>
+    <ellipse cx="120" cy="94" rx="9" ry="7" stroke-width="0.6" opacity="0.4"/>
+    <!-- Lids -->
+    <path d="M70 90 Q80 85 90 90" stroke-width="1"/>
+    <path d="M110 90 Q120 85 130 90" stroke-width="1"/>
+    <!-- Iris/pupil -->
+    <circle cx="80" cy="95" r="5" stroke-width="1"/>
+    <circle cx="120" cy="95" r="5" stroke-width="1"/>
+    <circle cx="80" cy="95" r="2" fill="#fff"/>
+    <circle cx="120" cy="95" r="2" fill="#fff"/>
+
+    <!-- Nose - quick strokes -->
+    <path d="M100 86 L97 106" stroke-width="1.5"/>
+    <path d="M99 88 L96 104" stroke-width="0.6" opacity="0.4"/>
+    <path d="M97 106 Q100 114 103 106" stroke-width="1.5"/>
+    <path d="M94 110 Q100 116 106 110" stroke-width="0.8" opacity="0.5"/>
+
+    <!-- Mustache sketchy -->
+    <path d="M82 119 Q94 126 100 124 Q106 126 118 119" stroke-width="1.5"/>
+    <path d="M84 118 Q94 124 100 122" stroke-width="0.8" opacity="0.5"/>
+    <path d="M100 122 Q106 124 116 118" stroke-width="0.8" opacity="0.5"/>
+
+    <!-- Mouth -->
+    <path d="M88 134 Q100 140 112 134" stroke-width="1.5"/>
+    <path d="M90 133 Q100 138 110 133" stroke-width="0.8" opacity="0.4"/>
+
+    <!-- Beard - loose strokes -->
+    <path d="M66 124 Q62 146 78 160" stroke-width="1" opacity="0.5"/>
+    <path d="M68 126 Q65 145 80 158" stroke-width="0.6" opacity="0.35"/>
+    <path d="M134 124 Q138 146 122 160" stroke-width="1" opacity="0.5"/>
+    <path d="M132 126 Q135 145 120 158" stroke-width="0.6" opacity="0.35"/>
+    <path d="M80 158 Q100 170 120 158" stroke-width="0.8" opacity="0.4"/>
+    <path d="M85 156 Q100 166 115 156" stroke-width="0.5" opacity="0.3"/>
+  </g>
+</svg>

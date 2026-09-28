@@ -228,6 +228,30 @@ export async function setYearInCache(year, data) {
 }
 
 /**
+ * Set week data in cache with short TTL (for incomplete data that needs retry)
+ * @param {number} weekNumber - Week number
+ * @param {Object} data - Week data
+ * @returns {Promise<void>}
+ */
+export async function setWeekInCacheWithShortTTL(weekNumber, data) {
+    const cacheKey = `week-${weekNumber}`;
+    const ttl = 15 * 60 * 1000; // 15 minutes - short TTL for retry
+
+    // Add metadata
+    const cachedData = {
+        ...data,
+        cachedAt: Date.now(),
+        expiresAt: Date.now() + ttl,
+        incomplete: true, // Mark as incomplete for debugging
+    };
+
+    // Write to L1 only (don't persist incomplete data to Firestore)
+    memoryCache.set(cacheKey, cachedData, { ttl });
+
+    console.log(`[Cache] Stored incomplete week ${weekNumber} with 15min TTL (not persisted to Firestore)`);
+}
+
+/**
  * Invalidate cache for specific week
  * @param {number} weekNumber - Week number
  * @returns {Promise<void>}

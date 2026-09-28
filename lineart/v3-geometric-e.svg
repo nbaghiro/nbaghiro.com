@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Geometric style E: Cubist/multi-perspective -->
+  <circle cx="100" cy="100" r="95" fill="#0a0a0a"/>
+  <g fill="none" stroke="#ffffff" stroke-linejoin="miter">
+    <!-- Multiple overlapping face planes -->
+
+    <!-- Main face plane -->
+    <polygon points="55,60 50,100 55,140 75,160 100,168 125,160 145,140 150,100 145,60 100,45" stroke-width="2"/>
+
+    <!-- Secondary shifted plane -->
+    <polygon points="65,55 58,95 62,135 80,155 105,162 128,152 142,132 145,95 138,58 100,48" stroke-width="1" opacity="0.4"/>
+
+    <!-- Hair block -->
+    <polygon points="100,38 60,55 55,75 70,70 100,50 130,70 145,75 140,55" stroke-width="2"/>
+    <line x1="100" y1="38" x2="100" y2="50" stroke-width="1.5"/>
+    <line x1="70" y1="70" x2="85" y2="58" stroke-width="1"/>
+    <line x1="130" y1="70" x2="115" y2="58" stroke-width="1"/>
+
+    <!-- Face divisions - cubist style -->
+    <line x1="100" y1="50" x2="100" y2="168" stroke-width="1" opacity="0.5"/>
+    <line x1="55" y1="100" x2="145" y2="100" stroke-width="1" opacity="0.3"/>
+    <line x1="65" y1="75" x2="135" y2="125" stroke-width="0.8" opacity="0.2"/>
+    <line x1="135" y1="75" x2="65" y2="125" stroke-width="0.8" opacity="0.2"/>
+
+    <!-- Eyebrows - angular blocks -->
+    <polygon points="65,75 68,82 92,82 88,75" stroke-width="1.5"/>
+    <polygon points="135,75 132,82 108,82 112,75" stroke-width="1.5"/>
+
+    <!-- Left eye - fragmented -->
+    <polygon points="70,88 75,85 90,88 88,95 85,102 70,98" stroke-width="1.5"/>
+    <polygon points="75,90 82,88 85,95 78,97" fill="#fff"/>
+    <!-- Eye from different angle -->
+    <polygon points="72,92 68,95 70,100 76,98" stroke-width="0.8" opacity="0.5"/>
+
+    <!-- Right eye - fragmented -->
+    <polygon points="130,88 125,85 110,88 112,95 115,102 130,98" stroke-width="1.5"/>
+    <polygon points="125,90 118,88 115,95 122,97" fill="#fff"/>
+    <!-- Eye from different angle -->
+    <polygon points="128,92 132,95 130,100 124,98" stroke-width="0.8" opacity="0.5"/>
+
+    <!-- Nose - multiple angles -->
+    <polygon points="100,82 94,95 96,112 100,118 104,112 106,95" stroke-width="1.5"/>
+    <line x1="100" y1="82" x2="94" y2="95" stroke-width="1"/>
+    <line x1="100" y1="82" x2="106" y2="95" stroke-width="1"/>
+    <!-- Nose shadow plane -->
+    <polygon points="94,95 90,105 96,112" stroke-width="0.8" opacity="0.4"/>
+
+    <!-- Mustache block -->
+    <polygon points="82,118 88,115 100,120 112,115 118,118 115,125 100,128 85,125" stroke-width="1.5"/>
+
+    <!-- Mouth planes -->
+    <polygon points="88,132 100,128 112,132 108,140 100,144 92,140" stroke-width="1.5"/>
+    <line x1="100" y1="128" x2="100" y2="144" stroke-width="0.8"/>
+
+    <!-- Beard planes -->
+    <polygon points="60,125 55,145 68,158 60,140" stroke-width="1" opacity="0.4"/>
+    <polygon points="140,125 145,145 132,158 140,140" stroke-width="1" opacity="0.4"/>
+    <polygon points="68,158 85,165 100,168 80,155" stroke-width="1" opacity="0.35"/>
+    <polygon points="132,158 115,165 100,168 120,155" stroke-width="1" opacity="0.35"/>
+
+    <!-- Jaw angular definition -->
+    <polyline points="55,140 68,158 85,165 100,168" stroke-width="2"/>
+    <polyline points="145,140 132,158 115,165 100,168" stroke-width="2"/>
+  </g>
+</svg>

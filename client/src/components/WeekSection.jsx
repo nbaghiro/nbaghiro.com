@@ -1,4 +1,41 @@
+import { useState } from "react";
 import "./WeekSection.css";
+
+// Book cover component with error handling for failed image loads
+function BookCover({ src, alt }) {
+    const [error, setError] = useState(false);
+
+    if (error || !src) {
+        return (
+            <div
+                className="book-cover book-cover-placeholder"
+                style={{
+                    backgroundColor: "#222",
+                    height: "180px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.75rem",
+                    color: "#666",
+                    textAlign: "center",
+                    padding: "1rem",
+                }}
+            >
+                {alt}
+            </div>
+        );
+    }
+
+    return (
+        <img
+            src={src}
+            alt={alt}
+            className="book-cover"
+            loading="lazy"
+            onError={() => setError(true)}
+        />
+    );
+}
 
 function WeekSection({ week, isFirstWeek }) {
     const formatDateRange = (start, end) => {
@@ -41,9 +78,9 @@ function WeekSection({ week, isFirstWeek }) {
                     <h3 className="section-title">Listening</h3>
                     <div className="album-grid">
                         {week.listening.topAlbums?.length > 0
-                            ? week.listening.topAlbums.map((album, i) => (
+                            ? week.listening.topAlbums.map((album) => (
                                   <img
-                                      key={i}
+                                      key={`${album.title}-${album.artist}`}
                                       src={album.coverUrl}
                                       alt={`${album.title} by ${album.artist}`}
                                       className="album-cover"
@@ -77,8 +114,8 @@ function WeekSection({ week, isFirstWeek }) {
                     {/* Activity list */}
                     {week.activity.activities?.length > 0 && (
                         <div className="activity-list">
-                            {week.activity.activities.map((activity, i) => (
-                                <div key={i} className="activity-item">
+                            {week.activity.activities.map((activity) => (
+                                <div key={`${activity.date}-${activity.type}`} className="activity-item">
                                     <span className="activity-type">
                                         {activity.type}
                                     </span>
@@ -117,8 +154,8 @@ function WeekSection({ week, isFirstWeek }) {
                             <div className="places-list">
                                 {week.places.places
                                     .slice(0, 6)
-                                    .map((place, i) => (
-                                        <div key={i} className="place-item">
+                                    .map((place) => (
+                                        <div key={place.name} className="place-item">
                                             <span className="place-name">
                                                 {place.name}
                                             </span>
@@ -146,24 +183,12 @@ function WeekSection({ week, isFirstWeek }) {
                     {week.reading.currently?.length > 0 && (
                         <div className="reading-section">
                             <p className="reading-status">Currently</p>
-                            {week.reading.currently.map((book, i) => (
-                                <div key={i} className="book-item">
-                                    {book.coverUrl ? (
-                                        <img
-                                            src={book.coverUrl}
-                                            alt={book.title}
-                                            className="book-cover"
-                                            loading="lazy"
-                                        />
-                                    ) : (
-                                        <div
-                                            className="book-cover"
-                                            style={{
-                                                backgroundColor: "#333",
-                                                height: "180px",
-                                            }}
-                                        />
-                                    )}
+                            {week.reading.currently.map((book) => (
+                                <div key={book.key || book.title} className="book-item">
+                                    <BookCover
+                                        src={book.coverUrl}
+                                        alt={book.title}
+                                    />
                                     <p
                                         className="stat"
                                         style={{ marginTop: "0.5rem" }}
@@ -182,16 +207,12 @@ function WeekSection({ week, isFirstWeek }) {
                             style={{ marginTop: "1rem" }}
                         >
                             <p className="reading-status">Started</p>
-                            {week.reading.started.map((book, i) => (
-                                <div key={i} className="book-item">
-                                    {book.coverUrl && (
-                                        <img
-                                            src={book.coverUrl}
-                                            alt={book.title}
-                                            className="book-cover"
-                                            loading="lazy"
-                                        />
-                                    )}
+                            {week.reading.started.map((book) => (
+                                <div key={book.key || book.title} className="book-item">
+                                    <BookCover
+                                        src={book.coverUrl}
+                                        alt={book.title}
+                                    />
                                     <p
                                         className="stat"
                                         style={{ marginTop: "0.5rem" }}
@@ -210,16 +231,12 @@ function WeekSection({ week, isFirstWeek }) {
                             style={{ marginTop: "1rem" }}
                         >
                             <p className="reading-status">Finished</p>
-                            {week.reading.finished.map((book, i) => (
-                                <div key={i} className="book-item">
-                                    {book.coverUrl && (
-                                        <img
-                                            src={book.coverUrl}
-                                            alt={book.title}
-                                            className="book-cover"
-                                            loading="lazy"
-                                        />
-                                    )}
+                            {week.reading.finished.map((book) => (
+                                <div key={book.key || book.title} className="book-item">
+                                    <BookCover
+                                        src={book.coverUrl}
+                                        alt={book.title}
+                                    />
                                     <p
                                         className="stat"
                                         style={{ marginTop: "0.5rem" }}

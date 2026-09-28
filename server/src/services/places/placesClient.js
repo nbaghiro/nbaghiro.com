@@ -3,6 +3,8 @@
  * Requires API key authentication
  */
 
+import { resilientFetch } from "../../utils/httpClient.js";
+
 const API_BASE_URL = "https://maps.googleapis.com/maps/api/place";
 
 /**
@@ -35,7 +37,7 @@ export async function searchNearbyPlaces(
     url.searchParams.append("type", type);
     url.searchParams.append("key", apiKey);
 
-    const response = await fetch(url);
+    const response = await resilientFetch(url);
 
     if (!response.ok) {
         throw new Error(
@@ -75,7 +77,7 @@ export async function textSearch(query, maxResults = 10) {
     url.searchParams.append("query", query);
     url.searchParams.append("key", apiKey);
 
-    const response = await fetch(url);
+    const response = await resilientFetch(url);
 
     if (!response.ok) {
         throw new Error(

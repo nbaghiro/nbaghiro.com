@@ -11,7 +11,42 @@ import { getWeekDates } from "../utils/dateUtils.js";
 import {
     getWeekFromCache,
     setWeekInCache,
+    setWeekInCacheWithShortTTL,
 } from "./cache/cacheService.js";
+
+/**
+ * Check if week data is complete enough for long-term caching
+ * Incomplete data gets cached with a short TTL for automatic retry
+ * @param {Object} weekData - Week data to validate
+ * @returns {boolean}
+ */
+function isDataComplete(weekData) {
+    // Music data should have at least 6 album covers
+    const albumCount = weekData.listening?.topAlbums?.length || 0;
+    const hasEnoughAlbums = albumCount >= 6;
+
+    if (!hasEnoughAlbums) {
+        console.log(
+            `[WeekData] Week ${weekData.weekNumber} incomplete: only ${albumCount} albums (need 6+)`
+        );
+        return false;
+    }
+
+    // Check if any book section has a book with a cover
+    const hasBookWithCover =
+        weekData.reading?.currently?.some((b) => b.coverUrl) ||
+        weekData.reading?.started?.some((b) => b.coverUrl) ||
+        weekData.reading?.finished?.some((b) => b.coverUrl);
+
+    // Books are optional but log if missing
+    if (!hasBookWithCover) {
+        console.log(
+            `[WeekData] Week ${weekData.weekNumber} has no book covers (books are optional)`
+        );
+    }
+
+    return true;
+}
 
 /**
  * Check which weeks are cached
@@ -71,8 +106,12 @@ export async function generateWeekData(weekNumber) {
         reading,
     };
 
-    // Store in cache (both memory and Firestore)
-    await setWeekInCache(weekNumber, weekData);
+    // Store in cache - use short TTL for incomplete data so it retries automatically
+    if (isDataComplete(weekData)) {
+        await setWeekInCache(weekNumber, weekData);
+    } else {
+        await setWeekInCacheWithShortTTL(weekNumber, weekData);
+    }
 
     return weekData;
 }

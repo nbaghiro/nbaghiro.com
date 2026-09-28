@@ -4,6 +4,7 @@
  */
 
 import { fetchSubjectBooks, getCoverUrl } from "./openLibraryClient.js";
+import { isValidImageUrl } from "../../utils/imageValidator.js";
 
 // Rotate through subjects matching user interests
 // Similar to: Lords of Uncreation, The Enduring Universe, Apple in China, The Human Division
@@ -38,17 +39,48 @@ function seededRandom(seed) {
 }
 
 /**
- * Format a book work from Open Library into our structure
+ * Format a book and validate its cover URL
+ * Returns null if cover is invalid (placeholder or 404)
  * @param {Object} work - Work object from Open Library
- * @returns {Object}
+ * @returns {Promise<Object|null>}
  */
-function formatBook(work) {
+async function formatBookWithValidation(work) {
+    const coverUrl = getCoverUrl(work.cover_id);
+
+    // Validate the cover URL actually returns a real image
+    const isValid = await isValidImageUrl(coverUrl);
+
+    if (!isValid) {
+        console.log(
+            `[Books] Rejected cover for "${work.title}" - invalid or placeholder`
+        );
+        return null;
+    }
+
     return {
         title: work.title,
         author: work.authors?.[0]?.name || "Unknown Author",
-        coverUrl: getCoverUrl(work.cover_id),
+        coverUrl,
         key: work.key,
     };
+}
+
+/**
+ * Find a book with a valid cover from a list of candidates
+ * @param {Array} books - Array of book works
+ * @param {number} startIndex - Index to start searching from
+ * @returns {Promise<Object|null>}
+ */
+async function findBookWithValidCover(books, startIndex = 0) {
+    // Try books starting from startIndex, wrapping around if needed
+    for (let i = 0; i < books.length; i++) {
+        const index = (startIndex + i) % books.length;
+        const book = await formatBookWithValidation(books[index]);
+        if (book) {
+            return book;
+        }
+    }
+    return null;
 }
 
 /**
@@ -80,7 +112,7 @@ export async function getWeeklyBooks(weekNumber) {
             };
         }
 
-        // Filter out books without covers
+        // Filter out books without cover_id
         const booksWithCovers = data.works.filter((work) => work.cover_id);
 
         if (booksWithCovers.length === 0) {
@@ -104,7 +136,19 @@ export async function getWeeklyBooks(weekNumber) {
         let started = [];
         let finished = [];
 
-        const primaryBook = formatBook(booksWithCovers[bookIndex]);
+        // Find a book with a valid cover (not a placeholder)
+        const primaryBook = await findBookWithValidCover(booksWithCovers, bookIndex);
+
+        if (!primaryBook) {
+            console.log(
+                `[Books] No valid cover found for week ${weekNumber} in subject "${subject}"`
+            );
+            return {
+                currently: [],
+                started: [],
+                finished: [],
+            };
+        }
 
         // Reading progression: Started (oldest week) → Currently (middle) → Finished (newest)
         // Week 0 = current week (newest), Week 2 = 2 weeks ago (oldest)

@@ -1,0 +1,41 @@
+# Render Blueprint for nbaghiro.com. One web service (Node) runs Express, which serves the built
+# React app AND /api on one origin. A Key Value instance holds the project chat's daily spend and
+# per-visitor counters, so they survive the free web instance sleeping and restarting.
+services:
+    - type: web
+      name: nbaghiro
+      runtime: node
+      region: oregon
+      plan: free # spins down after 15 min idle; the first visit after that waits for a cold start
+      branch: main
+      # Deploy each push to main, but only after its GitHub checks (.github/workflows/ci.yml)
+      # pass. A failed check, or a commit with no checks at all, is not deployed.
+      autoDeployTrigger: checksPass
+      # `--include=dev`: NODE_ENV=production below makes `npm ci` skip devDependencies, and the
+      # client build needs vite from there.
+      # Node version comes from "engines" in the root package.json (24.x).
+      buildCommand: npm ci --include=dev && npm run build
+      startCommand: npm start
+      healthCheckPath: /api/health
+      envVars:
+          - key: NODE_ENV
+            value: production
+          - key: CHAT_DAILY_CAP_USD # hard stop for the project chat's Claude spend, per UTC day
+            value: "5"
+          - key: CHAT_QUESTIONS_PER_VISITOR
+            value: "10"
+          - key: REDIS_URL
+            fromService:
+                type: keyvalue
+                name: nbaghiro-kv
+                property: connectionString
+          # --- secrets: set in the Render dashboard (never committed) ---
+          - key: ANTHROPIC_API_KEY
+            sync: false
+
+    - type: keyvalue
+      name: nbaghiro-kv
+      region: oregon
+      plan: free # in-memory only: a Key Value restart resets the day's counters
+      maxmemoryPolicy: noeviction
+      ipAllowList: [] # reachable only from services in this Render account
