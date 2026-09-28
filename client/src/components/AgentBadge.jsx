@@ -13,7 +13,7 @@ function AgentBadge() {
                 <path d="M55,80 L52,105 L55,130 L70,150 L100,165 L130,150 L145,130 L148,105 L145,80" vectorEffect="non-scaling-stroke" />
                 <polyline points="88,135 100,142 112,135" vectorEffect="non-scaling-stroke" />
             </g>
-            <g fill="#FFD64A">
+            <g fill="#EDEAE2">
                 <polygon points="80,84 91,92 80,101 69,92" />
                 <polygon points="120,84 131,92 120,101 109,92" />
             </g>

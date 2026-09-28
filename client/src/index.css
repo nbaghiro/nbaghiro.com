@@ -14,7 +14,7 @@
     --line-strong: #333333;
     --paper: #edeae2;
     --paper-ink: #1b1d22;
-    --glow: #ffd64a;
+    --glow: #edeae2; /* the UI accent: light, not a hue */
 
     --font-hand: "Shantell Sans", "Comic Sans MS", cursive;
     --font-read: "Andika", system-ui, sans-serif;
