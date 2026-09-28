@@ -12,9 +12,16 @@ function About() {
                     Download PDF
                 </a>
             </div>
-            <div className="resume-frame">
-                <iframe src="/resume.pdf#view=Fit&toolbar=0&navpanes=0&page=1" title="Naib Baghirov résumé" />
-            </div>
+            {/* An image of the page rather than an embedded PDF viewer: no viewer redraw
+                after load, and it looks the same in every browser. The PDF is one click away. */}
+            <a className="resume-frame" href="/resume.pdf" target="_blank" rel="noreferrer">
+                <img
+                    src="/resume.webp"
+                    width="1700"
+                    height="2200"
+                    alt="Naib Baghirov's résumé. Open the PDF for a selectable text version."
+                />
+            </a>
         </section>
     );
 }
