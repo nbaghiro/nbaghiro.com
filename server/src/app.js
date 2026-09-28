@@ -16,7 +16,11 @@ const app = express();
 // req.ip is the visitor's address (used by the chat's per-visitor limit)
 app.set("trust proxy", 1);
 
-app.use(helmet());
+// Security headers. PDFs skip the page CSP: its object-src 'none' stops Chrome's
+// built-in PDF viewer from rendering the résumé inside the About page's frame.
+const pageHeaders = helmet();
+const pdfHeaders = helmet({ contentSecurityPolicy: false });
+app.use((req, res, next) => (req.path.endsWith(".pdf") ? pdfHeaders : pageHeaders)(req, res, next));
 
 // CORS configuration
 app.use(
