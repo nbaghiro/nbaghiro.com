@@ -14,6 +14,7 @@ import { INTAKE_TOOLS, cleanBrief } from "./intake.js";
 
 const MODEL = process.env.CHAT_MODEL || "claude-opus-5";
 const MAX_TOKENS = 8000;
+const HOLD_CHARS = 220; // longer than a typical "let me check" preamble
 
 let client = null;
 function getClient() {
@@ -64,7 +65,28 @@ async function runAgent({ label, system, tools, execute, history, emit, signal, 
             },
             { signal }
         );
-        stream.on("text", (text) => emit({ type: "text", text }));
+        // Hold back the start of each reply: if the model is only announcing a lookup
+        // before calling a tool ("I'll look into..."), that preamble is dropped.
+        // Real answers are released once they pass a short length, then stream as usual.
+        let held = "";
+        let released = false;
+        let calledTool = false;
+        stream.on("streamEvent", (event) => {
+            if (event.type === "content_block_start" && event.content_block?.type === "tool_use") {
+                calledTool = true;
+                held = "";
+            }
+        });
+        stream.on("text", (text) => {
+            if (calledTool) return;
+            if (released) return emit({ type: "text", text });
+            held += text;
+            if (held.length > HOLD_CHARS) {
+                emit({ type: "text", text: held });
+                held = "";
+                released = true;
+            }
+        });
 
         let message;
         try {
@@ -75,6 +97,8 @@ async function runAgent({ label, system, tools, execute, history, emit, signal, 
             if (err instanceof Anthropic.APIError || signal?.aborted || jsonRetries++ >= 2) throw err;
             continue;
         }
+
+        if (!calledTool && held) emit({ type: "text", text: held });
 
         const cost = costOf(message.model, message.usage);
         spent += cost;

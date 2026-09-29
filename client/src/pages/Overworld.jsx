@@ -33,7 +33,22 @@ function chainPath(home, places) {
     return d;
 }
 
-function Island({ project, index, onOpen }) {
+// On phones the islands become a winding trail. This dotted path joins one row to the
+// next: straight down past the text, then a curve across the gap to the other side.
+function TrailLink({ className }) {
+    return (
+        <span className={`trail-link ${className}`} aria-hidden="true">
+            <svg className="trail-drop" viewBox="0 0 2 100" preserveAspectRatio="none">
+                <path d="M1 0 V100" vectorEffect="non-scaling-stroke" />
+            </svg>
+            <svg className="trail-curve" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0 0 C0 55 100 45 100 100" vectorEffect="non-scaling-stroke" />
+            </svg>
+        </span>
+    );
+}
+
+function Island({ project, index, last, onOpen }) {
     return (
         <div
             className="island"
@@ -55,6 +70,7 @@ function Island({ project, index, onOpen }) {
                     <Mark size="100%" ink={project.color} variant={project.variant} />
                 </span>
                 <span className="island-name">{project.name}</span>
+                <span className="island-summary">{project.summary}</span>
             </button>
             <p className="island-meta">
                 <span>{project.status}</span>
@@ -67,6 +83,7 @@ function Island({ project, index, onOpen }) {
                     code ↗
                 </a>
             </p>
+            {!last && <TrailLink className={index % 2 ? "trail-link--back" : ""} />}
         </div>
     );
 }
@@ -156,10 +173,11 @@ function Overworld() {
                         <AgentBadge />
                         Ask my agent
                     </button>
+                    <TrailLink className="trail-link--start" />
                 </div>
 
                 {places.map((project, i) => (
-                    <Island key={project.id} project={project} index={i} onOpen={openProject} />
+                    <Island key={project.id} project={project} index={i} last={i === places.length - 1} onOpen={openProject} />
                 ))}
             </div>
 

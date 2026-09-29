@@ -96,6 +96,18 @@
     letter-spacing: 0.08em;
 }
 
+.project-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex-grow: 1;
+}
+
+/* The copy inside About is for phones only */
+.about .project-intro {
+    display: none;
+}
+
 .project-summary {
     margin: 0;
     font-size: 17px;
@@ -223,14 +235,106 @@
     color: var(--ink-muted);
 }
 
+/* Phones: a full-screen sheet with a compact header, the tabs right under it,
+   and the chat filling the rest of the screen */
 @media (max-width: 760px) {
+    .project-dialog {
+        width: 100vw;
+        height: 100dvh;
+        max-height: none;
+        margin: 0;
+    }
+
+    .tape {
+        display: none;
+    }
+
     .project-card {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 28px;
-        padding: 28px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        height: 100%;
+        max-height: none;
+        padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .close-button {
+        right: 12px;
+        top: 18px;
+    }
+
+    .project-side {
+        display: grid;
+        grid-template-columns: 60px minmax(0, 1fr);
+        align-items: center;
+        gap: 14px;
+        padding-right: 52px;
     }
 
     .project-character {
-        width: 110px;
+        width: 60px;
+    }
+
+    .project-name {
+        font-size: 26px;
+        line-height: 1.15;
+    }
+
+    .project-meta {
+        font-size: 11px;
+    }
+
+    .project-side .project-intro {
+        display: none;
+    }
+
+    .about .project-intro {
+        display: flex;
+        padding-bottom: 22px;
+        border-bottom: 1px dashed var(--line-strong);
+    }
+
+    .project-links .pill {
+        min-height: 40px;
+        font-size: 15px;
+    }
+
+    .tabs {
+        padding-right: 0;
+    }
+
+    .tabs button {
+        flex: 1;
+        padding: 0 12px;
+    }
+
+    .details {
+        font-size: 16px;
+    }
+
+    .highlights li {
+        font-size: 15px;
+    }
+
+    /* On the chat tab the sheet stops scrolling and the conversation takes the rest */
+    .project-card:has(.project-chat) .project-main {
+        flex: 1 1 0;
+        min-height: 0;
+    }
+
+    .project-chat {
+        flex: 1 1 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .project-chat .chat-thread--embedded {
+        flex: 1 1 0;
+        min-height: 0;
+        height: auto;
     }
 }

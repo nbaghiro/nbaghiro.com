@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useSyncExternalStore } from "react";
 import ChatThread from "./ChatThread";
 
 export const TOOL_LABELS = {
@@ -30,39 +30,64 @@ async function readEvents(response, onEvent) {
     }
 }
 
+// Conversations live in memory for the life of the page, one per endpoint, so closing
+// a chat and coming back later picks up where it left off. A reload or a new tab starts
+// fresh; nothing is stored in the browser or on the server.
+const sessions = new Map(); // endpoint -> { state: { turns, busy }, listeners }
+
+function sessionFor(endpoint) {
+    if (!sessions.has(endpoint)) sessions.set(endpoint, { state: { turns: [], busy: false }, listeners: new Set() });
+    return sessions.get(endpoint);
+}
+
+function setSession(session, patch) {
+    session.state = { ...session.state, ...patch(session.state) };
+    session.listeners.forEach((listener) => listener());
+}
+
+/** True when this endpoint already has a conversation in this page */
+export function hasChat(endpoint) {
+    return (sessions.get(endpoint)?.state.turns.length ?? 0) > 0;
+}
+
 /**
- * Chat state and streaming for a server-side agent. History stays in the page.
+ * Chat state and streaming for a server-side agent, kept per endpoint (see above).
+ * An answer keeps streaming if the chat is closed while it is being written.
  * `labels` turns tool events into the short status line shown while it works.
  */
 export function useChat(endpoint, labels = TOOL_LABELS) {
-    const [turns, setTurns] = useState([]); // { role, content, files?, activity?, error? }
-    const [busy, setBusy] = useState(false);
-    const abortRef = useRef(null);
-
-    useEffect(() => () => abortRef.current?.abort(), []);
+    const session = sessionFor(endpoint);
+    const { turns, busy } = useSyncExternalStore(
+        (listener) => {
+            session.listeners.add(listener);
+            return () => session.listeners.delete(listener);
+        },
+        () => session.state,
+    );
 
     const updateLast = (patch) =>
-        setTurns((prev) => {
-            const last = prev[prev.length - 1];
-            return [...prev.slice(0, -1), { ...last, ...patch(last) }];
+        setSession(session, ({ turns }) => {
+            const last = turns[turns.length - 1];
+            return { turns: [...turns.slice(0, -1), { ...last, ...patch(last) }] };
         });
 
     const ask = async (question) => {
         const text = question.trim();
-        if (!text || busy) return;
-        setBusy(true);
+        if (!text || session.state.busy) return;
 
         // Only answered question/answer pairs go back to the server
         const history = [];
-        for (let i = 0; i + 1 < turns.length; i += 2) {
-            const [q, a] = [turns[i], turns[i + 1]];
+        const previous = session.state.turns;
+        for (let i = 0; i + 1 < previous.length; i += 2) {
+            const [q, a] = [previous[i], previous[i + 1]];
             if (a.content && !a.error) history.push({ role: "user", content: q.content }, { role: "assistant", content: a.content });
         }
         history.push({ role: "user", content: text });
-        setTurns((prev) => [...prev, { role: "user", content: text }, { role: "assistant", content: "", activity: [], files: [] }]);
+        setSession(session, ({ turns }) => ({
+            busy: true,
+            turns: [...turns, { role: "user", content: text }, { role: "assistant", content: "", activity: [], files: [] }],
+        }));
 
-        const abort = new AbortController();
-        abortRef.current = abort;
         let needsBreak = false;
 
         try {
@@ -70,7 +95,6 @@ export function useChat(endpoint, labels = TOOL_LABELS) {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ messages: history }),
-                signal: abort.signal,
             });
             if (!response.ok) {
                 const body = await response.json().catch(() => ({}));
@@ -93,18 +117,20 @@ export function useChat(endpoint, labels = TOOL_LABELS) {
                 }
             });
         } catch (error) {
-            if (error.name !== "AbortError") updateLast(() => ({ error: error.message }));
+            updateLast(() => ({ error: error.message }));
         } finally {
-            setBusy(false);
+            setSession(session, () => ({ busy: false }));
         }
     };
 
     return { turns, busy, ask };
 }
 
+export const chatEndpoint = (project) => `/api/projects/${project.id}/chat`;
+
 /** "Ask the code" tab: Claude reads this project's public repo on the server */
 function ProjectChat({ project }) {
-    const { turns, busy, ask } = useChat(`/api/projects/${project.id}/chat`);
+    const { turns, busy, ask } = useChat(chatEndpoint(project));
     return (
         <div role="tabpanel" className="project-chat">
             <ChatThread

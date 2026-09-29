@@ -431,20 +431,28 @@
     }
 }
 
-/* Narrow screens: the map becomes a list of islands under the portrait */
+/* Phone-only pieces of the trail layout below */
+.island-summary,
+.trail-link {
+    display: none;
+}
+
+/* Narrow screens: the map becomes a trail winding down from the portrait,
+   one island per row, alternating sides, joined by the dotted path */
 @media (max-width: 860px) {
     .overworld {
         height: auto;
         min-height: 0;
-        overflow: visible;
-        padding: 24px 16px 48px;
+        overflow: hidden;
+        padding: 28px 20px 72px;
     }
 
     .stage {
-        position: static;
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 40px 12px;
+        position: relative;
+        max-width: 440px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
     }
 
     .stage-lines,
@@ -454,18 +462,21 @@
     }
 
     .home {
-        position: static;
-        grid-column: 1 / -1;
+        position: relative;
+        left: auto !important;
+        top: auto !important;
         width: 100%;
+        margin-bottom: 64px;
         transform: none;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 22px;
+        gap: 24px;
     }
 
     .home-portrait {
-        width: 150px;
+        width: 148px;
+        margin-top: 12px;
     }
 
     .ask-agent {
@@ -479,6 +490,8 @@
         top: auto;
         width: auto;
         max-width: 340px;
+        margin-top: 8px;
+        font-size: 15px;
     }
 
     .home-bubble::before {
@@ -493,14 +506,152 @@
         left: auto !important;
         top: auto !important;
         width: 100%;
-        max-width: 200px;
-        justify-self: center;
+        padding-bottom: 60px;
         transform: none;
+        display: block;
+    }
+
+    .island:last-child {
+        padding-bottom: 0;
+    }
+
+    /* Art on one side, name and summary on the other; the last row holds the links */
+    .island-open {
+        display: grid;
+        grid-template-columns: 112px minmax(0, 1fr);
+        grid-template-rows: auto auto 32px;
+        grid-template-areas:
+            "art name"
+            "art summary"
+            "art .";
+        column-gap: 18px;
+        align-items: start;
+        min-height: 112px;
+        text-align: left;
+    }
+
+    .island-character {
+        grid-area: art;
+        width: 76px;
+        justify-self: center;
     }
 
     .island-rings {
-        left: 50%;
-        width: min(100%, 170px);
-        transform: translateX(-50%);
+        left: 0;
+        top: 50px;
+        width: 112px;
+        height: 42px;
+    }
+
+    .island-name {
+        grid-area: name;
+        margin: 4px 0 4px;
+        font-size: 22px;
+        line-height: 1.2;
+    }
+
+    .island-summary {
+        grid-area: summary;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+        font-size: 14px;
+        line-height: 1.45;
+        color: var(--ink-muted);
+    }
+
+    .island-meta {
+        position: absolute;
+        left: 130px;
+        right: 0;
+        top: calc(100% - 60px - 30px);
+        font-size: 10.5px;
+    }
+
+    .island:last-child .island-meta {
+        top: calc(100% - 30px);
+    }
+
+    /* Every other row mirrors, so the trail zigzags */
+    .island:nth-child(even of .island) .island-open {
+        grid-template-columns: minmax(0, 1fr) 112px;
+        grid-template-areas:
+            "name art"
+            "summary art"
+            ". art";
+        text-align: right;
+    }
+
+    .island:nth-child(even of .island) .island-rings {
+        left: auto;
+        right: 0;
+    }
+
+    .island:nth-child(even of .island) .island-meta {
+        left: 0;
+        right: 130px;
+        justify-content: flex-end;
+    }
+
+    .trail-link {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        z-index: -1;
+        left: 56px;
+        right: 56px;
+        top: 104px;
+        bottom: 4px;
+    }
+
+    .trail-link svg {
+        display: block;
+        overflow: visible;
+    }
+
+    .trail-drop {
+        flex: 1 1 0;
+        min-height: 0;
+        height: auto;
+        width: 2px;
+        margin-left: -1px;
+    }
+
+    .trail-curve {
+        flex-shrink: 0;
+        width: 100%;
+        height: 60px;
+    }
+
+    .trail-link path {
+        fill: none;
+        stroke: var(--island-color, var(--ink));
+        stroke-width: 1.5;
+        stroke-dasharray: 2 8;
+        stroke-linecap: round;
+        opacity: 0.45;
+    }
+
+    .trail-link--back {
+        transform: scaleX(-1);
+    }
+
+    /* From the ask button down to the first island, on the left */
+    .trail-link--start {
+        left: 56px;
+        right: 50%;
+        top: calc(100% + 6px);
+        bottom: auto;
+        transform: scaleX(-1);
+    }
+
+    .trail-link--start .trail-drop {
+        display: none;
+    }
+
+    .trail-link--start path {
+        stroke: var(--ink);
+        opacity: 0.25;
     }
 }

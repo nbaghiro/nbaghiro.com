@@ -1,8 +1,32 @@
 import { useEffect, useRef, useState } from "react";
 import Mark from "./Mark";
-import ProjectChat from "./ProjectChat";
+import ProjectChat, { chatEndpoint, hasChat } from "./ProjectChat";
 import { repoUrl } from "../data/projects";
 import "./ProjectDialog.css";
+
+/** Summary, stack and links; in the side column on wide screens, in About on phones */
+function ProjectIntro({ project }) {
+    return (
+        <div className="project-intro">
+            <p className="project-summary">{project.summary}</p>
+            <ul className="stack" aria-label="Technologies">
+                {project.stack.map((tech) => (
+                    <li key={tech}>{tech}</li>
+                ))}
+            </ul>
+            <div className="project-links">
+                {project.liveUrl && (
+                    <a className="pill pill-solid" href={project.liveUrl} target="_blank" rel="noreferrer">
+                        Visit {project.liveUrl.replace("https://", "")}
+                    </a>
+                )}
+                <a className="pill" href={repoUrl(project)} target="_blank" rel="noreferrer">
+                    Source on GitHub
+                </a>
+            </div>
+        </div>
+    );
+}
 
 /**
  * Popup for one project. Uses the native <dialog> so focus is trapped,
@@ -10,7 +34,8 @@ import "./ProjectDialog.css";
  */
 function ProjectDialog({ project, onClose }) {
     const ref = useRef(null);
-    const [tab, setTab] = useState("about");
+    // Reopen on the chat when this project already has a conversation
+    const [tab, setTab] = useState(() => (hasChat(chatEndpoint(project)) ? "ask" : "about"));
 
     useEffect(() => {
         const dialog = ref.current;
@@ -54,22 +79,7 @@ function ProjectDialog({ project, onClose }) {
                             {project.status} · updated {project.updated}
                         </p>
                     </div>
-                    <p className="project-summary">{project.summary}</p>
-                    <ul className="stack" aria-label="Technologies">
-                        {project.stack.map((tech) => (
-                            <li key={tech}>{tech}</li>
-                        ))}
-                    </ul>
-                    <div className="project-links">
-                        {project.liveUrl && (
-                            <a className="pill pill-solid" href={project.liveUrl} target="_blank" rel="noreferrer">
-                                Visit {project.liveUrl.replace("https://", "")}
-                            </a>
-                        )}
-                        <a className="pill" href={repoUrl(project)} target="_blank" rel="noreferrer">
-                            Source on GitHub
-                        </a>
-                    </div>
+                    <ProjectIntro project={project} />
                 </aside>
 
                 <div className="project-main">
@@ -84,6 +94,8 @@ function ProjectDialog({ project, onClose }) {
 
                     {tab === "about" ? (
                         <div className="about" role="tabpanel">
+                            {/* Phones show the intro here, under the tabs, instead of in the side column */}
+                            <ProjectIntro project={project} />
                             <p className="details">{project.details}</p>
                             <ul className="highlights">
                                 {project.highlights.map((h) => (

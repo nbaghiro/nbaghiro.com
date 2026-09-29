@@ -142,9 +142,11 @@
 
 .chat-thread-suggestions button {
     min-height: 36px;
-    padding: 0 14px;
+    padding: 6px 14px;
     border: 1px solid #2c2c2c;
-    border-radius: 999px;
+    border-radius: 18px;
+    text-align: left;
+    line-height: 1.35;
     background: transparent;
     color: var(--ink-muted);
     font: 14px var(--font-read);
