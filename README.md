@@ -69,7 +69,7 @@ Environment variables on the web service:
 - `REDIS_URL` is filled in by Render from the Key Value instance.
 - `ANTHROPIC_API_KEY` is a secret. It is marked `sync: false`, so it is entered in the Render dashboard and never committed.
 
-Both resources are on the free plan. The web service sleeps after 15 minutes without traffic, so the first request after that waits for a cold start. The free Key Value instance keeps data in memory only, so a restart of it resets the day's counters.
+The web service is on the Starter plan so it is always on; on the free plan it slept after 15 minutes without traffic and the first request after that waited through Render's waking-up page. The Key Value instance is free and keeps data in memory only, so a restart of it resets the day's counters.
 
 To check the Blueprint after editing it:
 

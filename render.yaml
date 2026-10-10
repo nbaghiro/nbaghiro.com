@@ -6,7 +6,8 @@ services:
       name: nbaghiro
       runtime: node
       region: oregon
-      plan: free # spins down after 15 min idle; the first visit after that waits for a cold start
+      plan: starter # always on. Free spun down after 15 idle minutes and showed Render's
+      # waking-up page on the next visit, which is the first thing a phone saw at /ads.
       branch: main
       # Deploy each push to main, but only after its GitHub checks (.github/workflows/ci.yml)
       # pass. A failed check, or a commit with no checks at all, is not deployed.
