@@ -34,3 +34,9 @@ coverage/
 # Temporary files
 *.tmp
 .cache/
+
+# Local design experiments
+.scratchpad/
+
+# Credentials for publishing the ad studios to R2 (scripts/ads-publish.mjs)
+.env.ads

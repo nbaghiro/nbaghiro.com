@@ -18,9 +18,29 @@ app.set("trust proxy", 1);
 
 // Security headers. PDFs skip the page CSP: its object-src 'none' stops Chrome's
 // built-in PDF viewer from rendering the résumé inside the About page's frame.
-const pageHeaders = helmet();
+// /ads shows images and video straight from the R2 bucket and fetches them for the
+// share sheet, so the bucket's origin is allowed in the three directives that cover
+// that (helmet's default for each is 'self' only). ADS_MEDIA_ORIGINS adds more.
+const mediaOrigins = (
+    process.env.ADS_MEDIA_ORIGINS || "https://*.r2.dev"
+).split(/\s+/);
+const directives = helmet.contentSecurityPolicy.getDefaultDirectives();
+directives["img-src"] = ["'self'", "data:", "blob:", ...mediaOrigins];
+directives["media-src"] = ["'self'", "blob:", ...mediaOrigins];
+directives["connect-src"] = ["'self'", ...mediaOrigins];
+const pageHeaders = helmet({ contentSecurityPolicy: { directives } });
 const pdfHeaders = helmet({ contentSecurityPolicy: false });
-app.use((req, res, next) => (req.path.endsWith(".pdf") ? pdfHeaders : pageHeaders)(req, res, next));
+app.use((req, res, next) =>
+    (req.path.endsWith(".pdf") ? pdfHeaders : pageHeaders)(req, res, next)
+);
+
+// /ads is reachable only by its URL and must stay out of search results
+app.use((req, res, next) => {
+    if (req.path === "/ads" || req.path.startsWith("/ads/")) {
+        res.setHeader("X-Robots-Tag", "noindex, nofollow");
+    }
+    next();
+});
 
 // CORS configuration
 app.use(

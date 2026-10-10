@@ -14,6 +14,7 @@ Personal dashboard aggregating activity data from multiple APIs with multi-tier 
 ## Architecture
 
 ### Caching Strategy
+
 ```
 ┌─────────────┐
 │   Client    │
@@ -75,6 +76,16 @@ To check the Blueprint after editing it:
 ```bash
 render blueprints validate ./render.yaml
 ```
+
+## The ad studios (`/ads`)
+
+`/ads` is a page for posting the marketing material that each project renders in its own repo (Galleo's Instagram, LinkedIn and X kits; lumischool's social studio). It is not linked from the site, sends `X-Robots-Tag: noindex`, and asks once per device for the root of the bucket it reads, which is `<public R2 base>/<key>`. The key is the only protection: it is long and random, lives in `.env.ads` (gitignored) and on the devices that entered it, and never in `client/src`.
+
+The media stays out of this repo. Each project runs a publish script next to its renders (`galleo/.local/ads-publish.mjs`, `lumischool/.scratchpad/social/ads-publish.mjs`) that builds a `manifest.json` from the project's own data and calls `publish` in `scripts/ads-publish.mjs`, which syncs the frames, reels and PDFs to a Cloudflare R2 bucket with the `aws` CLI and writes the manifest and an `index.json` of projects under the key. The page reads those directly, so a new render needs a publish from the machine that holds it and no deploy here. A new project needs only its own publish script.
+
+Setting it up once: copy `.env.ads.example` to `.env.ads` and fill in an R2 API token, then `node scripts/ads-publish.mjs setup` to create the bucket and its CORS rule, allow the bucket's `r2.dev` public URL in the Cloudflare dashboard, put that URL in `ADS_PUBLIC_BASE` and in `DEFAULT_BASE` in `client/src/pages/ads/store.js`, and publish each project. The server's CSP allows `https://*.r2.dev` for images, video and fetches; `ADS_MEDIA_ORIGINS` adds another host. For checking the page without a bucket, `ADS_LOCAL_DIR` makes a publish write to a folder that `node scripts/ads-publish.mjs serve` serves on 8200; enter `http://localhost:8200/<key>` on the page.
+
+On a phone, "Save to Photos" and "Copy caption" use the share sheet and the clipboard, which iOS allows only over HTTPS, so they work on the deployed site and not on a plain-http dev server.
 
 ## Local Development
 

@@ -1,0 +1,267 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import {
+    fetchJson,
+    mediaUrl,
+    pref,
+    themeIds,
+    themeName,
+    themeOf,
+} from "./store";
+import { Posts } from "./Posts";
+import { Stories } from "./Stories";
+import { Reels } from "./Reels";
+import { LinkedIn } from "./LinkedIn";
+import { XPosts } from "./XPosts";
+import { Profile } from "./Profile";
+
+const TABS = [
+    ["posts", "Posts", (m) => m.posts?.length],
+    ["stories", "Stories", (m) => m.stories?.length],
+    ["reels", "Reels", (m) => m.reels?.length],
+    ["linkedin", "LinkedIn", (m) => m.linkedin?.posts?.length],
+    ["x", "X", (m) => m.x?.posts?.length],
+    [
+        "profile",
+        "Profile",
+        (m) => m.profile?.pictures?.length || m.profile?.fields?.length,
+    ],
+];
+
+// One project's studio over its manifest. The theme applies to every post at once and any
+// post can be overridden; theme, overrides, size and tab are kept per device.
+export function Studio({ root }) {
+    const { project } = useParams();
+    const [manifest, setManifest] = useState(null);
+    const [error, setError] = useState("");
+    const [tab, setTab] = useState(() => pref.get(`${project}.tab`, "posts"));
+    const [theme, setThemeState] = useState(() =>
+        pref.get(`${project}.theme`, "")
+    );
+    const [sel, setSelState] = useState(() => pref.get(`${project}.sel`, {}));
+    const [fmt, setFmtState] = useState(() =>
+        pref.get(`${project}.fmt`, "feed")
+    );
+    const [sheet, setSheet] = useState(false);
+
+    useEffect(() => {
+        setManifest(null);
+        fetchJson(`${root}/${project}/manifest.json`)
+            .then(setManifest)
+            .catch((e) => setError(String(e.message)));
+    }, [root, project]);
+
+    const themes = useMemo(
+        () => (manifest ? themeIds(manifest) : []),
+        [manifest]
+    );
+    const current = themes.includes(theme) ? theme : themes[0];
+    const hasStory = useMemo(
+        () =>
+            !!manifest?.posts?.some((p) =>
+                Object.values(p.slides || {}).some((s) => s.story?.length)
+            ),
+        [manifest]
+    );
+    const format = hasStory ? fmt : "feed";
+
+    if (error) {
+        return (
+            <div className="body">
+                <p className="error">{error}</p>
+            </div>
+        );
+    }
+    if (!manifest) {
+        return (
+            <div className="body">
+                <p className="meta">Loading…</p>
+            </div>
+        );
+    }
+
+    const url = (file) => mediaUrl(root, manifest, file);
+    const setTheme = (id) => {
+        setThemeState(id);
+        setSelState({});
+        pref.set(`${project}.theme`, id);
+        pref.set(`${project}.sel`, {});
+    };
+    const setSel = (slug, id) => {
+        const next = { ...sel, [slug]: id };
+        setSelState(next);
+        pref.set(`${project}.sel`, next);
+    };
+    const setFmt = (f) => {
+        setFmtState(f);
+        pref.set(`${project}.fmt`, f);
+    };
+    const pick = (id) => {
+        setTab(id);
+        pref.set(`${project}.tab`, id);
+        window.scrollTo({ top: 0 });
+    };
+    const tabs = TABS.filter(([, , count]) => count(manifest));
+    const active = tabs.some(([id]) => id === tab) ? tab : tabs[0]?.[0];
+    const manyThemes = themes.length > 1;
+    const showSize = hasStory && active === "posts";
+    const ctx = { manifest, url, theme: current, sel, setSel, format, themes };
+
+    const sizeSwitch = (
+        <div className="seg" role="group" aria-label="Size">
+            <button
+                type="button"
+                aria-pressed={format === "feed"}
+                onClick={() => setFmt("feed")}
+            >
+                Feed
+            </button>
+            <button
+                type="button"
+                aria-pressed={format === "story"}
+                onClick={() => setFmt("story")}
+            >
+                Story
+            </button>
+        </div>
+    );
+
+    return (
+        <>
+            <header className="topbar">
+                <Link to="/ads" className="back" aria-label="All projects">
+                    ‹
+                </Link>
+                <h1>{manifest.project.name}</h1>
+                <nav className="tabs desk" aria-label="Sections">
+                    {tabs.map(([id, label, count]) => (
+                        <button
+                            key={id}
+                            type="button"
+                            aria-pressed={id === active}
+                            onClick={() => pick(id)}
+                        >
+                            {label} <small>{count(manifest)}</small>
+                        </button>
+                    ))}
+                </nav>
+                {manyThemes && active !== "profile" && (
+                    <div className="rings bare desk" aria-label="Theme">
+                        {themes.map((id) => (
+                            <Ring
+                                key={id}
+                                manifest={manifest}
+                                id={id}
+                                pressed={id === current}
+                                onClick={() => setTheme(id)}
+                            />
+                        ))}
+                    </div>
+                )}
+                {showSize && <div className="desk">{sizeSwitch}</div>}
+                {(manyThemes || showSize) && active !== "profile" && (
+                    <button
+                        type="button"
+                        className="ringbtn"
+                        aria-label="Theme and size"
+                        onClick={() => setSheet(true)}
+                        style={ringStyle(themeOf(manifest, current))}
+                    >
+                        <span className="disc">
+                            <i />
+                        </span>
+                    </button>
+                )}
+            </header>
+            <main className="body">
+                {active === "posts" && <Posts {...ctx} />}
+                {active === "stories" && <Stories {...ctx} />}
+                {active === "reels" && <Reels {...ctx} />}
+                {active === "linkedin" && <LinkedIn {...ctx} />}
+                {active === "x" && <XPosts {...ctx} />}
+                {active === "profile" && <Profile {...ctx} />}
+            </main>
+            <nav className="tabbar" aria-label="Sections">
+                {tabs.map(([id, label, count]) => (
+                    <button
+                        key={id}
+                        type="button"
+                        aria-pressed={id === active}
+                        onClick={() => pick(id)}
+                    >
+                        <b>{label}</b>
+                        <span>{count(manifest)}</span>
+                    </button>
+                ))}
+            </nav>
+            {sheet && (
+                <>
+                    <button
+                        type="button"
+                        className="scrim"
+                        aria-label="Close"
+                        onClick={() => setSheet(false)}
+                    />
+                    <div
+                        className="sheet"
+                        role="dialog"
+                        aria-label="Theme and size"
+                    >
+                        {manyThemes && (
+                            <>
+                                <h2>Theme for every post</h2>
+                                <div className="rings">
+                                    {themes.map((id) => (
+                                        <Ring
+                                            key={id}
+                                            manifest={manifest}
+                                            id={id}
+                                            pressed={id === current}
+                                            onClick={() => setTheme(id)}
+                                        />
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                        {showSize && (
+                            <>
+                                <h2>Size</h2>
+                                {sizeSwitch}
+                            </>
+                        )}
+                        <button
+                            type="button"
+                            className="btn"
+                            onClick={() => setSheet(false)}
+                        >
+                            Done
+                        </button>
+                    </div>
+                </>
+            )}
+        </>
+    );
+}
+
+export function ringStyle(t) {
+    if (!t) return undefined;
+    return { "--t-bg": t.bg, "--t-ink": t.ink, "--t-accent": t.accent };
+}
+
+export function Ring({ manifest, id, pressed, onClick }) {
+    const t = themeOf(manifest, id);
+    return (
+        <button
+            type="button"
+            className="ring"
+            aria-pressed={pressed}
+            onClick={onClick}
+            style={ringStyle(t)}
+        >
+            <span className="disc">
+                <i />
+            </span>
+            <span className="name">{themeName(manifest, id)}</span>
+        </button>
+    );
+}

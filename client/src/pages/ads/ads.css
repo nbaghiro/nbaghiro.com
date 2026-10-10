@@ -1,0 +1,866 @@
+/* The ad studios. The site's own identity (black, a paper ink, a hand-drawn heading face)
+   used as a light table: the frames are the content and sit on black with a thin paper
+   edge, the chrome is a sticky bar above and a tab bar under the thumb. Built for a phone
+   first; a wide screen gets the same strips at a fixed height and the tabs in the top bar. */
+.ads {
+    --ground: #000000;
+    --panel: #111111;
+    --ink: #edeae2;
+    --soft: #a0a0a0;
+    --faint: #6a6a6a;
+    --line: #222222;
+    --line-strong: #3a3a3a;
+    --edge: rgba(237, 234, 226, 0.1);
+    --font-hand: "Shantell Sans", "Comic Sans MS", cursive;
+    --font-read: "Andika", system-ui, sans-serif;
+    --r-frame: 6px;
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--ink);
+    font: 15px/1.5 var(--font-read);
+    color-scheme: dark;
+}
+.ads * {
+    box-sizing: border-box;
+}
+.ads a {
+    color: inherit;
+}
+.ads img,
+.ads video {
+    display: block;
+}
+.ads h1,
+.ads h2 {
+    font-family: var(--font-hand);
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.15;
+}
+.ads h1 {
+    font-size: 24px;
+}
+.ads h2 {
+    font-size: 21px;
+}
+.ads h3 {
+    font: 700 15px/1.3 var(--font-read);
+    margin: 0 0 4px;
+}
+.ads p {
+    margin: 0;
+}
+.ads .meta {
+    color: var(--soft);
+    font-size: 14px;
+}
+.ads .lede {
+    color: var(--soft);
+    max-width: 52ch;
+    margin: 4px 0 20px;
+}
+.ads .error {
+    color: #f0a9a0;
+}
+.ads pre.text {
+    font: inherit;
+    white-space: pre-wrap;
+    color: var(--ink);
+    border-left: 2px solid var(--line-strong);
+    padding: 2px 0 2px 14px;
+    margin: 10px 0 0;
+    max-width: 62ch;
+}
+.ads :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+}
+
+/* controls: pills, 44px, the paper ink for the one that matters */
+.ads .btn {
+    font: inherit;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+}
+.ads .btn.primary,
+.ads .btn[aria-pressed="true"] {
+    background: var(--ink);
+    color: #000;
+    border-color: var(--ink);
+}
+.ads .btn.quiet {
+    border-color: transparent;
+    padding: 0 10px;
+    color: var(--soft);
+}
+.ads .btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+.ads .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+.ads input {
+    font: inherit;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--panel);
+    color: var(--ink);
+    width: 100%;
+}
+.ads input::placeholder {
+    color: var(--faint);
+}
+
+/* a theme as its own colours: the frame ground, an ink border, the accent as a dot */
+.ads .ring {
+    border: 0;
+    background: none;
+    padding: 4px;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--soft);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    -webkit-tap-highlight-color: transparent;
+}
+.ads .ring .disc {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--t-bg);
+    border: 2px solid var(--t-ink);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 0 2px var(--ground);
+}
+.ads .ring .disc i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--t-accent);
+}
+.ads .ring[aria-pressed="true"] {
+    color: var(--ink);
+}
+.ads .ring[aria-pressed="true"] .disc {
+    box-shadow:
+        0 0 0 2px var(--ground),
+        0 0 0 4px var(--ink);
+}
+.ads .rings {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.ads .rings::-webkit-scrollbar {
+    display: none;
+}
+.ads .rings.bare .ring .name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}
+.ads .rings.bare .ring {
+    padding: 4px 2px;
+    min-width: 40px;
+}
+
+/* a two-way switch */
+.ads .seg {
+    display: inline-flex;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+}
+.ads .seg button {
+    font: inherit;
+    font-size: 14px;
+    border: 0;
+    background: none;
+    color: var(--soft);
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+.ads .seg button[aria-pressed="true"] {
+    background: var(--ink);
+    color: #000;
+}
+
+/* the gate */
+.ads .gate {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 24px 20px;
+}
+.ads .gate form {
+    width: min(400px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.ads .gate h1 {
+    font-size: 36px;
+}
+.ads .gate .btn {
+    align-self: flex-start;
+}
+
+/* the top bar, sticky, and the body under it */
+.ads .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 60px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+.ads .topbar h1 {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ads .topbar .back {
+    width: 44px;
+    height: 44px;
+    margin-left: -12px;
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    font-size: 30px;
+    line-height: 1;
+    color: var(--soft);
+}
+.ads .topbar .quiet {
+    font-size: 14px;
+}
+.ads .ringbtn {
+    border: 0;
+    background: none;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+.ads .ringbtn .disc {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--t-bg);
+    border: 2px solid var(--t-ink);
+    display: grid;
+    place-items: center;
+    box-shadow:
+        0 0 0 2px var(--ground),
+        0 0 0 3px var(--line-strong);
+}
+.ads .ringbtn .disc i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--t-accent);
+}
+.ads .body {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 12px 16px calc(84px + env(safe-area-inset-bottom));
+}
+
+/* tabs: a bar under the thumb on a phone, inline on a wide screen */
+.ads .tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    gap: 2px;
+    padding: 6px 8px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--line);
+}
+.ads .tabbar button {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    border: 0;
+    border-radius: 12px;
+    background: none;
+    color: var(--soft);
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.ads .tabbar button b {
+    font-family: var(--font-hand);
+    font-weight: 600;
+    font-size: 15px;
+}
+.ads .tabbar button[aria-pressed="true"] {
+    color: var(--ink);
+    background: var(--panel);
+}
+.ads .desk {
+    display: none;
+}
+
+/* the bottom sheet for theme and size on a phone */
+.ads .scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(0, 0, 0, 0.6);
+    border: 0;
+    padding: 0;
+}
+.ads .sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 41;
+    background: var(--panel);
+    border-radius: 18px 18px 0 0;
+    padding: 10px 16px calc(18px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.ads .sheet::before {
+    content: "";
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line-strong);
+    margin: 0 auto 2px;
+}
+.ads .sheet h2 {
+    font-size: 18px;
+}
+.ads .sheet .rings {
+    gap: 10px;
+    padding: 2px;
+}
+.ads .sheet .ring .disc {
+    box-shadow: 0 0 0 2px var(--panel);
+}
+.ads .sheet .ring[aria-pressed="true"] .disc {
+    box-shadow:
+        0 0 0 2px var(--panel),
+        0 0 0 4px var(--ink);
+}
+
+/* one post: a title, the strip of frames, the two things a thumb needs */
+.ads .post {
+    padding: 22px 0 26px;
+    border-top: 1px solid var(--line);
+}
+.ads .post:first-of-type {
+    border-top: 0;
+    padding-top: 6px;
+}
+.ads .post-head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 0 12px;
+}
+.ads .post-head h2 {
+    flex: 1;
+    min-width: 0;
+}
+.ads .post .actions {
+    margin-top: 12px;
+}
+.ads .more {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.ads .more .rings {
+    margin: 0 -4px;
+}
+.ads ol.alts {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    max-width: 62ch;
+    color: var(--soft);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ads ol.alts li span {
+    color: var(--ink);
+}
+
+/* the strip: frames that snap one at a time, bleeding to the screen edge on a phone */
+.ads .strip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin: 0 -16px;
+    padding: 2px 16px;
+    -webkit-overflow-scrolling: touch;
+}
+.ads .strip::-webkit-scrollbar {
+    display: none;
+}
+.ads .strip figure {
+    flex: none;
+    margin: 0;
+    width: min(78vw, 340px);
+    scroll-snap-align: center;
+}
+.ads .strip.story figure {
+    width: min(62vw, 250px);
+}
+.ads .strip img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--r-frame);
+    background: var(--panel);
+    box-shadow: 0 0 0 1px var(--edge);
+    cursor: zoom-in;
+}
+.ads .strip.story img {
+    aspect-ratio: 9 / 16;
+}
+.ads .strip figcaption {
+    color: var(--faint);
+    font-size: 12px;
+    margin-top: 6px;
+}
+.ads .dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+}
+.ads .dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--line-strong);
+}
+.ads .dots span.on {
+    background: var(--ink);
+}
+
+/* stickers a story frame asks for in the Instagram app */
+.ads .stickers {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 62ch;
+}
+.ads .stickers li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    color: var(--soft);
+}
+.ads .stickers li .n {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    color: var(--ink);
+    margin-top: 1px;
+}
+.ads .stickers li .btn {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 13px;
+    margin-left: auto;
+}
+
+/* reels: tall, one per row on a phone */
+.ads .reels {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: 1fr;
+}
+.ads .reel video {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    border-radius: var(--r-frame);
+    background: var(--panel);
+    box-shadow: 0 0 0 1px var(--edge);
+}
+.ads .reel h2 {
+    margin-top: 12px;
+}
+.ads .reel .meta {
+    margin-top: 2px;
+}
+.ads .reel .actions {
+    margin-top: 10px;
+}
+
+/* a copyable piece of text: a heading, an optional note, the text, one button */
+.ads .field {
+    margin-top: 16px;
+    max-width: 62ch;
+}
+.ads .field .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ads .field .row h3 {
+    flex: 1;
+    margin: 0;
+}
+.ads .field .row .btn {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
+}
+.ads .field .note {
+    color: var(--faint);
+    font-size: 13px;
+    margin-top: 2px;
+}
+.ads .field .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+.ads .field .options div {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border-left: 2px solid var(--line-strong);
+    padding-left: 14px;
+}
+.ads .field .options div span {
+    flex: 1;
+}
+
+/* pictures: profile marks and page art */
+.ads .pics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px 12px;
+}
+.ads .pics figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+.ads .pics .round {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px var(--edge);
+}
+.ads .pics .square {
+    width: 112px;
+    height: 112px;
+    border-radius: var(--r-frame);
+    object-fit: cover;
+    box-shadow: 0 0 0 1px var(--edge);
+}
+.ads .pics figcaption {
+    color: var(--soft);
+    font-size: 13px;
+}
+.ads .pics .actions {
+    justify-content: center;
+}
+.ads .pics .actions .btn {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 13px;
+}
+.ads .banner {
+    width: 100%;
+    max-width: 720px;
+    border-radius: var(--r-frame);
+    box-shadow: 0 0 0 1px var(--edge);
+    margin: 8px 0 10px;
+}
+
+/* X: the image, then the words above it on X */
+.ads .xitems {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.ads .xitem {
+    display: grid;
+    gap: 12px;
+}
+.ads .xitem img {
+    width: 100%;
+    max-width: 340px;
+    border-radius: var(--r-frame);
+    box-shadow: 0 0 0 1px var(--edge);
+    cursor: zoom-in;
+}
+.ads .xitem pre.text {
+    margin: 0;
+}
+.ads .xitem .alt {
+    color: var(--faint);
+    font-size: 13px;
+    max-width: 62ch;
+}
+
+/* projects */
+.ads .projects {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: 1fr;
+}
+.ads .tile {
+    text-decoration: none;
+    display: block;
+}
+.ads .tile .covers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+.ads .tile .covers img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--r-frame);
+    background: var(--panel);
+    box-shadow: 0 0 0 1px var(--edge);
+}
+.ads .tile h2 {
+    font-size: 26px;
+    margin-top: 14px;
+}
+.ads .tile .meta {
+    margin-top: 2px;
+}
+.ads .tile .when {
+    color: var(--faint);
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+/* the lightbox: full screen, one frame per screen, swipe between them */
+.ads .lb {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+}
+.ads .lb-track {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+.ads .lb-track::-webkit-scrollbar {
+    display: none;
+}
+.ads .lb-item {
+    flex: none;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: center;
+    display: grid;
+    place-items: center;
+    padding: 12px;
+}
+.ads .lb-item img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+}
+.ads .lb-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
+}
+.ads .lb-bar .title {
+    flex: 1 1 100%;
+    min-width: 0;
+    font-size: 14px;
+    color: var(--soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ads .lb-alt {
+    color: var(--soft);
+    font-size: 13px;
+    padding: 0 16px 8px;
+    max-height: 4.5em;
+    overflow: auto;
+}
+
+@media (min-width: 760px) {
+    .ads h1 {
+        font-size: 26px;
+    }
+    .ads .topbar {
+        gap: 18px;
+        padding: 10px 24px;
+    }
+    .ads .topbar h1 {
+        flex: none;
+        max-width: 280px;
+    }
+    .ads .desk {
+        display: flex;
+        align-items: center;
+    }
+    .ads .tabs {
+        gap: 2px;
+        flex: 1;
+    }
+    .ads .tabs > button {
+        font: inherit;
+        font-size: 15px;
+        border: 0;
+        background: none;
+        color: var(--soft);
+        min-height: 40px;
+        padding: 0 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: baseline;
+        gap: 6px;
+    }
+    .ads .tabs > button small {
+        color: var(--faint);
+        font-size: 12px;
+    }
+    .ads .tabs > button[aria-pressed="true"] {
+        color: var(--ink);
+        background: var(--panel);
+    }
+    .ads .tabbar,
+    .ads .ringbtn {
+        display: none;
+    }
+    .ads .body {
+        padding: 16px 24px 64px;
+    }
+    .ads .post-head {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 12px;
+    }
+    .ads .strip {
+        margin: 0;
+        padding: 2px 0;
+        scroll-snap-type: none;
+    }
+    .ads .strip figure {
+        width: 232px;
+    }
+    .ads .strip.story figure {
+        width: 190px;
+    }
+    .ads .dots {
+        display: none;
+    }
+    .ads .reels {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 28px 20px;
+    }
+    .ads .projects {
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 32px 28px;
+    }
+    .ads .xitem {
+        grid-template-columns: 220px 1fr;
+        align-items: start;
+    }
+    .ads .lb-item {
+        padding: 24px 64px;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .ads .btn,
+    .ads .tabbar button,
+    .ads .ring .disc {
+        transition:
+            background-color 0.15s,
+            color 0.15s,
+            box-shadow 0.15s;
+    }
+}
