@@ -216,16 +216,19 @@ export async function publish({ project, manifest, syncs, dryRun = false }) {
     return built;
 }
 
-// the first frame of the first three posts, in their default theme, for the project tile
+// three frames for the project tile: the first feed slides, else the first document pages,
+// else the reel posters (a kit that is only LinkedIn posts has no feed)
 function covers(m) {
-    return (m.posts ?? [])
-        .slice(0, 3)
-        .map((p) => {
-            const set =
-                p.slides?.[p.defaultTheme] ?? Object.values(p.slides ?? {})[0];
-            return set?.feed?.[0];
-        })
-        .filter(Boolean);
+    const fromPosts = (m.posts ?? []).map((p) => {
+        const set =
+            p.slides?.[p.defaultTheme] ?? Object.values(p.slides ?? {})[0];
+        return set?.feed?.[0];
+    });
+    const fromDocs = (m.linkedin?.posts ?? []).map(
+        (p) => (p.pages?.[p.defaultTheme] ?? p.pages?.default ?? [])[0]
+    );
+    const fromReels = (m.reels ?? []).map((r) => r.poster?.default);
+    return [...fromPosts, ...fromDocs, ...fromReels].filter(Boolean).slice(0, 3);
 }
 
 function counts(m) {

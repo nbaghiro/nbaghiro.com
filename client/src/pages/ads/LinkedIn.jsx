@@ -17,8 +17,9 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes }) {
     return (
         <>
             <p className="lede">
-                {posts.length} document posts. Upload the PDF, type the title,
-                paste the post, then the first comment.
+                {li.kind === "profile"
+                    ? `${posts.length} posts for the personal profile. Copy the post, attach what it uses, add the first comment an hour or two later.`
+                    : `${posts.length} document posts. Upload the PDF, type the title, paste the post, then the first comment.`}
             </p>
             {li.page && (
                 <section className="post">
@@ -103,9 +104,8 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes }) {
                         <div className="post-head">
                             <h2>{post.title}</h2>
                             <p className="meta">
-                                {pages.length
-                                    ? `${pages.length} pages`
-                                    : "document"}
+                                {pages.length > 0 && `${pages.length} pages`}
+                                {!pages.length && li.kind !== "profile" && "document"}
                                 {themes.length > 1 && t
                                     ? ` in ${themeName(manifest, t)}`
                                     : ""}

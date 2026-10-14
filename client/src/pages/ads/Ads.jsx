@@ -66,35 +66,86 @@ function Gate({ onOpen }) {
     );
 }
 
+// Two kinds of kit share the bucket: a product's ads, and a personal profile's posts (the
+// publisher marks those with kind "profile"). They sit under separate tabs here.
+const SHELVES = [
+    ["products", "Products", (p) => p.kind !== "profile"],
+    ["linkedin", "LinkedIn", (p) => p.kind === "profile"],
+];
+const SHELF_KEY = "ads:shelf";
+
+function readShelf() {
+    try {
+        const v = localStorage.getItem(SHELF_KEY);
+        return SHELVES.some(([id]) => id === v) ? v : "products";
+    } catch {
+        return "products";
+    }
+}
+
 function Projects({ root, onLock }) {
     const [index, setIndex] = useState(null);
     const [error, setError] = useState("");
+    const [shelf, setShelf] = useState(readShelf);
     useEffect(() => {
         fetchJson(`${root}/index.json`)
             .then(setIndex)
             .catch((e) => setError(String(e.message)));
     }, [root]);
+    const pick = (id) => {
+        setShelf(id);
+        try {
+            localStorage.setItem(SHELF_KEY, id);
+        } catch {
+            // a private window; the choice lasts for the page
+        }
+    };
     const cover = (p, file) =>
         `${root}/${p.id}/${file}?v=${encodeURIComponent(p.publishedAt || "")}`;
+    const keep = SHELVES.find(([id]) => id === shelf)?.[2] ?? (() => true);
+    const shown = index ? index.projects.filter(keep) : [];
+    // in the top bar on a desk, on its own row above the tiles on a phone
+    const seg = (
+        <div className="seg" role="tablist" aria-label="Kind of kit">
+            {SHELVES.map(([id, label, test]) => (
+                <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-pressed={id === shelf}
+                    aria-selected={id === shelf}
+                    onClick={() => pick(id)}
+                >
+                    {label}
+                    {index && (
+                        <small> {index.projects.filter(test).length}</small>
+                    )}
+                </button>
+            ))}
+        </div>
+    );
     return (
         <>
             <header className="topbar">
                 <h1>Ad studio</h1>
+                <div className="desk">{seg}</div>
                 <button type="button" className="btn quiet" onClick={onLock}>
                     Forget this device
                 </button>
             </header>
             <div className="body">
+                <div className="shelf">{seg}</div>
                 {error && <p className="error">{error}</p>}
-                {index && index.projects.length === 0 && (
+                {index && shown.length === 0 && (
                     <p className="lede">
-                        Nothing is published yet. Run a project&apos;s publish
-                        script and reload.
+                        {shelf === "linkedin"
+                            ? "No profile kit is published yet. Run the founder publish script and reload."
+                            : "Nothing is published yet. Run a project's publish script and reload."}
                     </p>
                 )}
                 {index && (
                     <div className="projects">
-                        {index.projects.map((p) => (
+                        {shown.map((p) => (
                             <Link
                                 key={p.id}
                                 to={`/ads/${p.id}`}
