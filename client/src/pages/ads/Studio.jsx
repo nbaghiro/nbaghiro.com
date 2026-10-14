@@ -101,8 +101,16 @@ export function Studio({ root }) {
         pref.set(`${project}.tab`, id);
         window.scrollTo({ top: 0 });
     };
-    const tabs = TABS.filter(([, , count]) => count(manifest));
+    // a profile kit may carry the same posts in several voices; each voice is its own tab
+    const sets = manifest.linkedin?.sets ?? [];
+    const tabs = [
+        ...TABS.filter(
+            ([id, , count]) => count(manifest) && !(id === "linkedin" && sets.length)
+        ),
+        ...sets.map((s) => [`li:${s.id}`, s.label, () => ""]),
+    ];
     const active = tabs.some(([id]) => id === tab) ? tab : tabs[0]?.[0];
+    const activeSet = sets.find((s) => `li:${s.id}` === active);
     const manyThemes = themes.length > 1;
     const showSize = hasStory && active === "posts";
     const ctx = { manifest, url, theme: current, sel, setSel, format, themes };
@@ -133,18 +141,20 @@ export function Studio({ root }) {
                     ‹
                 </Link>
                 <h1>{manifest.project.name}</h1>
-                <nav className="tabs desk" aria-label="Sections">
-                    {tabs.map(([id, label, count]) => (
-                        <button
-                            key={id}
-                            type="button"
-                            aria-pressed={id === active}
-                            onClick={() => pick(id)}
-                        >
-                            {label} <small>{count(manifest)}</small>
-                        </button>
-                    ))}
-                </nav>
+                {tabs.length > 1 && (
+                    <nav className="tabs desk" aria-label="Sections">
+                        {tabs.map(([id, label, count]) => (
+                            <button
+                                key={id}
+                                type="button"
+                                aria-pressed={id === active}
+                                onClick={() => pick(id)}
+                            >
+                                {label} <small>{count(manifest)}</small>
+                            </button>
+                        ))}
+                    </nav>
+                )}
                 {manyThemes && active !== "profile" && (
                     <div className="rings bare desk" aria-label="Theme">
                         {themes.map((id) => (
@@ -178,22 +188,25 @@ export function Studio({ root }) {
                 {active === "stories" && <Stories {...ctx} />}
                 {active === "reels" && <Reels {...ctx} />}
                 {active === "linkedin" && <LinkedIn {...ctx} />}
+                {activeSet && <LinkedIn {...ctx} set={activeSet} />}
                 {active === "x" && <XPosts {...ctx} />}
                 {active === "profile" && <Profile {...ctx} />}
             </main>
-            <nav className="tabbar" aria-label="Sections">
-                {tabs.map(([id, label, count]) => (
-                    <button
-                        key={id}
-                        type="button"
-                        aria-pressed={id === active}
-                        onClick={() => pick(id)}
-                    >
-                        <b>{label}</b>
-                        <span>{count(manifest)}</span>
-                    </button>
-                ))}
-            </nav>
+            {tabs.length > 1 && (
+                <nav className="tabbar" aria-label="Sections">
+                    {tabs.map(([id, label, count]) => (
+                        <button
+                            key={id}
+                            type="button"
+                            aria-pressed={id === active}
+                            onClick={() => pick(id)}
+                        >
+                            <b>{label}</b>
+                            <span>{count(manifest)}</span>
+                        </button>
+                    ))}
+                </nav>
+            )}
             {sheet && (
                 <>
                     <button

@@ -8,11 +8,12 @@ import { chooseTheme, fileName, themeName } from "./store";
 // Document posts: the PDF to upload, the title typed into the upload dialog, the post, and
 // the first comment that carries the link. The pages are there so a rejected PDF can go up
 // as images instead.
-export function LinkedIn({ manifest, url, theme, sel, setSel, themes }) {
+// `set` is one voice of a profile kit: the same posts with that voice's text and a note on it
+export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
     const [lb, setLb] = useState(null);
     const [open, setOpen] = useState("");
     const li = manifest.linkedin || {};
-    const posts = li.posts || [];
+    const posts = set?.posts || li.posts || [];
 
     return (
         <>
@@ -21,10 +22,19 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes }) {
                     ? `${posts.length} posts for the personal profile. Copy the post, attach what it uses, add the first comment an hour or two later.`
                     : `${posts.length} document posts. Upload the PDF, type the title, paste the post, then the first comment.`}
             </p>
+            {set?.note && (
+                <p className="lede">
+                    <b>{set.label}.</b> {set.note}
+                </p>
+            )}
             {li.page && (
                 <section className="post">
                     <div className="post-head">
-                        <h2>The company page</h2>
+                        <h2>
+                            {li.kind === "profile"
+                                ? "The profile"
+                                : "The company page"}
+                        </h2>
                     </div>
                     <div className="pics">
                         {li.page.logo && (
@@ -86,6 +96,9 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes }) {
                         </>
                     )}
                     <Fields fields={li.page.fields} />
+                    {(li.page.profile || []).map((f) => (
+                        <Field key={f.label} label={f.label} text={f.text} />
+                    ))}
                 </section>
             )}
             {posts.map((post) => {
@@ -111,6 +124,41 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes }) {
                                     : ""}
                             </p>
                         </div>
+                        {post.reel && (
+                            <div className="reel inline">
+                                <video
+                                    crossOrigin="anonymous"
+                                    src={url(post.reel.file)}
+                                    poster={
+                                        post.reel.poster
+                                            ? url(post.reel.poster)
+                                            : undefined
+                                    }
+                                    controls
+                                    loop
+                                    playsInline
+                                    preload="metadata"
+                                />
+                                <div className="actions">
+                                    <ShareButton
+                                        label="Save video"
+                                        items={() => [
+                                            {
+                                                url: url(post.reel.file),
+                                                name: `${post.slug}.mp4`,
+                                            },
+                                        ]}
+                                    />
+                                    <a
+                                        className="btn"
+                                        href={url(post.reel.file)}
+                                        download={`${post.slug}.mp4`}
+                                    >
+                                        File
+                                    </a>
+                                </div>
+                            </div>
+                        )}
                         {pages.length > 0 && (
                             <Strip
                                 items={pages.map((f, i) => ({

@@ -326,10 +326,12 @@
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-top: 1px solid var(--line);
+    overflow-x: auto;
+    scrollbar-width: none;
 }
 .ads .tabbar button {
-    flex: 1;
-    min-width: 0;
+    flex: 1 0 auto;
+    min-width: 64px;
     min-height: 48px;
     border: 0;
     border-radius: 12px;
@@ -561,6 +563,13 @@
 }
 .ads .reel .actions {
     margin-top: 10px;
+}
+.ads .post .reel.inline {
+    max-width: 300px;
+    margin: 4px 0 14px;
+}
+.ads .post .reel.inline video {
+    width: 100%;
 }
 
 /* a copyable piece of text: a heading, an optional note, the text, one button */
@@ -797,6 +806,7 @@
     .ads .tabs {
         gap: 2px;
         flex: 1;
+        flex-wrap: wrap;
     }
     .ads .tabs > button {
         font: inherit;
