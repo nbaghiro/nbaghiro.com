@@ -101,8 +101,12 @@ export function Studio({ root }) {
         pref.set(`${project}.tab`, id);
         window.scrollTo({ top: 0 });
     };
-    // a profile kit may carry the same posts in several voices; each voice is its own tab
-    const sets = manifest.linkedin?.sets ?? [];
+    // a profile kit may carry the same posts in several voices: a tab per voice, or, with
+    // layout "compare", one tab with the voices side by side on each post
+    const sets =
+        manifest.linkedin?.layout === "compare"
+            ? []
+            : (manifest.linkedin?.sets ?? []);
     const tabs = [
         ...TABS.filter(
             ([id, , count]) => count(manifest) && !(id === "linkedin" && sets.length)

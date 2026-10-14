@@ -14,6 +14,8 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
     const [open, setOpen] = useState("");
     const li = manifest.linkedin || {};
     const posts = set?.posts || li.posts || [];
+    // with layout "compare", each post shows its text in every voice, side by side
+    const voices = li.layout === "compare" && li.sets?.length > 1 ? li.sets : null;
 
     return (
         <>
@@ -25,6 +27,16 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
             {set?.note && (
                 <p className="lede">
                     <b>{set.label}.</b> {set.note}
+                </p>
+            )}
+            {voices && (
+                <p className="lede">
+                    {voices.map((v, i) => (
+                        <span key={v.id}>
+                            {i > 0 && " "}
+                            <b>{v.label}.</b> {v.note}
+                        </span>
+                    ))}
                 </p>
             )}
             {li.page && (
@@ -233,7 +245,23 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                             note="Typed into the upload dialog, which otherwise shows the file name."
                             text={post.documentTitle}
                         />
-                        <Field label="Post" text={post.text} />
+                        {voices ? (
+                            <div className="compare">
+                                {voices.map((v) => (
+                                    <Field
+                                        key={v.id}
+                                        label={v.label}
+                                        text={
+                                            v.posts.find(
+                                                (p) => p.slug === post.slug
+                                            )?.text ?? post.text
+                                        }
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <Field label="Post" text={post.text} />
+                        )}
                         <Field
                             label="First comment"
                             note="Posted right after, with the link."

@@ -571,6 +571,13 @@
 .ads .post .reel.inline video {
     width: 100%;
 }
+/* the same post in several voices, read across on a wide screen, stacked on a phone */
+.ads .compare {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 0 24px;
+    align-items: start;
+}
 
 /* a copyable piece of text: a heading, an optional note, the text, one button */
 .ads .field {
@@ -788,6 +795,9 @@
 }
 
 @media (min-width: 760px) {
+    .ads .body:has(.compare) {
+        max-width: 1400px;
+    }
     .ads h1 {
         font-size: 26px;
     }
