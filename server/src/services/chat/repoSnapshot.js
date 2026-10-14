@@ -9,7 +9,9 @@ import { Readable } from "stream";
 import { createGunzip } from "zlib";
 
 const MAX_FILE_BYTES = 200 * 1024;
-const SNAPSHOT_TTL = 6 * 60 * 60 * 1000; // 6 hours
+// Half an hour: long enough that a conversation reads one consistent tree, short enough that a
+// push shows up before the person asking about it has moved on
+const SNAPSHOT_TTL = 30 * 60 * 1000;
 
 const SKIPPED_DIRS = new Set([
     "node_modules",

@@ -68,6 +68,7 @@ Environment variables on the web service:
 - `NODE_ENV=production`, `CHAT_DAILY_CAP_USD=5` and `CHAT_QUESTIONS_PER_VISITOR=10` are set in `render.yaml`.
 - `REDIS_URL` is filled in by Render from the Key Value instance.
 - `ANTHROPIC_API_KEY` is a secret. It is marked `sync: false`, so it is entered in the Render dashboard and never committed.
+- `GITHUB_TOKEN` is optional, also `sync: false`. The chat's commit history starts from the snapshot committed under `server/data/history/` and adds whatever GitHub has seen since through the public commits API, which allows 60 unauthenticated requests an hour (the server makes at most one per project every ten minutes, and keeps serving the last list when a request fails). A fine-grained personal access token with no permissions raises that to 5,000. Run `npm run snapshot --workspace=server` now and then to move the baseline forward; it reads the sibling clones under `../`.
 
 The web service is on the Starter plan so it is always on; on the free plan it slept after 15 minutes without traffic and the first request after that waited through Render's waking-up page. The Key Value instance is free and keeps data in memory only, so a restart of it resets the day's counters.
 

@@ -33,6 +33,10 @@ services:
           # --- secrets: set in the Render dashboard (never committed) ---
           - key: ANTHROPIC_API_KEY
             sync: false
+          # optional: a fine-grained token with no permissions raises the GitHub API limit the
+          # chat's live commit history runs under from 60 to 5,000 requests an hour
+          - key: GITHUB_TOKEN
+            sync: false
 
     - type: keyvalue
       name: nbaghiro-kv
