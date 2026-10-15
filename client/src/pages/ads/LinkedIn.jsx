@@ -15,12 +15,67 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
     const [lb, setLb] = useState(null);
     const [open, setOpen] = useState("");
     const [here, setHere] = useState("");
-    const li = manifest.linkedin || {};
-    const posts = set?.posts || li.posts || [];
+    const [editionId, setEditionId] = useState("codex");
+    const [styleIds, setStyleIds] = useState({});
+    const source = manifest.linkedin || {};
+    const editions = source.editions || [];
+    const comparing = editionId === "compare" && editions.length > 1;
+    const edition = editions.find((e) => e.id === editionId) || editions[0];
+    const selectedSet = (e) =>
+        e.sets?.find((s) => s.id === styleIds[e.id]) || e.sets?.[0];
+    const li = edition ? { ...source, ...edition } : source;
+    const chosen = edition ? selectedSet(edition) : set;
+    const posts = chosen?.posts || li.posts || [];
     const kit = li.kind === "profile";
-    // with layout "compare", each post shows its text in every voice, side by side
-    const voices =
-        li.layout === "compare" && li.sets?.length > 1 ? li.sets : null;
+    const voices = comparing
+        ? editions.map((e) => ({
+            id: e.id,
+            label: `${e.label} · ${selectedSet(e)?.label || "Original"}`,
+            posts: selectedSet(e)?.posts || e.posts,
+        }))
+        : !edition && li.layout === "compare" && li.sets?.length > 1
+            ? li.sets
+            : null;
+    const controls = editions.length > 0 && (
+        <div className="editorial-controls">
+            <div className="seg" role="group" aria-label="Copy version">
+                {[...editions, { id: "compare", label: "Compare" }].map((e) => (
+                    <button
+                        key={e.id}
+                        type="button"
+                        aria-pressed={editionId === e.id}
+                        onClick={() => setEditionId(e.id)}
+                    >
+                        {e.label}
+                    </button>
+                ))}
+            </div>
+            {(comparing ? editions : [edition]).map(
+                (e) =>
+                    e.sets?.length > 0 && (
+                        <label className="style-select" key={e.id}>
+                            <span>{comparing ? e.label : "Style"}</span>
+                            <select
+                                value={selectedSet(e)?.id}
+                                onChange={(event) =>
+                                    setStyleIds({
+                                        ...styleIds,
+                                        [e.id]: event.target.value,
+                                    })
+                                }
+                            >
+                                {e.sets.map((s) => (
+                                    <option key={s.id} value={s.id}>
+                                        {s.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    )
+            )}
+            <span className="meta">{posts.length} posts</span>
+        </div>
+    );
 
     // the jump list follows the section under the top of the screen
     useEffect(() => {
@@ -44,28 +99,9 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
     }, [kit, posts.length]);
 
     const intro = (
-        <>
-            <p className="lede">
-                {kit
-                    ? `${posts.length} posts for the personal profile. Copy the post, attach what it uses, add the first comment an hour or two later.`
-                    : `${posts.length} document posts. Upload the PDF, type the title, paste the post, then the first comment.`}
-            </p>
-            {set?.note && (
-                <p className="lede">
-                    <b>{set.label}.</b> {set.note}
-                </p>
-            )}
-            {voices && (
-                <p className="lede">
-                    {voices.map((v, i) => (
-                        <span key={v.id}>
-                            {i > 0 && " "}
-                            <b>{v.label}.</b> {v.note}
-                        </span>
-                    ))}
-                </p>
-            )}
-        </>
+        <p className="lede">
+            {kit ? "Profile & posts" : `${posts.length} document posts`}
+        </p>
     );
 
     const jump = kit && (
@@ -75,7 +111,7 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                     href="#profile"
                     aria-current={here === "profile" ? "true" : undefined}
                 >
-                    The profile
+                    Profile
                 </a>
             )}
             {posts.map((p) => {
@@ -174,18 +210,22 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
     const page = li.page && (
         <section className="post" id="profile">
             <div className="post-head">
-                <h2>{kit ? "The profile" : "The company page"}</h2>
+                <h2>{kit ? "Profile" : "Company page"}</h2>
             </div>
             {kit ? (
                 <div className="page-grid">
-                    <div>
-                        {art}
-                        {profile.slice(1).map(field)}
-                    </div>
-                    <div>
-                        <Fields fields={li.page.fields} />
-                    </div>
-                    <div>{profile.slice(0, 1).map(field)}</div>
+                    <div>{art}</div>
+                    {comparing ? (
+                        editions.map((e) => (
+                            <div key={e.id}>
+                                <h3>{e.label}</h3>
+                                <Fields fields={e.page?.fields} />
+                                {e.page?.profile?.map(field)}
+                            </div>
+                        ))
+                    ) : (
+                        <div>{copy}</div>
+                    )}
                 </div>
             ) : (
                 <>
@@ -305,11 +345,7 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                         </div>
                     </div>
                 )}
-                <Field
-                    label="Document title"
-                    note="Typed into the upload dialog, which otherwise shows the file name."
-                    text={post.documentTitle}
-                />
+                <Field label="Document title" text={post.documentTitle} />
             </>
         );
         const text = voices ? (
@@ -322,25 +358,35 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                             v.posts.find((p) => p.slug === post.slug)?.text ??
                             post.text
                         }
+                        count
                     />
                 ))}
             </div>
         ) : (
-            <Field label="Post" text={post.text} />
+            <Field
+                label={
+                    edition
+                        ? `${edition.label} · ${chosen?.label || "Original"}`
+                        : "Post"
+                }
+                text={post.text}
+                count
+            />
         );
         const after = (
             <>
-                <Field
-                    label="First comment"
-                    note="Posted right after, with the link."
-                    text={post.firstComment}
-                />
+                <Field label="First comment" text={post.firstComment} />
                 <Field
                     label="From a personal profile"
                     note="A native post a day or two later."
                     text={post.founderCaption}
                 />
-                {post.notes && <Field label="Notes" text={post.notes} />}
+                {post.notes && (
+                    <details className="details">
+                        <summary>Notes & checks</summary>
+                        <Field label="Publishing notes" text={post.notes} />
+                    </details>
+                )}
             </>
         );
         return (
@@ -386,17 +432,20 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
 
     if (kit) {
         return (
-            <div className="kit">
-                <aside className="rail">
-                    {intro}
-                    {jump}
-                </aside>
-                <div className="main">
-                    {page}
-                    {items}
+            <>
+                {controls}
+                <div className={`kit${comparing ? " comparing" : ""}`}>
+                    <aside className="rail">
+                        {intro}
+                        {jump}
+                    </aside>
+                    <div className="main">
+                        {page}
+                        {items}
+                    </div>
+                    {box}
                 </div>
-                {box}
-            </div>
+            </>
         );
     }
     return (

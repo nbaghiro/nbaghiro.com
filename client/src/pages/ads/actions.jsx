@@ -149,12 +149,17 @@ export function ZipButton({ name, files, texts = {}, label = "Download zip" }) {
 }
 
 // A piece of text with its own copy button: a document title, a post, a first comment.
-export function Field({ label, note, text }) {
+export function Field({ label, note, text, count = false }) {
     if (!text) return null;
     return (
         <div className="field">
             <div className="row">
                 <h3>{label}</h3>
+                {count && (
+                    <span className="char-count">
+                        {text.length.toLocaleString()} characters
+                    </span>
+                )}
                 <CopyButton text={text} label="Copy" />
             </div>
             {note && <p className="note">{note}</p>}

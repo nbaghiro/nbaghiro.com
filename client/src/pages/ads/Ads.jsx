@@ -181,9 +181,14 @@ function Projects({ root, onLock }) {
 function Ads() {
     const navigate = useNavigate();
     const [root, setRoot] = useState(() => {
-        const fromHash = rootFrom(
-            decodeURIComponent(window.location.hash.slice(1))
-        );
+        const hash = window.location.hash.slice(1);
+        const sectionLink = hash === "profile" || hash.startsWith("post-");
+        let fromHash = "";
+        try {
+            if (!sectionLink) fromHash = rootFrom(decodeURIComponent(hash));
+        } catch {
+            // A malformed fragment must not replace the saved studio address.
+        }
         if (fromHash) {
             storeRoot(fromHash);
             window.history.replaceState(null, "", window.location.pathname);

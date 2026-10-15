@@ -48,6 +48,7 @@ export function Studio({ root }) {
 
     useEffect(() => {
         setManifest(null);
+        setError("");
         fetchJson(`${root}/${project}/manifest.json`)
             .then(setManifest)
             .catch((e) => setError(String(e.message)));
