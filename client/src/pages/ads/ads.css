@@ -491,6 +491,21 @@
     font-size: 12px;
     margin-top: 6px;
 }
+/* the overview strip: a thread's every image in one row, before the items themselves */
+.ads .strip.small {
+    scroll-snap-type: none;
+    margin: 12px 0 0;
+    padding: 2px 0;
+}
+.ads .strip.small figure {
+    width: 120px;
+}
+.ads .strip.small img {
+    aspect-ratio: auto;
+}
+.ads .strip.small + .dots {
+    display: none;
+}
 .ads .dots {
     display: flex;
     justify-content: center;
@@ -666,6 +681,91 @@
     border-radius: var(--r-frame);
     box-shadow: 0 0 0 1px var(--edge);
     margin: 8px 0 10px;
+}
+
+/* a profile kit on a desk: the rail holds the notes and the jump list and stays put, the
+   profile's art sits beside its copy, each post's media and small fields sit beside its
+   voices, and the frames keep their own shape instead of the feed crop */
+.ads .kit {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+.ads .kit .main > section {
+    scroll-margin-top: 76px;
+}
+.ads .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 10px;
+}
+.ads .jump a {
+    text-decoration: none;
+    color: var(--soft);
+    font-size: 13px;
+    line-height: 1.3;
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.ads .jump a small {
+    color: var(--faint);
+    font-size: 11px;
+}
+.ads .jump a[aria-current="true"] {
+    color: var(--ink);
+    border-color: var(--line-strong);
+    background: var(--panel);
+}
+.ads .kit .page-grid,
+.ads .kit .spread {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px 32px;
+    align-items: start;
+}
+.ads .kit .banner {
+    max-width: none;
+    margin: 4px 0 10px;
+}
+.ads .kit .field,
+.ads .kit pre.text {
+    max-width: none;
+}
+.ads .kit .strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+}
+.ads .kit .strip figure {
+    width: auto;
+}
+.ads .kit .strip img {
+    aspect-ratio: auto;
+}
+.ads .kit .dots {
+    display: none;
+}
+.ads .kit .post .reel.inline {
+    max-width: 220px;
+    margin: 0 0 12px;
+}
+.ads .kit .post .actions {
+    margin-top: 10px;
+}
+.ads .kit .compare {
+    gap: 0 28px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.ads .kit .compare .field {
+    margin-top: 0;
 }
 
 /* X: the image, then the words above it on X */
@@ -884,6 +984,50 @@
     }
 }
 
+@media (min-width: 1100px) {
+    .ads .body:has(.kit) {
+        max-width: 1720px;
+    }
+    .ads .kit {
+        grid-template-columns: 216px minmax(0, 1fr);
+        gap: 0 36px;
+        align-items: start;
+    }
+    .ads .rail {
+        position: sticky;
+        top: 72px;
+        max-height: calc(100dvh - 88px);
+        overflow: auto;
+        scrollbar-width: none;
+        padding-bottom: 12px;
+    }
+    .ads .rail .lede {
+        font-size: 14px;
+        margin: 4px 0 14px;
+    }
+    .ads .jump {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 2px;
+    }
+    .ads .jump a {
+        border: 0;
+        border-left: 2px solid transparent;
+        border-radius: 0;
+        padding: 5px 10px;
+    }
+    .ads .jump a[aria-current="true"] {
+        background: none;
+        border-left-color: var(--ink);
+    }
+    .ads .kit .page-grid {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 4fr);
+    }
+    .ads .kit .spread {
+        grid-template-columns: 272px minmax(0, 1fr);
+    }
+}
+
 @media (prefers-reduced-motion: no-preference) {
     .ads .btn,
     .ads .tabbar button,
@@ -893,4 +1037,107 @@
             color 0.15s,
             box-shadow 0.15s;
     }
+}
+
+/* profile combinations: a photo and a cover shown together at LinkedIn's proportions */
+.ads .mock {
+    position: relative;
+    max-width: 790px;
+    background: #fff;
+    color: #1b1f23;
+    border: 1px solid #d9dce0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.ads .mock-cover {
+    width: 100%;
+    aspect-ratio: 4 / 1;
+    object-fit: cover;
+    display: block;
+}
+.ads .mock-avatar {
+    position: absolute;
+    left: 24px;
+    top: calc(25% - 56px);
+    width: 152px;
+    height: 152px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fff;
+    background: #fff;
+}
+.ads .mock-body {
+    padding: 64px 24px 20px;
+}
+.ads .mock-name {
+    font: 700 24px/1.2 var(--font-read);
+    color: #1b1f23;
+    margin: 0;
+}
+.ads .mock-headline {
+    font-size: 15px;
+    margin-top: 4px;
+    max-width: 62ch;
+}
+.ads .mock-meta {
+    font-size: 14px;
+    color: #5e6670;
+    margin-top: 6px;
+}
+.ads .mock-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+}
+.ads .mock-btn {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1px solid #0a66c2;
+    color: #0a66c2;
+}
+.ads .mock-btn.solid {
+    background: #0a66c2;
+    color: #fff;
+}
+.ads .picker {
+    margin-top: 22px;
+}
+.ads .picker .row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 6px 2px;
+    scrollbar-width: none;
+}
+.ads .picker .row::-webkit-scrollbar {
+    display: none;
+}
+.ads .pick {
+    flex: none;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: none;
+    cursor: pointer;
+    line-height: 0;
+    opacity: 0.55;
+}
+.ads .pick[aria-pressed="true"] {
+    border-color: var(--ink);
+    opacity: 1;
+}
+.ads .pick img {
+    border-radius: 8px;
+    object-fit: cover;
+}
+.ads .pick.round img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+}
+.ads .pick.wide img {
+    width: 180px;
+    height: 45px;
 }

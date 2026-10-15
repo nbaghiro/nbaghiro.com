@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
 // A row of frames. On a phone it snaps one frame at a time and shows the dots Instagram
-// would; on a wide screen it is a plain row at a fixed height.
-export function Strip({ items, story = false, onOpen }) {
+// would; on a wide screen it is a plain row at a fixed height. `small` is the overview
+// size: every frame of a set in view at once, each at its own shape.
+export function Strip({ items, story = false, small = false, onOpen }) {
     const ref = useRef(null);
     const [active, setActive] = useState(0);
     useEffect(() => {
@@ -19,7 +20,12 @@ export function Strip({ items, story = false, onOpen }) {
 
     return (
         <div>
-            <div className={story ? "strip story" : "strip"} ref={ref}>
+            <div
+                className={["strip", story && "story", small && "small"]
+                    .filter(Boolean)
+                    .join(" ")}
+                ref={ref}
+            >
                 {items.map((it, i) => (
                     <figure key={it.url}>
                         <img

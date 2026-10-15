@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CopyButton, ShareButton } from "./actions";
 import { Lightbox } from "./Lightbox";
+import { Strip } from "./Strip";
 import { fileName } from "./store";
 
 // X posts: one image per post with the text above it; a thread is a list of those, posted
@@ -29,6 +30,26 @@ export function XPosts({ manifest, url }) {
                         </p>
                     </div>
                     {post.note && <p className="meta">{post.note}</p>}
+                    {post.items.length > 1 && (
+                        <Strip
+                            small
+                            items={post.items.map((x, i) => ({
+                                url: url(x.png || x.jpg),
+                                alt: x.alt || `${titleOf(post.slug)}, ${i + 1}`,
+                            }))}
+                            onOpen={(i) =>
+                                setLb({
+                                    title: titleOf(post.slug),
+                                    index: i,
+                                    items: post.items.map((x) => ({
+                                        url: url(x.png || x.jpg),
+                                        name: fileName(x.png || x.jpg),
+                                        alt: x.alt,
+                                    })),
+                                })
+                            }
+                        />
+                    )}
                     <ol className="xitems">
                         {post.items.map((it, i) => {
                             const img = it.jpg || it.png;

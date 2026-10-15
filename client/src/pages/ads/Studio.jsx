@@ -14,6 +14,7 @@ import { Reels } from "./Reels";
 import { LinkedIn } from "./LinkedIn";
 import { XPosts } from "./XPosts";
 import { Profile } from "./Profile";
+import { Combos } from "./Combos";
 
 const TABS = [
     ["posts", "Posts", (m) => m.posts?.length],
@@ -26,6 +27,7 @@ const TABS = [
         "Profile",
         (m) => m.profile?.pictures?.length || m.profile?.fields?.length,
     ],
+    ["combos", "Combos", (m) => m.combos?.avatars?.length],
 ];
 
 // One project's studio over its manifest. The theme applies to every post at once and any
@@ -109,7 +111,8 @@ export function Studio({ root }) {
             : (manifest.linkedin?.sets ?? []);
     const tabs = [
         ...TABS.filter(
-            ([id, , count]) => count(manifest) && !(id === "linkedin" && sets.length)
+            ([id, , count]) =>
+                count(manifest) && !(id === "linkedin" && sets.length)
         ),
         ...sets.map((s) => [`li:${s.id}`, s.label, () => ""]),
     ];
@@ -195,6 +198,7 @@ export function Studio({ root }) {
                 {activeSet && <LinkedIn {...ctx} set={activeSet} />}
                 {active === "x" && <XPosts {...ctx} />}
                 {active === "profile" && <Profile {...ctx} />}
+                {active === "combos" && <Combos {...ctx} />}
             </main>
             {tabs.length > 1 && (
                 <nav className="tabbar" aria-label="Sections">
