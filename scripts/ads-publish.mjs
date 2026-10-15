@@ -206,6 +206,7 @@ export async function publish({ project, manifest, syncs, dryRun = false }) {
         publishedAt: built.publishedAt,
         counts: summary,
         covers: covers(built),
+        preview: preview(built),
     });
     index.projects.sort((a, b) => a.name.localeCompare(b.name));
     await put("index.json", JSON.stringify(index));
@@ -228,7 +229,19 @@ function covers(m) {
         (p) => (p.pages?.[p.defaultTheme] ?? p.pages?.default ?? [])[0]
     );
     const fromReels = (m.reels ?? []).map((r) => r.poster?.default);
-    return [...fromPosts, ...fromDocs, ...fromReels].filter(Boolean).slice(0, 3);
+    const extraPages = (m.linkedin?.posts ?? []).flatMap(
+        (p) => p.pages?.[p.defaultTheme] ?? p.pages?.default ?? []
+    );
+    return [...new Set([...fromPosts, ...fromDocs, ...fromReels, ...extraPages].filter(Boolean))].slice(0, 3);
+}
+
+function preview(m) {
+    if (!m.combos) return undefined;
+    return {
+        banner: m.combos.covers?.[0]?.file,
+        avatar: m.combos.avatars?.[0]?.file,
+        name: m.combos.name,
+    };
 }
 
 function counts(m) {
@@ -238,6 +251,7 @@ function counts(m) {
         reels: m.reels?.length ?? 0,
         linkedin: m.linkedin?.posts?.length ?? 0,
         x: m.x?.posts?.length ?? 0,
+        ...(m.combos ? { photos: m.combos.avatars?.length ?? 0, covers: m.combos.covers?.length ?? 0 } : {}),
     };
 }
 
@@ -297,6 +311,7 @@ async function publishLocal(id, built, syncs, summary) {
         publishedAt: built.publishedAt,
         counts: summary,
         covers: covers(built),
+        preview: preview(built),
     });
     index.projects.sort((a, b) => a.name.localeCompare(b.name));
     await writeFile(indexFile, JSON.stringify(index));

@@ -108,8 +108,10 @@ const COUNT_WORDS = {
     posts: ["post", "posts"],
     stories: ["story set", "story sets"],
     reels: ["reel", "reels"],
-    linkedin: ["LinkedIn document", "LinkedIn documents"],
+    linkedin: ["LinkedIn post", "LinkedIn posts"],
     x: ["X post", "X posts"],
+    photos: ["photo", "photos"],
+    covers: ["cover", "covers"],
 };
 
 // "57 posts, 28 reels, 47 LinkedIn documents and 26 X posts"

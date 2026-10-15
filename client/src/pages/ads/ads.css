@@ -1383,3 +1383,25 @@
 @media (max-width: 759px) {
     .ads .style-select select { min-height: 44px; }
 }
+
+.ads .tile { display: flex; flex-direction: column; gap: 0; }
+.ads .tile .covers, .ads .tile-profile, .ads .tile-empty {
+    height: 180px;
+    flex: none;
+    border-radius: 6px;
+    background: var(--ground);
+    overflow: hidden;
+}
+.ads .tile .covers { padding: 12px; align-items: center; gap: 8px; }
+.ads .tile .covers img { height: 156px; max-height: 156px; aspect-ratio: auto; object-fit: contain; background: transparent; box-shadow: none; }
+.ads .tile .covers-1 { grid-template-columns: 1fr; }
+.ads .tile .covers-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ads .tile .when { margin-top: auto; padding-top: 8px; }
+.ads .tile-profile { position: relative; }
+.ads .tile-profile .tile-banner { width: 100%; height: 110px; object-fit: cover; }
+.ads .tile-profile .tile-avatar { position: absolute; top: 82px; left: 16px; width: 64px; height: 64px; object-fit: cover; border-radius: 50%; border: 3px solid var(--ground); }
+.ads .tile-profile span { display: block; padding: 39px 16px 0; font-size: 13px; }
+.ads .tile-empty { display: grid; place-items: center; color: var(--soft); font-family: var(--font-hand); padding: 20px; text-align: center; }
+
+.ads .kit .spread > div:last-child > .field,
+.ads .kit .page-grid .field { max-width: 76ch; }

@@ -151,8 +151,14 @@ function Projects({ root, onLock }) {
                                 to={`/ads/${p.id}`}
                                 className="tile"
                             >
-                                {p.covers?.length > 0 && (
-                                    <div className="covers">
+                                {p.preview?.banner ? (
+                                    <div className="tile-profile">
+                                        <img className="tile-banner" src={cover(p, p.preview.banner)} alt="" loading="lazy" />
+                                        {p.preview.avatar && <img className="tile-avatar" src={cover(p, p.preview.avatar)} alt="" loading="lazy" />}
+                                        <span>{p.preview.name}</span>
+                                    </div>
+                                ) : p.covers?.length > 0 ? (
+                                    <div className={`covers covers-${Math.min(p.covers.length, 3)}`}>
                                         {p.covers.slice(0, 3).map((f) => (
                                             <img
                                                 crossOrigin="anonymous"
@@ -163,7 +169,7 @@ function Projects({ root, onLock }) {
                                             />
                                         ))}
                                     </div>
-                                )}
+                                ) : <div className="tile-empty">{p.name}</div>}
                                 <h2>{p.name}</h2>
                                 <p className="meta">{countsText(p.counts)}</p>
                                 <p className="when">
