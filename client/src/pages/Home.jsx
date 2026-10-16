@@ -4,7 +4,8 @@ import Ask from "../components/Ask";
 import "./Home.css";
 
 const EMAIL = "naib.baghirov@gmail.com";
-const latest = POSTS.slice(0, 2);
+// the newest piece carries the photograph; anything after it is a line
+const [feature, ...older] = POSTS.slice(0, 3);
 
 function Home() {
     return (
@@ -28,59 +29,69 @@ function Home() {
             </header>
 
             <section className="entry" aria-label="Where to go">
-                <p className="entry-note">
-                    Each of these is run by one person, so the work includes the
-                    code, the servers, billing, support and sales. The writing
-                    here is mostly about the parts that are not code.
-                </p>
+                <div className="entry-side">
+                    <p className="entry-note">
+                        Each of these is run by one person, so the work includes
+                        the code, the servers, billing, support and sales. The
+                        writing here is mostly about the parts that are not
+                        code.
+                    </p>
 
-                <nav className="doors" aria-label="Sections">
-                    <Link className="door" to="/blogs">
-                        <h2>Writing</h2>
-                        <p>How the things underneath are built, in detail.</p>
-                    </Link>
-                    <Link className="door" to="/projects">
-                        <h2>Projects</h2>
-                        <p>
-                            What each product is, who uses it, and where it
-                            stands.
-                        </p>
-                    </Link>
-                    <Link className="door" to="/about">
-                        <h2>Résumé</h2>
-                        <p>The working history, as a page or a PDF.</p>
-                    </Link>
-                    <a className="door" href={`mailto:${EMAIL}`}>
-                        <h2>Contact</h2>
-                        <p>{EMAIL}</p>
-                    </a>
-                </nav>
+                    <nav className="doors" aria-label="Sections">
+                        <Link className="door" to="/blogs">
+                            <h2>Writing</h2>
+                            <p>
+                                How the things underneath are built, in detail.
+                            </p>
+                        </Link>
+                        <Link className="door" to="/projects">
+                            <h2>Projects</h2>
+                            <p>
+                                What each product is, who uses it, and where it
+                                stands.
+                            </p>
+                        </Link>
+                        <Link className="door" to="/about">
+                            <h2>Résumé</h2>
+                            <p>The working history, as a page or a PDF.</p>
+                        </Link>
+                        <a className="door" href={`mailto:${EMAIL}`}>
+                            <h2>Contact</h2>
+                            <p>{EMAIL}</p>
+                        </a>
+                    </nav>
+                </div>
 
-                {latest.length > 0 && (
-                    <ul className="latest">
-                        {latest.map((post) => (
-                            <li key={post.slug}>
-                                <Link to={`/blogs/${post.slug}`}>
-                                    {post.card && (
-                                        <img
-                                            src={post.card}
-                                            alt=""
-                                            loading="lazy"
-                                        />
-                                    )}
-                                    <span>
-                                        <span className="latest-title">
-                                            {post.title}
-                                        </span>
-                                        <span className="latest-meta">
-                                            {post.about} ·{" "}
-                                            {readableDate(post.date)}
-                                        </span>
-                                    </span>
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
+                {feature && (
+                    <div className="reading">
+                        <Link className="feature" to={`/blogs/${feature.slug}`}>
+                            {feature.card && <img src={feature.card} alt="" />}
+                            <h2>{feature.title}</h2>
+                            {feature.summary && (
+                                <p className="feature-sum">{feature.summary}</p>
+                            )}
+                            <p className="feature-meta">
+                                {feature.about} · {readableDate(feature.date)}
+                            </p>
+                        </Link>
+                        {older.length > 0 && (
+                            <ul className="older">
+                                {older.map((post) => (
+                                    <li key={post.slug}>
+                                        <Link to={`/blogs/${post.slug}`}>
+                                            <span className="older-title">
+                                                {post.title}
+                                            </span>
+                                            <span className="older-meta">
+                                                {post.about} ·{" "}
+                                                {readableDate(post.date)}
+                                            </span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
                 )}
             </section>
 
