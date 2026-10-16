@@ -1367,12 +1367,19 @@
     padding: 8px 0;
     margin-bottom: 16px;
 }
-.ads .kit .main > section { scroll-margin-top: 140px; }
+.ads .kit .main > section {
+    scroll-margin-top: 140px;
+}
 @media (min-width: 1100px) {
-    .ads .rail { top: 140px; max-height: calc(100dvh - 156px); }
+    .ads .rail {
+        top: 140px;
+        max-height: calc(100dvh - 156px);
+    }
 }
 @media (max-width: 759px) {
-    .ads .kit .main > section { scroll-margin-top: 230px; }
+    .ads .kit .main > section {
+        scroll-margin-top: 230px;
+    }
 }
 
 .ads .style-select select {
@@ -1389,33 +1396,92 @@
     background-size: 16px;
     cursor: pointer;
 }
-.ads .style-select select:hover { border-color: var(--soft); }
-.ads .style-select select:focus-visible { border-color: var(--ink); outline-offset: 3px; }
+.ads .style-select select:hover {
+    border-color: var(--soft);
+}
+.ads .style-select select:focus-visible {
+    border-color: var(--ink);
+    outline-offset: 3px;
+}
 @media (max-width: 759px) {
-    .ads .style-select select { min-height: 44px; }
+    .ads .style-select select {
+        min-height: 44px;
+    }
 }
 
-.ads .tile { display: flex; flex-direction: column; gap: 0; }
-.ads .tile .covers, .ads .tile-profile, .ads .tile-empty {
+.ads .tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.ads .tile .covers,
+.ads .tile-profile,
+.ads .tile-empty {
     height: 180px;
     flex: none;
     border-radius: 6px;
     background: var(--ground);
     overflow: hidden;
 }
-.ads .tile .covers { padding: 12px; align-items: center; gap: 8px; }
-.ads .tile .covers img { height: 156px; max-height: 156px; aspect-ratio: auto; object-fit: contain; background: transparent; box-shadow: none; }
-.ads .tile .covers-1 { grid-template-columns: 1fr; }
-.ads .tile .covers-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.ads .tile .when { margin-top: auto; padding-top: 8px; }
-.ads .tile-profile { position: relative; }
-.ads .tile-profile .tile-banner { width: 100%; height: 110px; object-fit: cover; }
-.ads .tile-profile .tile-avatar { position: absolute; top: 82px; left: 16px; width: 64px; height: 64px; object-fit: cover; border-radius: 50%; border: 3px solid var(--ground); }
-.ads .tile-profile span { display: block; padding: 39px 16px 0; font-size: 13px; }
-.ads .tile-empty { display: grid; place-items: center; color: var(--soft); font-family: var(--font-hand); padding: 20px; text-align: center; }
+.ads .tile .covers {
+    padding: 12px;
+    align-items: center;
+    gap: 8px;
+}
+.ads .tile .covers img {
+    height: 156px;
+    max-height: 156px;
+    aspect-ratio: auto;
+    object-fit: contain;
+    background: transparent;
+    box-shadow: none;
+}
+.ads .tile .covers-1 {
+    grid-template-columns: 1fr;
+}
+.ads .tile .covers-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ads .tile .when {
+    margin-top: auto;
+    padding-top: 8px;
+}
+.ads .tile-profile {
+    position: relative;
+}
+.ads .tile-profile .tile-banner {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+}
+.ads .tile-profile .tile-avatar {
+    position: absolute;
+    top: 82px;
+    left: 16px;
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--ground);
+}
+.ads .tile-profile span {
+    display: block;
+    padding: 39px 16px 0;
+    font-size: 13px;
+}
+.ads .tile-empty {
+    display: grid;
+    place-items: center;
+    color: var(--soft);
+    font-family: var(--font-hand);
+    padding: 20px;
+    text-align: center;
+}
 
 .ads .kit .spread > div:last-child > .field,
-.ads .kit .page-grid .field { max-width: 76ch; }
+.ads .kit .page-grid .field {
+    max-width: 76ch;
+}
 
 /* Show the complete source photo in the picker; the profile mock keeps its circular crop. */
 .ads .picker .row {
@@ -1429,11 +1495,36 @@
     border-radius: 12px;
     opacity: 0.8;
 }
-.ads .picker .pick[aria-pressed="true"] { opacity: 1; }
+.ads .picker .pick[aria-pressed="true"] {
+    opacity: 1;
+}
 .ads .picker .pick.round img {
     width: 80px;
     height: 80px;
     border-radius: 6px;
     object-fit: contain;
 }
-.ads .picker .pick.wide img { object-fit: contain; }
+.ads .picker .pick.wide img {
+    object-fit: contain;
+}
+
+/* finished documents: the page itself, then the three ways to send it */
+.ads .doc-page {
+    display: block;
+    margin-top: 14px;
+    max-width: 560px;
+    background: #fff;
+    border-radius: var(--r-frame);
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--edge);
+}
+.ads .doc-page img {
+    width: 100%;
+    height: auto;
+}
+.ads .doc-note {
+    margin-top: 14px;
+    max-width: 62ch;
+    color: var(--soft);
+    font-size: 14px;
+}
