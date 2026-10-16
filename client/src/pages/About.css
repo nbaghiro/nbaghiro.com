@@ -1,50 +1,43 @@
-.about-page {
-    width: min(850px, calc(100vw - 32px));
-    margin: 24px auto 48px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
+@import "./Projects.css";
 
-.about-bar {
+.about .page-head > p {
+    max-width: 48ch;
+}
+.about-actions {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 16px;
+    gap: 12px 20px;
+    margin-top: 22px;
 }
-
-.about-bar h1 {
-    font-family: var(--font-hand);
-    font-size: 28px;
-    font-weight: 700;
-}
-
 .download {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
     min-height: 44px;
-    padding: 0 18px;
-    border: 1px solid var(--glow);
-    border-radius: 999px;
-    background: var(--glow);
-    color: #000;
-    font-weight: 700;
+    padding: 0 20px;
+    border-radius: 2px;
+    background: var(--pine);
+    color: #e7edea;
+    font-size: 15px;
 }
-
 .download:hover {
-    color: #000;
-    opacity: 0.9;
+    background: var(--ink);
+}
+.about-actions a:not(.download) {
+    font-size: 15px;
+    color: var(--water);
+    border-bottom: 1px solid var(--mist);
+    padding-bottom: 2px;
 }
 
+/* the page itself, sitting on the ground rather than in a card */
 .resume-frame {
     display: block;
+    margin-top: clamp(36px, 5vw, 60px);
     overflow: hidden;
-    border: 1px solid var(--line-strong);
-    border-radius: 10px;
     background: #fff;
+    border: 1px solid var(--mist);
 }
-
 .resume-frame img {
     display: block;
     width: 100%;
