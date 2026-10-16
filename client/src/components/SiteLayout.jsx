@@ -50,6 +50,7 @@ function SiteLayout() {
                     <Link to="/projects">Projects</Link>
                     <Link to="/about">Résumé</Link>
                     <a
+                        className="out"
                         href="https://www.linkedin.com/in/naibbaghirov/"
                         target="_blank"
                         rel="noreferrer"

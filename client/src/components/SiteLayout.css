@@ -72,15 +72,30 @@
         padding: 0 max(24px, calc((100% - 1100px) / 2));
     }
 }
+/* On a phone the bar carries the three pages and nothing else: LinkedIn is in the footer,
+   and below 400px the portrait stands in for the name, which the hero sets anyway. */
 @media (max-width: 560px) {
     .site-header {
         padding: 0 16px;
+        gap: 12px;
     }
     .site-logo {
         font-size: 17px;
     }
+    .site-logo img {
+        width: 34px;
+        height: 34px;
+    }
     .site-nav {
-        gap: 14px;
-        font-size: 13.5px;
+        gap: 16px;
+        font-size: 14px;
+    }
+    .site-nav .out {
+        display: none;
+    }
+}
+@media (max-width: 400px) {
+    .site-logo span {
+        display: none;
     }
 }

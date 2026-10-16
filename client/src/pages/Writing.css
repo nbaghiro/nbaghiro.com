@@ -52,6 +52,7 @@
     display: block;
     width: 100%;
     aspect-ratio: 2000 / 769;
+    object-fit: contain;
     max-height: 62vh;
     object-fit: contain;
     object-position: center top;
@@ -161,4 +162,11 @@
 }
 .post-back a {
     color: var(--water);
+}
+
+@media (max-width: 700px) {
+    .post-cover {
+        aspect-ratio: 3 / 2;
+        max-height: none;
+    }
 }

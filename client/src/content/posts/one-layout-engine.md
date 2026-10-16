@@ -35,7 +35,7 @@ It does not measure text either. You install a callback with `Clay_SetMeasureTex
 
 Galleo's engine is modelled on Clay and written in TypeScript. The sizing vocabulary is the same four modes, as a tagged union rather than macros. The solver resolves a tree in three passes, and the order is forced by text.
 
-![The same tree resolved three times. Widths come down the tree, heights come back up, positions come down again. Text is measured in the middle pass, at the width the first pass has just given it.](/img/figures/three-passes.svg)
+![The same tree resolved three times. Widths come down the tree, heights come back up, positions come down again. Text is measured in the middle pass, at the width the first pass has just given it.](figure:three-passes)
 
 Widths go top-down, because a parent is the only thing that knows how much room there is to share out. Heights come bottom-up, because a paragraph has no height until something has told it how wide it is, and a row is as tall as its tallest child. Positions and alignment go top-down once both dimensions are known. Each pass is linear in the number of nodes, and at the end every box has an absolute x, y, width and height.
 
@@ -55,7 +55,7 @@ That is a small amount of code and it is the part I would protect most carefully
 
 Because the engine knows nothing about pages, a format is not a mode in the engine. It is a descriptor handed to the same solver.
 
-![One tree, three profiles. The deck is a paged frame at 1280 by 720, the doc is a continuous column 816 wide, and the site fills whatever width it is given.](/img/figures/one-tree-three-formats.svg)
+![One tree, three profiles. The deck is a paged frame at 1280 by 720, the doc is a continuous column 816 wide, and the site fills whatever width it is given.](figure:three-formats)
 
 A deck is paged, 1280 by 720, one section per slide. A document is continuous, a column 816 points wide, which is 8.5 inches at 96dpi. A site is continuous and fills the width it is given. Alongside the dimensions each profile carries a type and space multiplier, the width below which a row of columns stacks, and what a paged render should do with a section taller than its frame.
 
@@ -65,7 +65,7 @@ Two consequences fall out of this that I did not plan for and would not give up.
 
 The solver returns two arrays. The first is the render commands in paint order: rectangles, text, images, and surfaces, which are the elements that draw themselves, such as charts and diagrams. The second is the regions, which are the boxes of every node that carries an id.
 
-![The layout returns two arrays: the commands, in paint order, and the regions, which are the boxes of every node that carries an id. Four backends consume the commands; hit-testing consumes the regions.](/img/figures/command-list.svg)
+![The layout returns two arrays: the commands, in paint order, and the regions, which are the boxes of every node that carries an id. Four backends consume the commands; hit-testing consumes the regions.](figure:command-list)
 
 Four things consume the command list. The DOM backend paints it into elements on screen. A 2D canvas backend paints it for presenting and for PNG export. The PDF writer emits vectors with the fonts embedded, so the text in the file is selectable and searchable rather than a picture of text. The PowerPoint writer is a hybrid: rectangles become autoshapes, each text leaf becomes a real text box with styled runs and the engine's own line breaks baked in, with PowerPoint's own wrapping and autofit switched off so that it never reflows the text and undoes the agreement. Self-painted surfaces go in as vector.
 
@@ -75,7 +75,7 @@ Hit-testing reads the region list. It is a separate output rather than a questio
 
 If layout ends in a flat list, cutting a long flow into pages is not a layout problem any more. It is a problem about where to put the scissors.
 
-![Cutting one flow into two pages. The break lands above the block that must not be split, so that block moves whole to page two, while the card's background is clipped to each page's window rather than closing at the seam and reopening.](/img/figures/fragment.svg)
+![Cutting one flow into two pages. The break lands above the block that must not be split, so that block moves whole to page two, while the card's background is clipped to each page's window rather than closing at the seam and reopening.](figure:fragment)
 
 The fragmenter is greedy. It looks for the lowest edge that does not split any command, and if there is no such edge inside a long paragraph it breaks at a line boundary instead, leaving a minimum number of lines on each side so that no page ends on a widow.
 

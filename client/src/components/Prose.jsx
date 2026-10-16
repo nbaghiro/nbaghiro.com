@@ -1,7 +1,10 @@
+import { FIGURES } from "./Figures";
+
 /**
  * The small Markdown subset the written pieces use, rendered as React elements rather than
  * injected as HTML: headings, paragraphs, bullet and numbered lists, blockquotes, fenced code,
- * `code`, **bold**, *italic* and links.
+ * `code`, **bold**, *italic* and links. A figure is either a path to a picture or
+ * `figure:name`, which is one of the drawn diagrams in Figures.jsx.
  */
 const INLINE = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)\s]+\))/g;
 
@@ -56,8 +59,16 @@ function Prose({ text }) {
             // these carry the argument, and a deferred one has no height to reserve space with.
             const fig = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(line.trim());
             const src = fig[2];
+            const Drawn = src.startsWith("figure:")
+                ? FIGURES[src.slice(7)]
+                : null;
             out.push(
-                src.startsWith("/") ? (
+                Drawn ? (
+                    <figure key={out.length}>
+                        <Drawn />
+                        <figcaption>{fig[1]}</figcaption>
+                    </figure>
+                ) : src.startsWith("/") ? (
                     <figure key={out.length}>
                         <img src={src} alt={fig[1]} />
                         <figcaption>{fig[1]}</figcaption>

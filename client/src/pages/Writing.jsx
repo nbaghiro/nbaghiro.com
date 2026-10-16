@@ -61,12 +61,18 @@ export function Post() {
     return (
         <article className="post">
             {post.cover && (
-                <img
-                    className="post-cover"
-                    src={post.cover}
-                    alt=""
-                    fetchPriority="high"
-                />
+                <picture>
+                    {/* the plate is drawn twice; a phone gets the one laid out for its shape */}
+                    {post.card && (
+                        <source media="(max-width: 700px)" srcSet={post.card} />
+                    )}
+                    <img
+                        className="post-cover"
+                        src={post.cover}
+                        alt=""
+                        fetchPriority="high"
+                    />
+                </picture>
             )}
             <div className="page">
                 <PageArt kind="fern" side="left" top={420} />
