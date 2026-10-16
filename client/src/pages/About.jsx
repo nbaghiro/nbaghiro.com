@@ -10,8 +10,8 @@ function About() {
             <header className="page-head">
                 <h1>Résumé</h1>
                 <p>
-                    Where I have worked and what I built there. The page below
-                    is the current version; the PDF has selectable text.
+                    My experience and the work I’ve done. You can read
+                    the résumé below or download the PDF.
                 </p>
                 <p className="about-actions">
                     <a

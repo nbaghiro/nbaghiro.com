@@ -10,8 +10,8 @@ export function openAsk() {
 
 const SUGGESTIONS = [
     "What are you working on right now?",
-    "How does Galleo keep an export identical to the screen?",
-    "What runs Clientbridge's sales tax?",
+    "How does Galleo share layout between the editor and exports?",
+    "How does Clientbridge calculate sales tax?",
 ];
 
 // The repo agent. The band carries the invitation; the conversation itself happens in a
@@ -64,7 +64,7 @@ function Ask() {
                     type="text"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    placeholder="Ask about any of it"
+                    placeholder="Ask about a project"
                     aria-label="Ask about the work"
                 />
                 <button type="submit" disabled={!text.trim()}>
@@ -88,7 +88,7 @@ function Ask() {
                     type="button"
                     onClick={() => dialog.current?.showModal()}
                 >
-                    Open the conversation again
+                    Continue the conversation
                 </button>
             )}
 
@@ -101,8 +101,8 @@ function Ask() {
                                 Ask about the work
                             </p>
                             <p className="ask-plate-line">
-                                The answers are read out of the repositories and
-                                their history.
+                                An AI assistant with access to the project code
+                                and its history.
                             </p>
                         </figcaption>
                     </figure>
@@ -143,8 +143,8 @@ function Ask() {
                             {!answered && !busy && (
                                 <>
                                     <p className="ask-invite">
-                                        Ask anything about how these are built,
-                                        or start from one of these.
+                                        Ask how a project works, or choose a
+                                        question below.
                                     </p>
                                     <ul className="ask-suggestions">
                                         {SUGGESTIONS.map((s) => (
@@ -175,7 +175,7 @@ function Ask() {
                                 value={reply}
                                 onChange={(e) => setReply(e.target.value)}
                                 placeholder={
-                                    busy ? "Reading the code" : "Ask another"
+                                    busy ? "Reading the code" : "Ask a follow-up question"
                                 }
                                 aria-label="Ask another question"
                                 disabled={busy}

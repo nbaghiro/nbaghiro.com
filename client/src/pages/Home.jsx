@@ -22,9 +22,8 @@ function Home() {
                 <div className="hero-copy">
                     <h1>Naib Baghirov</h1>
                     <p>
-                        I build software products and run them. The writing here
-                        is about how they work and what keeping them running
-                        involves.
+                        I’m a software engineer and founder. I build and run
+                        software products, and share what I learn along the way.
                     </p>
                     <button
                         className="hero-ask"
@@ -40,29 +39,30 @@ function Home() {
                 <PageArt seed="home" count={2} />
                 <div className="entry-side">
                     <p className="entry-note">
-                        Each of these is run by one person, so the work includes
-                        the code, the servers, billing, support and sales. The
-                        writing here is mostly about the parts that are not
-                        code.
+                        My work covers development, infrastructure, billing and
+                        customer support. Here I write about how the products
+                        work, the decisions behind them and what I learn from
+                        running them.
                     </p>
 
                     <nav className="doors" aria-label="Sections">
                         <Link className="door" to="/blogs">
                             <h2>Writing</h2>
                             <p>
-                                How the things underneath are built, in detail.
+                                Technical articles about building and running
+                                the products.
                             </p>
                         </Link>
                         <Link className="door" to="/projects">
                             <h2>Projects</h2>
                             <p>
-                                What each product is, who uses it, and where it
-                                stands.
+                                What I’m building, who it’s for and its current
+                                status.
                             </p>
                         </Link>
                         <Link className="door" to="/about">
                             <h2>Résumé</h2>
-                            <p>The working history, as a page or a PDF.</p>
+                            <p>My experience and previous work.</p>
                         </Link>
                         <a className="door" href={`mailto:${EMAIL}`}>
                             <h2>Contact</h2>
@@ -109,10 +109,9 @@ function Home() {
                     <div className="ask-head">
                         <h2 id="ask-title">Ask about the work</h2>
                         <p className="ask-lede">
-                            An agent with read access to the repositories and
-                            their history. It answers from the code rather than
-                            from a summary, so it can say how something is built
-                            and when it changed.
+                            An AI assistant that can read the project code and
+                            its history. Ask how a feature works, why it was
+                            built that way or what has changed.
                         </p>
                     </div>
                     <Ask />
@@ -128,7 +127,7 @@ function Home() {
                             <div>
                                 <p className="foot-name">Naib Baghirov</p>
                                 <p className="foot-line">
-                                    Five products, built and run from here.
+                                    Software engineer and founder.
                                 </p>
                             </div>
                         </div>

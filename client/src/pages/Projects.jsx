@@ -9,8 +9,8 @@ function Projects() {
             <header className="page-head">
                 <h1>Projects</h1>
                 <p>
-                    The products I build and run. Each one is live, in testing
-                    or in progress; where it stands is noted beside it.
+                    The products and tools I’m building, with a short
+                    description and the current status of each.
                 </p>
             </header>
 
@@ -50,9 +50,9 @@ function Projects() {
                 <img src="/img/band.webp" alt="" />
                 <figcaption>
                     <blockquote>
-                        Coding agents write most of the code now. What they do
-                        not do is find the users, decide what the product should
-                        be, or keep the whole thing pointed somewhere.
+                        I use coding agents throughout development. My work also
+                        includes understanding what people need, deciding what
+                        to build and supporting the products day to day.
                     </blockquote>
                 </figcaption>
             </figure>

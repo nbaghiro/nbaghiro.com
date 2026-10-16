@@ -1184,7 +1184,7 @@ export function LayerMemory() {
                     one layer, drawn back
                 </text>
                 <text className="fig-sub" x={x0} y={narrow ? 44 : 50}>
-                    sized as if the map were at scale one
+                    recorded in the September investigation
                 </text>
                 <line
                     className="fig-mist"
@@ -1219,22 +1219,22 @@ export function LayerMemory() {
                     x={bx + 20}
                     y={by + (narrow ? 24 : 26)}
                 >
-                    × 71 layers
+                    71 sample-map layers
                 </text>
                 <text
                     className="fig-note"
                     x={bx + 20}
                     y={by + (narrow ? 44 : 46)}
                 >
-                    2,557 MB of them at the
+                    2,557 MB in the Simulator,
                     <tspan x={bx + 20} dy="15">
-                        opening view, with 27,089
+                        at the sample opening view.
                     </tspan>
                     <tspan x={bx + 20} dy="15">
-                        elements and 500 MB of
+                        Parent-map measurements
                     </tspan>
                     <tspan x={bx + 20} dy="15">
-                        heap above that
+                        are separate; see the text.
                     </tspan>
                 </text>
                 <text
@@ -1242,7 +1242,7 @@ export function LayerMemory() {
                     x={bx + 20}
                     y={by + (narrow ? 112 : 116)}
                 >
-                    iOS kills the tab at 2,048 MB
+                    Test device limit: 2,048 MB
                 </text>
             </Plate>
         </svg>
@@ -1633,7 +1633,7 @@ export function ReuseSettle() {
             className="fig"
             viewBox={frame(box.w, box.h)}
             role="img"
-            aria-label="While the camera moves a drawing keeps the texture it has; 200 milliseconds after it rests the drawing is rasterised at the size it is seen, and the sharper pixels fade in over 150 milliseconds."
+            aria-label="Textures are reused during camera movement. A 200 millisecond settling threshold allows refinement, and sharper pixels fade in over 150 milliseconds when ready."
         >
             <Plate
                 w={box.w}
@@ -1717,7 +1717,7 @@ export function ReuseSettle() {
                     y={axis - 42}
                     textAnchor={narrow ? "end" : "start"}
                 >
-                    {narrow ? "drawn sharp" : "drawn at the size it is seen"}
+                    {narrow ? "refinement starts" : "refinement can begin"}
                 </text>
                 <text
                     className="fig-note"

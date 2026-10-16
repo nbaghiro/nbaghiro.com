@@ -1528,3 +1528,65 @@
     color: var(--soft);
     font-size: 14px;
 }
+
+/* the account as it will look: the pair of pictures at X's proportions, then the words */
+.ads .xmock {
+    position: relative;
+    max-width: 660px;
+    margin-bottom: 26px;
+    background: #000;
+    color: #e7e9ea;
+    border: 1px solid #2f3336;
+    border-radius: 14px;
+    overflow: hidden;
+}
+.ads .xmock-cover {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 1;
+    object-fit: cover;
+}
+.ads .xmock-avatar {
+    position: absolute;
+    left: 16px;
+    top: calc(33.33% - 44px);
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #000;
+    background: #000;
+}
+.ads .xmock-body {
+    position: relative;
+    padding: 56px 16px 18px;
+}
+.ads .xmock-follow {
+    position: absolute;
+    right: 16px;
+    top: 14px;
+    font: 700 14px/1 var(--font-read);
+    color: #000;
+    background: #e7e9ea;
+    border-radius: 999px;
+    padding: 9px 17px;
+}
+.ads .xmock-name {
+    font: 800 21px/1.2 var(--font-read);
+    margin: 0;
+}
+.ads .xmock-handle {
+    font-size: 15px;
+    color: #71767b;
+    margin-top: 2px;
+}
+.ads .xmock-bio {
+    font-size: 15px;
+    margin-top: 12px;
+    max-width: 54ch;
+}
+.ads .xmock-meta {
+    font-size: 15px;
+    color: #71767b;
+    margin-top: 10px;
+}

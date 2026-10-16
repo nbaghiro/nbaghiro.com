@@ -1,74 +1,68 @@
-title: One integration, two callers
+title: Sharing integrations between workflows and agents
 date: 2026-10-16
 about: FlowMaestro
 cover: /img/posts/one-integration-two-callers-wide.webp
 card: /img/posts/one-integration-two-callers-card.webp
-summary: An automation platform has to let a graph call Slack and let a model call Slack, and the obvious way to build that is twice. Making one operation serve both callers turned out to rest on a single schema with three readers.
+summary: FlowMaestro lets workflow steps and agent tools share provider operations. The shared schemas reduce duplication, but validation, routing and descriptions still need attention in both paths.
 
-FlowMaestro runs two kinds of thing. There are workflows, which are graphs a person draws: this trigger, then that step, then post the result to Slack. And there are agents, which are a model with a set of tools, deciding for themselves what to call and with what.
+FlowMaestro has workflows built from steps and agents that choose tools while they run. Both need to call external services. A workflow might send a Slack message after processing a record; an agent might choose that operation in response to a request.
 
-Both of them need Slack. Both need Notion, HubSpot, Postgres and the other hundred and fifty services in the catalogue. The difference is who is holding the pen. In a workflow the parameters were typed into a form weeks ago and the run is the same every time. In an agent the model picks the tool and writes the arguments in the moment, from a description it read.
+The provider system gives both callers access to shared operation implementations. The aim is to keep service-specific behavior in one place while allowing the workflow builder and the agent to present it differently.
 
-The obvious way to build that is twice: an integration catalogue for the builder, and a tool catalogue for the agent. I want to describe why that is a trap, what replaced it, and the part of the replacement that still does not sit right.
+![A workflow step and an agent tool call reach a shared provider operation. Each caller has its own adapter.](figure:two-callers)
 
-![A workflow node and a model's tool call arriving at the same operation function, which then calls the service once.](figure:two-callers)
+## What the provider owns
 
-## What building it twice actually costs
+An integration includes more than the HTTP request. It has connection handling, input definitions, operation routing and a way to return results or errors. Maintaining separate implementations for workflows and agents would create more places for those behaviors to diverge.
 
-The duplication is not the code that makes the HTTP request. That part is small, and copying it would be survivable.
-
-What gets duplicated is everything around it. Each service has an auth story: an API key here, OAuth with a refresh token there, a token that expires in an hour and has to be renewed before a call rather than after a failure. Each has rate limits worth respecting, pagination worth hiding, and errors worth normalising, because `429` from one service and `rate_limit_exceeded` from another should reach the caller as the same kind of problem. Each has a parameter schema that has to be described once for a form and once for a model.
-
-Two of each of those is not twice the work, because they do not stay in step. The fix you make on the workflow side when a customer hits a Slack thread-timestamp edge case does not reach the agent side, and nobody notices until an agent silently posts to the wrong place. The second copy is always the one that rots, because the first one is the one people are using while you are looking.
-
-## The interface asks for both
-
-So a provider in FlowMaestro is one class with both surfaces on it, and the base class makes them mandatory rather than encouraged:
+FlowMaestro's base provider requires three methods: one to execute a workflow operation, one to describe agent tools, and one to execute an agent tool call.
 
 ```
-abstract executeOperation(op, params, connection, ctx)   // a workflow node
-abstract getMCPTools(): MCPTool[]                        // what an agent may call
-abstract executeMCPTool(toolName, params, connection)    // an agent calling it
+executeOperation(operation, params, connection, context)
+getMCPTools()
+executeMCPTool(toolName, params, connection)
 ```
 
-There are 156 provider directories in the repository, and all 156 implement all three. That is not discipline, it is the compiler: a provider that only serves the builder does not type-check, so the question "did we expose this one to agents yet?" cannot be asked.
+That interface makes both entry points part of the provider contract. It does not prove that every registered operation is correctly routed, validated or equally capable through both paths. Those properties still depend on the implementation and tests.
 
-A hundred and fourteen of them keep the agent half in a separate `mcp/` folder and the rest put it inline on the provider class, which is a filing preference rather than a difference in behaviour. The ones that inline it are often the thinnest: AWS S3's `executeMCPTool` strips its prefix and calls `executeOperation` with the mode set to `agent`, which is the whole adapter.
+## A schema used in several places
 
-## One definition, three readers
+Operations register an identifier, name, description, category and Zod input schema. The same record supplies information to the builder, validation code and agent tool description.
 
-The thing that makes both surfaces cheap is that an operation is described once, in a structure that carries its own schema.
+![An operation definition supplies the builder's parameter information, runtime validation and the agent's tool schema.](figure:one-definition)
 
-![One operation definition read by three things: the node's form, the engine's validation, and the tool spec given to the model.](figure:one-definition)
+The execution router converts the operation's input schema to JSON Schema and extracts parameter information for the frontend. This reduces the need to maintain a separate form definition for every operation. The frontend still has to support the field types and interactions that schema requires.
 
-Each operation registers an id, a name, a description, a category and a Zod schema for its input. Three different parts of the product read that one record.
+The provider's validation helper parses parameters against the Zod schema. The Slack workflow path calls it before invoking the operation.
 
-The canvas reads it to build the node's form. When you pick Slack and then Send Message, the panel that appears is not hand-written: the router walks the provider's operations, converts each Zod schema to JSON Schema, and flattens it into the parameter list the inspector renders. A new optional field on an operation shows up in the product without anybody opening the frontend.
+The Slack tool adapter also reads the registered operations. It prefixes each identifier with `slack_`, uses the operation description, and converts the input schema into the tool's `inputSchema`. The model therefore receives a description derived from the same operation definition used by the builder.
 
-The engine reads it to validate. The parameters the node collected are parsed against the same schema before the call goes out, so a workflow fails at the step that is wrong rather than inside somebody's HTTP client.
+Sharing a schema reduces drift between those descriptions. It is not a substitute for validating input at execution time.
 
-The model reads it as a tool. `getMCPTools()` maps over the same operations and emits a tool per operation, whose `inputSchema` is that Zod schema converted by the same function the canvas path uses. The model is looking at the form, in the only format a model can read.
+## Following a Slack call
 
-This is the whole trick, and it is less clever than it sounds. There is no code generation and no registry of mappings. There is one object with a schema on it, and three consumers that each ask it a different question.
+For a workflow step, `SlackProvider.executeOperation` validates the input, gets a client for the connection, and dispatches to an executor such as `executeSendMessage`.
 
-## What a provider actually looks like
+For an agent call, `executeMCPTool` gets the client and passes the request to `SlackMCPAdapter`. The adapter removes the tool-name prefix and dispatches to the same executor. The provider then converts the result into the value or error expected by the tool caller.
 
-![The files of one provider, with the operations shared by both callers and a small adapter for the model, beside the counts across the repository.](figure:provider-shape)
+The two entry points also have different validation and error-handling code. A tool schema describes accepted input to the model; it does not enforce that input at runtime. Each execution path still needs validation before it relies on the parameters. Sharing the executor alone is not evidence that the entry points enforce identical checks.
 
-Slack is the example I keep going back to because it is unremarkable. A provider class that declares the metadata and registers its operations. A client that owns auth, pooling and retries. One file per operation, which is where the work is. And an adapter of 46 lines that prefixes the operation ids with `slack_`, converts the schemas, and routes a tool call back to the same `executeSendMessage` the node calls.
+The routing is explicit too. The adapter builds tool descriptions from the registered operations, but dispatches calls through a switch. Adding an operation to the registry does not automatically add its execution branch. Keeping those two lists aligned is part of maintaining the provider.
 
-Across the repository that comes to 1,759 operation files, and one line each in the registry, which holds a lazy loader per provider so that a worker touching Slack does not import the other 155.
+## What sharing improves
 
-The payoff is the thing that does not appear in any diff: when somebody adds a service for a workflow, the agents can use it the same afternoon, and nobody filed a ticket to make that true.
+Both paths can reuse the same service client and operation implementation. A fix inside that shared executor can benefit workflow and agent calls without being copied into a second integration.
 
-## What it costs
+The provider registry also loads providers on demand. A caller can resolve the provider it needs through the registry instead of directly importing every integration into the calling code.
 
-Three things, and the first one is not solved.
+These are useful boundaries because they keep service behavior together. They do not remove the need for caller-specific handling: a workflow receives a structured operation result, while a tool caller may need a value or an exception it can act on.
 
-**The description is doing two jobs.** A field in a form wants a short label: "Channel". A tool parameter wants a sentence that tells a model when to use the thing and what the value should look like: "The Slack channel id, not the name, in the form C0123ABC". Right now both of those come out of the same `description` string, which means it is either a clumsy form or a thin tool spec. The honest answer is probably a second field written for the model, and I have not added it.
+## What still needs separate judgment
 
-**Strictness cuts both ways.** A person filling a form gets to see the error and try again. A model gets a validation failure as a tool result and will often retry with the same shape, because the schema it was given was correct and its reading of it was not. The same strict parse that makes a workflow fail usefully makes an agent loop, and the handling for that lives above the provider rather than in it.
+Descriptions serve different readers. A form label needs to be easy to scan; a model may need examples, accepted identifiers and guidance about when to call the operation. Reusing a description is a useful starting point, but the code should allow a more specific explanation where the caller needs one.
 
-**Symmetry is not the same as parity.** Every provider exposes tools, but the catalogue still lists 42 entries as coming soon, and shared plumbing does not write those. A single interface flatters the inventory: it tells you every provider has both surfaces, not that every service your customer wants is there.
+Error handling also differs. A person can correct a field in the builder. An agent needs enough information to decide whether to change its arguments, retry later or stop. Sharing the service executor does not determine that policy.
 
-If you have built the two-caller version of this, I would like to know where you put the seam: one object with two faces, as here, or two thin surfaces over a shared core underneath them both.
+Finally, provider counts are not a measure of complete integration coverage. A provider can expose both interfaces while individual operations, schema handling or routing still need work. Reviewing a real call end to end is more informative than counting directories.
+
+The shared operation is the part of this design I would retain. It keeps service-specific work together while leaving the callers free to use it differently. The follow-up is to make their validation and routing guarantees equally explicit.

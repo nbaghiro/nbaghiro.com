@@ -1,76 +1,76 @@
-title: One screen writes offline
+title: Offline reads and a queued working-week edit
 date: 2026-10-16
 about: Clientbridge
 cover: /img/posts/one-screen-writes-offline-wide.webp
 card: /img/posts/one-screen-writes-offline-card.webp
-summary: A booking app that works on a phone in a shop has to answer one question before anything else: which writes may a device make on its own? In Clientbridge the answer is almost none, and the single exception cost more to build than the feature it serves.
+summary: Clientbridge reads replicated business data locally, while the server settles bookings and financial commands. Working-week edits use a local queue with revision checks, retry identities and confirmation through replication.
 
-Clientbridge is booking, invoicing and sales tax for a service business, and it runs on the web, on an iPhone and on an Android phone in a room where the signal is whatever the building allows. Each device keeps its own copy of that business in SQLite, so the schedule, the client list and the invoices are already on the machine when the app opens. There is no spinner on the board and no request behind it.
+Clientbridge combines booking, invoicing and payments for service businesses. Its web and mobile clients keep a local replica of business data so they can read information already synced to the device when the connection is poor.
 
-That part is the easy half. The hard half is the other direction, and it is the decision the rest of the product hangs from: which writes may a device make on its own?
+That does not mean every action can be completed offline. A booking needs to be checked against other bookings, working hours and resource availability. A local copy may not include a change another device has just made.
 
-The answer here is almost none. One screen is allowed to write offline, and making that one screen safe took more code than the screen is worth on its own. This is why, and what it cost.
+The design separates local reads from authoritative writes. Most writes go through server commands. The working-week editor has a narrower offline path: it queues a proposal for the server to accept or reject later.
 
-## Reads do not go through the API at all
+## Reading the local replica
 
-Postgres is the source of truth. [PowerSync](https://www.powersync.com) sits beside it, reads the write-ahead log, and streams each device the rows that device is allowed to see, keyed by the business and the role in its token. The API is not in the read loop.
+Postgres is the source of truth, and PowerSync replicates the rows selected by the application's sync rules into local SQLite. The client queries that replica for the data it holds. Changes arriving through sync can update reactive queries without a separate polling loop for each screen.
 
-![Two directions. Reads leave Postgres through the replication log and arrive on the device, which queries its own SQLite. Writes go the other way, as a command the server settles, and then return to every device through that same log.](figure:two-paths)
+![Replicated data travels from Postgres to local SQLite. Commands go to the server, and their resulting changes return through replication.](figure:two-paths)
 
-The consequence that matters for the client code is that the on-device database already holds only what this user may see, so the app never filters for security. It queries its local SQLite and renders. A reactive query re-runs whenever a sync push or a local write touches its tables, so a Stripe webhook, a cron job or another staff member's action arrives on the screen in under a second without anything polling.
+This improves access to already-synced data, but it does not guarantee that every screen opens instantly or that no read ever uses an API. Initial synchronization, missing data and older history still need handling.
 
-Two details stop that from being free. Tables that grow forever cannot all live on a phone, so messages, slots and bookings replicate for a window, the past twelve months and the next twenty-four, by month; anything older is read from the API while online. And the replica is not the same shape as Postgres: PowerSync stores each table as JSON behind a view, so the indexes are the server's indexes without their leading business column, because a device only ever reads one business.
+The code subscribes to a moving window for time-based history: twelve months back and twenty-four ahead. Older records can be requested online. Other replicated tables have different retention needs.
 
-## A booking cannot be an edit of a copy
+Access control is enforced through server authorization and sync selection. The frontend also has scoping helpers. Local filtering should not be treated as the security boundary, and a local replica is not permission to skip authorization when a command reaches the server.
 
-The obvious next step, once every device has a local database, is to let people write to it and reconcile later. That is where I stopped.
+## Why booking is a server command
 
-Creating a booking has to establish five things at the same moment: the team member is not on time off, the business is not closed, the time is inside that member's working hours for that weekday, a class seat or the surrounding visits leave room, and any resource the service needs is free. The command takes a Postgres advisory lock on the member for the length of the write, checks all five, and writes the slot, the booking and an audit row in one transaction.
+A booking can conflict with staff availability, opening hours, other visits, class capacity or a required resource. The booking service checks those conditions against authoritative data and uses transaction-scoped locks where the write needs coordination.
 
-![Inside one command: an advisory lock on the member, five checks against rows another device may be changing, then the slot, the booking and the audit written in a single transaction.](figure:five-checks)
+![A simplified booking command: coordinate the write, check availability and capacity, then record the accepted booking and its audit information.](figure:five-checks)
 
-A device cannot do that. It can check those five things against the copy it holds, but the copy is a snapshot, and the rows behind it are being changed by other devices while it checks. Two phones offline in the same shop will both find the same slot free, and both will be right about what they knew.
+A device can help someone choose a time using its replica, but cannot confirm that another device has not reserved it in the meantime. Two disconnected devices may both see the same opening.
 
-The alternatives are worse than they look. Last write wins silently discards one of two real bookings. A CRDT merges both and produces a double-booked member, which is not a merge conflict a library can resolve, because the conflict is not in the data, it is in the world. Either way the first thing the owner learns about it is a client standing in the doorway.
+A merge strategy alone does not decide which booking the business should honor. That is a product and consistency decision. In Clientbridge, the server decides whether the booking can be accepted; the resulting records then return through replication.
 
-So the rule in this codebase is that a server-only invariant is a command, never an edit of the replica. Four things are server-only: numbering and uniqueness, capacity and conflict, money, and anything that crosses from one business to another. Everything a command touches flows back out through the replication log to every device, so the write path ends where the read path begins and there is no second mechanism for getting the answer back.
+The same principle applies to other server-owned constraints, including financial operations, uniqueness and cross-business actions. Their commands do not directly edit the client replica and hope to reconcile later.
 
-There is no generic write endpoint. A capability is one of five surfaces, and choosing the surface is the main design decision for a new feature: replicated read, offline command, online command, webhook, or background job.
+## The working week is a proposal
 
-## The one exception, and why it earned it
+The working-week editor can save a local proposal when it cannot reach the server. The proposal lives in a local-only outbox table and carries the expected revision of the staff member's hours.
 
-The second surface in that list exists for exactly one screen: a team member's recurring working week.
+An uploader sends it as a typed command. The server checks authorization, takes the relevant locks, and compares the current revision with the one the device expected. If another change has already advanced the revision, the command rejects the proposal for review rather than merging it silently.
 
-It earned the exception because of who edits it and when. Working hours are set by someone standing in the business, often while the person they concern is in front of them, and the edit is not a contested resource in the way a two o'clock slot is. Refusing to accept it until the signal returns would be the wrong answer to a reasonable request.
+This makes the offline action precise: the device has saved an edit to be submitted. It has not confirmed that the business's working hours have changed.
 
-So the week is a proposal. It is written into a local-only table that never replicates, and an uploader walks that table and turns each proposal into a typed command. The screen shows the proposal as pending until the accepted revision appears in the replica, which is the only confirmation that counts, because it means the authoritative row has come back the normal way.
+## Retries need a stable identity
 
-## What one editable screen cost
+Each proposal carries a device identifier and an operation identifier. The server records a receipt tied to the operation and a hash of its content.
 
-Everything below exists because of that single exception.
+A retry with the same identity and payload can recover the recorded result without applying the change again. Reusing the identity with different content is rejected. The receipt logic also has a ninety-day retry horizon, so an old proposal cannot be replayed indefinitely.
 
-The command carries the revision the device expected. The server takes the same advisory locks a booking takes, re-reads the member, and refuses the write if the revision moved underneath it. Nothing is merged.
+On the device, edits can be combined while a proposal is queued and has never been attempted. Once an attempt starts, the payload remains fixed. A later edit becomes a successor in the queue, using the revision returned by its predecessor when appropriate.
 
-Every proposal carries a device id and an operation id, and the server reserves a receipt against that pair with a hash of the payload before it does anything else. A retry with the same identity returns the first answer rather than applying the week twice. The same identity with different content is an error rather than an update. Receipts are kept for ninety days, and a proposal created outside that horizon is refused rather than applied late.
+![An edit moves through queued, sending and accepted states, or is rejected for review. An accepted edit is retired after its revision appears in the replica.](figure:outbox-week)
 
-![The life of one proposal: queued and still editable, frozen the moment it is sent, accepted with a revision, and retired only when that revision appears in the replica. A refusal stops the chain and keeps the week for review.](figure:outbox-week)
+The response is not the end of the pending state. An accepted proposal stays in the outbox until the local staff record has reached at least the accepted revision. That prevents the interface from dropping the pending edit before the authoritative data has arrived through sync.
 
-On the device, the outbox is a small state machine with four states and a chain. A proposal that has not been attempted yet absorbs further edits, so holding the screen open and changing your mind three times sends one command. The moment it is sent its payload is frozen, and a new edit becomes a successor that waits for its predecessor and inherits the revision that predecessor returns. An accepted proposal is not deleted when the response arrives; it is retired when the replica shows its revision, which is what keeps the pending state honest. Transport failures back off with jitter to a five-minute ceiling and honour a Retry-After. A refusal stops that member's chain and keeps the proposal for review, with two explicit ways out: apply it again against the fresh revision, or discard it.
+Transport failures use backoff with jitter and bounded Retry-After handling. A rejected proposal stops that chain for review. The user can decide whether to apply a revised proposal or discard it.
 
-That is a lot of machinery for one screen. It is the whole bill for the decision, and it is worth stating plainly rather than hiding, because the alternative is the one most offline-first stacks take: allow general writes, add a merge policy, and discover the cost in support tickets instead of in code.
+## Checking the effect on existing bookings
 
-## The part I did not plan
+Changing working hours can leave future visits outside the new week. The command looks for pending or confirmed bookings affected by the change and returns their identifiers.
 
-The working week is what a booking was checked against. Change the week and visits already on the calendar can fall outside it.
+It does not automatically cancel those bookings. The editor can show the affected visits so the business can decide what to do with them.
 
-The command answers with them. After it replaces the week it collects every pending or confirmed visit for that member in the future that now sits outside the new hours, and returns their ids with the new revision. The device stores the list and the editor shows it. Nothing is cancelled and nothing is silently broken; the owner is told which visits their edit stranded, and decides.
+The command also rejects a week containing split-day hours that this replacement operation cannot safely represent. That avoids silently flattening two working periods into one.
 
-The same instinct refuses a week it cannot represent. If a member already has a split day, two windows on one weekday, set from somewhere other than this editor, replacing the week would flatten it. Rather than quietly dropping the second window, the command refuses and asks for the week to be reviewed.
+These checks make the proposal more than a delayed update. The server validates both whether it can apply the change and what existing work needs attention afterward.
 
-Both of those exist because the one write allowed offline is the one that can invalidate a decision the server already made. If you are going to make an exception, the exception has to report what it broke.
+## The boundary matters more than the queue
 
-## What I would tell someone starting this
+The queue needs ordering, stable payloads, retry identities, revision checks and a clear rule for confirmation. It also needs a usable response when the server refuses an edit.
 
-Decide the write path before the data model. For every capability, ask who has to settle it, and let that answer choose the surface. Most products have a handful of operations where the server must decide and a long tail where it need not, and the tail is where offline editing pays.
+That is a meaningful maintenance cost, even for one editor. It should be weighed against the value of accepting that particular action while disconnected.
 
-Then count the cost of each exception honestly. A screen that writes offline needs an expected version, an idempotent identity, a frozen payload, a queue with ordering, a retirement rule tied to the authoritative row, and an answer for what to do when it is refused. If a feature is not worth that, it is not worth writing offline, and saying so early is cheaper than a merge policy nobody can explain.
+For Clientbridge, local reads cover much of the day-to-day use, while the server retains decisions that depend on shared capacity or financial state. Working-week edits use a queued proposal because their acceptance can be deferred and their conflicts can be presented for review. Other offline actions would need their own justification and conflict behavior.

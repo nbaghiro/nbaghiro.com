@@ -11,8 +11,8 @@ export function Writing() {
             <header className="page-head">
                 <h1>Writing</h1>
                 <p>
-                    How the parts underneath are built: the decisions, what they
-                    cost, and what I would do differently.
+                    How I build and run the products, including technical
+                    decisions, tradeoffs and lessons from the work.
                 </p>
             </header>
             <ul className="post-list">
@@ -49,10 +49,10 @@ export function Post() {
         return (
             <article className="page">
                 <header className="page-head">
-                    <h1>Not here</h1>
+                    <h1>Article not found</h1>
                     <p>
-                        That piece does not exist.{" "}
-                        <Link to="/blogs">The rest of them.</Link>
+                        This article may have moved or is no longer available.{" "}
+                        <Link to="/blogs">Browse all articles.</Link>
                     </p>
                 </header>
             </article>
