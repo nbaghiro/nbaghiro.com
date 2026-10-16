@@ -127,7 +127,7 @@ export const PROJECTS = [
         liveUrl: "https://lumischool.ai",
         updated: "Sep 2026",
         summary:
-            "Homeschool platform for children aged 5 to 10 and the adults who teach them.",
+            "Homeschool platform for children aged 5 to 12 and the adults who teach them.",
         details:
             "Lessons are written in a small text notation that compiles into a typed tree and is checked for every value a question can take before a child sees it. Drawings render in one hand-drawn style on squared paper, on screen and in print, from one shared parts catalogue.",
         highlights: [

@@ -25,7 +25,7 @@ export const PRODUCTS = [
         name: "Lumischool",
         url: "https://lumischool.ai",
         state: "Live",
-        note: "Lessons for children aged 5 to 10 across nine subjects, drawn in one hand-drawn style, every question checked by a program before a child sees it.",
+        note: "Lessons for children aged 5 to 12 across eleven subjects, drawn in one hand-drawn style, every question checked by a program before a child sees it.",
         detail: "Made for families teaching at home.",
     },
     {
