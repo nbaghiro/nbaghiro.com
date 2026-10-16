@@ -1,0 +1,34 @@
+/* The margins only. A plate is sized to the room between the text column and the window,
+   never wider, so it cannot be clipped by the edge of the screen, and the file's own
+   background is transparent, so there is no rectangle to cut. */
+
+.page-art {
+    --room: calc((100vw - min(1100px, 100vw - 48px)) / 2 - 34px);
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    user-select: none;
+    width: min(var(--plate-w, 200px), var(--room));
+}
+.page-art.left {
+    right: calc(100% + 26px);
+}
+.page-art.right {
+    left: calc(100% + 26px);
+}
+.page-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: 0.86;
+}
+.page-art.flip img {
+    transform: scaleX(-1);
+}
+
+/* below this the margin has no room worth drawing in */
+@media (max-width: 1379px) {
+    .page-art {
+        display: none;
+    }
+}

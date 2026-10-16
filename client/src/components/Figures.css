@@ -1,0 +1,191 @@
+/* One drawing language for every figure: hairlines in the page's own greys, a water wash
+   for anything the engine has resolved, the page's two typefaces, and no colour the
+   photographs do not already have. Sizes are user units, and each figure chooses a viewBox
+   about as wide as the space it will be given, so 12 units means 12 pixels on the page. */
+
+.fig {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.fig-ink,
+.fig-mist,
+.fig-water {
+    fill: none;
+    stroke-linecap: square;
+}
+.fig-ink {
+    stroke: var(--ink);
+    stroke-width: 1.1;
+}
+.fig-mist {
+    stroke: #aeb9b5;
+    stroke-width: 1;
+}
+.fig-mist.dash {
+    stroke-dasharray: 4 3;
+}
+.fig-water {
+    stroke: var(--water);
+    stroke-width: 1.2;
+}
+.fig-open {
+    stroke-dasharray: 2 5;
+}
+.fig-wash {
+    fill: var(--water);
+    fill-opacity: 0.05;
+    stroke: none;
+}
+.fig-wash.strong {
+    fill-opacity: 0.1;
+}
+.fig-solid {
+    fill: var(--water);
+    stroke: none;
+}
+.fig-chip {
+    fill: #aeb9b5;
+    stroke: none;
+}
+.fig-pic {
+    fill: var(--water);
+    fill-opacity: 0.16;
+    stroke: none;
+}
+.fig-bars line {
+    stroke: var(--ink-soft);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+.fig-bars.quiet line {
+    stroke: #aeb9b5;
+    opacity: 0.9;
+}
+.fig-bus path {
+    fill: none;
+    stroke-width: 1;
+}
+.cut {
+    stroke-dasharray: 5 4;
+}
+/* where a page's window cuts a fill that carries on over the break */
+.fig-seam {
+    stroke: var(--water);
+    stroke-width: 2;
+    opacity: 0.5;
+}
+
+/* the plate itself: registration ticks at the corners, a measured rule along the foot,
+   and one contour of ground behind everything */
+.fig-plate path {
+    fill: none;
+    stroke: #aeb9b5;
+    stroke-width: 1;
+}
+.fig-foot line {
+    stroke: #c0cac6;
+    stroke-width: 1;
+}
+.fig-ground path {
+    fill: none;
+    stroke: #c7d1cd;
+    stroke-width: 1;
+}
+
+.fig text {
+    font-family: var(--font-read);
+    fill: var(--ink);
+}
+.fig .fig-num {
+    font-family: var(--font-display);
+    font-size: 23px;
+    fill: #b7c2be;
+}
+.fig .fig-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+}
+.fig .fig-title.sm {
+    font-size: 15px;
+}
+.fig .fig-sub,
+.fig .fig-note {
+    font-size: 12px;
+    fill: var(--ink-faint);
+}
+.fig .fig-note {
+    font-size: 12.5px;
+    fill: var(--ink-soft);
+}
+.fig .fig-dim {
+    font-size: 11.5px;
+    fill: var(--water);
+}
+.fig .fig-row {
+    font-size: 11.5px;
+    fill: var(--ink-soft);
+}
+
+/* The one figure that moves. Its resting state is its finished state, so the animation only
+   ever delays what is already drawn: a reader who arrives with motion turned off, or who
+   never scrolls this far, sees the whole diagram. */
+.fig-host {
+    position: relative;
+}
+.fig.playing [data-anim="in"] {
+    animation: fig-in 0.42s ease-out var(--d, 0s) backwards;
+}
+.fig.playing [data-anim="draw"] {
+    stroke-dasharray: 100;
+    animation: fig-draw 0.52s ease-in-out var(--d, 0s) backwards;
+}
+.fig.playing [data-anim="pop"] {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: fig-pop 0.34s cubic-bezier(0.2, 1.4, 0.4, 1) var(--d, 0s)
+        backwards;
+}
+@keyframes fig-in {
+    from {
+        opacity: 0;
+    }
+}
+@keyframes fig-draw {
+    from {
+        stroke-dashoffset: 100;
+    }
+}
+@keyframes fig-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+}
+
+.fig-replay {
+    margin-top: 12px;
+    padding: 0 0 2px;
+    border: 0;
+    border-bottom: 1px solid var(--mist);
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    color: var(--water);
+    cursor: pointer;
+}
+.fig-replay:hover {
+    border-bottom-color: var(--water);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fig.playing [data-anim] {
+        animation: none;
+        stroke-dasharray: none;
+    }
+    .fig-replay {
+        display: none;
+    }
+}

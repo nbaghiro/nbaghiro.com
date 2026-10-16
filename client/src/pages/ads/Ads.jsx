@@ -10,6 +10,7 @@ import {
     DEFAULT_BASE,
 } from "./store";
 import { Studio } from "./Studio";
+import { useFavicon } from "../../favicon";
 import "./ads.css";
 
 // The ad studios, one per project, published from each project's own repo into one bucket
@@ -153,12 +154,26 @@ function Projects({ root, onLock }) {
                             >
                                 {p.preview?.banner ? (
                                     <div className="tile-profile">
-                                        <img className="tile-banner" src={cover(p, p.preview.banner)} alt="" loading="lazy" />
-                                        {p.preview.avatar && <img className="tile-avatar" src={cover(p, p.preview.avatar)} alt="" loading="lazy" />}
+                                        <img
+                                            className="tile-banner"
+                                            src={cover(p, p.preview.banner)}
+                                            alt=""
+                                            loading="lazy"
+                                        />
+                                        {p.preview.avatar && (
+                                            <img
+                                                className="tile-avatar"
+                                                src={cover(p, p.preview.avatar)}
+                                                alt=""
+                                                loading="lazy"
+                                            />
+                                        )}
                                         <span>{p.preview.name}</span>
                                     </div>
                                 ) : p.covers?.length > 0 ? (
-                                    <div className={`covers covers-${Math.min(p.covers.length, 3)}`}>
+                                    <div
+                                        className={`covers covers-${Math.min(p.covers.length, 3)}`}
+                                    >
                                         {p.covers.slice(0, 3).map((f) => (
                                             <img
                                                 crossOrigin="anonymous"
@@ -169,7 +184,9 @@ function Projects({ root, onLock }) {
                                             />
                                         ))}
                                     </div>
-                                ) : <div className="tile-empty">{p.name}</div>}
+                                ) : (
+                                    <div className="tile-empty">{p.name}</div>
+                                )}
                                 <h2>{p.name}</h2>
                                 <p className="meta">{countsText(p.counts)}</p>
                                 <p className="when">
@@ -185,6 +202,7 @@ function Projects({ root, onLock }) {
 }
 
 function Ads() {
+    useFavicon("mark");
     const navigate = useNavigate();
     const [root, setRoot] = useState(() => {
         const hash = window.location.hash.slice(1);

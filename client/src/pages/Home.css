@@ -1,0 +1,306 @@
+/* The landing page is an entrance, not a catalogue: one photograph, one line about where
+   things stand, four ways in, the newest piece of writing, and a single question box. */
+
+.hero {
+    position: relative;
+    height: min(86vh, 800px);
+    min-height: 520px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background: #cfd8d7;
+}
+.hero img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+}
+/* the site bar sits on a pale sky, so the top gets a wash of its own */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 150px;
+    z-index: 1;
+    background: linear-gradient(
+        to bottom,
+        rgba(20, 28, 26, 0.42),
+        rgba(20, 28, 26, 0)
+    );
+}
+/* the copy sits over the water, the palest part of the frame, so it gets a wash */
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 62%;
+    background: linear-gradient(
+        to top,
+        rgba(20, 28, 26, 0.62),
+        rgba(20, 28, 26, 0)
+    );
+}
+.hero-copy {
+    position: relative;
+    z-index: 1;
+    width: var(--page);
+    margin: 0 auto;
+    padding-bottom: clamp(40px, 7vh, 88px);
+    color: #fff;
+}
+.hero-copy h1 {
+    font-size: clamp(44px, 7.4vw, 92px);
+    letter-spacing: -0.02em;
+}
+.hero-copy p {
+    margin-top: 18px;
+    max-width: 42ch;
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.86);
+}
+
+/* Under the photograph: the standing of the work and the way in on one side, the newest
+   piece of writing on the other, so neither reads as a row of identical cards. */
+.entry {
+    position: relative;
+    width: var(--page);
+    margin: 0 auto;
+    padding: var(--band) 0;
+    display: grid;
+    gap: clamp(46px, 6vw, 68px);
+}
+@media (min-width: 900px) {
+    .entry {
+        grid-template-columns: 0.86fr 1.14fr;
+        gap: clamp(56px, 7vw, 100px);
+        align-items: start;
+    }
+}
+.entry-note {
+    font-family: var(--font-display);
+    font-size: clamp(21px, 2.3vw, 28px);
+    line-height: 1.36;
+    max-width: 31ch;
+}
+
+.doors {
+    margin-top: clamp(34px, 4.2vw, 52px);
+    border-top: 1px solid var(--mist);
+}
+.door {
+    display: block;
+    padding: 16px 0 18px;
+    border-bottom: 1px solid var(--mist);
+}
+.door h2 {
+    font-size: 21px;
+}
+.door p {
+    margin-top: 2px;
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--ink-faint);
+    max-width: 36ch;
+}
+.door:hover h2 {
+    color: var(--water);
+}
+
+.feature {
+    display: block;
+}
+.feature img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    background: var(--mist);
+}
+.feature h2 {
+    margin-top: clamp(20px, 2.4vw, 28px);
+    font-size: clamp(26px, 3.1vw, 37px);
+    max-width: 22ch;
+}
+.feature-sum {
+    margin-top: 12px;
+    max-width: 50ch;
+    color: var(--ink-soft);
+}
+.feature-meta {
+    margin-top: 14px;
+    font-size: 14.5px;
+    color: var(--ink-faint);
+}
+.feature:hover h2 {
+    color: var(--water);
+}
+
+.older {
+    list-style: none;
+    margin-top: clamp(26px, 3vw, 38px);
+    border-top: 1px solid var(--mist);
+}
+.older li {
+    border-bottom: 1px solid var(--mist);
+}
+.older a {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 16px;
+    padding: 15px 0 17px;
+}
+.older-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+}
+.older-meta {
+    font-size: 14px;
+    color: var(--ink-faint);
+}
+.older a:hover .older-title {
+    color: var(--water);
+}
+
+/* The dark foot of the page is one field, not two blocks: the question on the left, the
+   answer box on the right, and the lake coming up underneath the closing links. */
+.ask-band {
+    background: var(--pine);
+    color: #e7edea;
+    padding: calc(var(--band) * 0.82) 0 calc(var(--band) * 0.6);
+}
+.ask-inner {
+    width: var(--page);
+    margin: 0 auto;
+    display: grid;
+    gap: clamp(26px, 4vw, 44px);
+}
+@media (min-width: 900px) {
+    .ask-inner {
+        grid-template-columns: 0.8fr 1.2fr;
+        gap: clamp(48px, 6vw, 88px);
+        align-items: start;
+    }
+}
+.ask-inner h2 {
+    font-size: clamp(25px, 2.9vw, 34px);
+    color: #eef3f1;
+}
+.ask-lede {
+    margin-top: 12px;
+    max-width: 42ch;
+    font-size: 15.5px;
+    color: #9fb3ad;
+}
+
+.site-foot {
+    position: relative;
+    overflow: hidden;
+    background: var(--pine);
+    color: #e7edea;
+}
+.site-foot img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 26%;
+    opacity: 0.72;
+}
+/* the photograph emerges at the foot rather than sitting behind the text */
+.site-foot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        var(--pine) 0%,
+        rgba(30, 47, 43, 0.9) 28%,
+        rgba(30, 47, 43, 0.58) 64%,
+        rgba(30, 47, 43, 0.16) 100%
+    );
+}
+.foot-inner {
+    position: relative;
+    z-index: 1;
+    width: var(--page);
+    margin: 0 auto;
+    padding: 34px 0 clamp(120px, 15vw, 210px);
+    display: grid;
+    gap: 28px;
+    border-top: 1px solid rgba(231, 237, 234, 0.14);
+}
+@media (min-width: 760px) {
+    .foot-inner {
+        grid-template-columns: 1fr auto;
+        gap: 40px clamp(40px, 6vw, 96px);
+        align-items: start;
+    }
+}
+.foot-left {
+    display: grid;
+    gap: clamp(26px, 3vw, 38px);
+    justify-items: start;
+}
+.foot-mark {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+.foot-mark img {
+    position: static;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    opacity: 1;
+    object-fit: cover;
+    flex: none;
+}
+.foot-name {
+    font-family: var(--font-display);
+    font-size: 20px;
+}
+.foot-line {
+    margin-top: 1px;
+    font-size: 14.5px;
+    color: #9fb3ad;
+}
+.foot-cols {
+    display: flex;
+    gap: clamp(40px, 6vw, 84px);
+}
+.foot-cols div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font-size: 15px;
+}
+.foot-label {
+    font-size: 13px;
+    color: #76918a;
+}
+.foot-cols a {
+    color: #c3d2cd;
+    width: fit-content;
+}
+.foot-cols a:hover {
+    color: #e7edea;
+}
+.foot-mail {
+    font-family: var(--font-display);
+    font-size: clamp(19px, 2.2vw, 25px);
+}
+.foot-mail a {
+    color: #cfdcd7;
+    border-bottom: 1px solid rgba(231, 237, 234, 0.28);
+    padding-bottom: 3px;
+}
+.foot-mail a:hover {
+    color: #fff;
+    border-bottom-color: #fff;
+}

@@ -54,7 +54,12 @@ function AnswerText({ text }) {
                 blocks.push(
                     <ul key={key}>
                         {lines.map((l, k) => (
-                            <li key={k}>{inline(l.replace(/^\s*[-*] /, ""), `${key}-${k}`)}</li>
+                            <li key={k}>
+                                {inline(
+                                    l.replace(/^\s*[-*] /, ""),
+                                    `${key}-${k}`
+                                )}
+                            </li>
                         ))}
                     </ul>
                 );
@@ -62,7 +67,12 @@ function AnswerText({ text }) {
                 blocks.push(
                     <ol key={key}>
                         {lines.map((l, k) => (
-                            <li key={k}>{inline(l.replace(/^\s*\d+\. /, ""), `${key}-${k}`)}</li>
+                            <li key={k}>
+                                {inline(
+                                    l.replace(/^\s*\d+\. /, ""),
+                                    `${key}-${k}`
+                                )}
+                            </li>
                         ))}
                     </ol>
                 );

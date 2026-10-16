@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>One tree, three formats</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+    /* The same content drawn three times, as a plate of specimens over the fog the rest of
+       the site is photographed in. The ink language matches the figures inside the post:
+       hairlines, a measured rule under each frame, registration ticks at the corners. */
+    * { margin: 0; box-sizing: border-box; }
+    html, body { background: #e9ecea; }
+    .sheet {
+        position: relative;
+        width: var(--w);
+        height: var(--h);
+        overflow: hidden;
+        background: #dfe4e2;
+    }
+    .sheet img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 38%;
+        filter: saturate(0.72) contrast(1);
+    }
+    /* the photograph stays visible at the top and gives way to paper where the ink runs */
+    .wash {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(233, 236, 234, 0.04) 0%,
+            rgba(233, 236, 234, 0.36) 30%,
+            rgba(233, 236, 234, 0.72) 58%,
+            rgba(233, 236, 234, 0.82) 100%
+        );
+    }
+    svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .ink { fill: none; stroke: #1b2522; stroke-width: 1.3; }
+    .ink.thin { stroke-width: 1; }
+    .mist { fill: none; stroke: #7e8d88; stroke-width: 1; }
+    .mist.dash { stroke-dasharray: 5 4; }
+    .water { fill: none; stroke: #4e7872; stroke-width: 1.3; }
+    .fillbox { fill: rgba(27, 37, 34, 0.08); stroke: none; }
+    .tick { stroke: #46544f; stroke-width: 1.1; }
+    text {
+        font-family: "Instrument Sans", system-ui, sans-serif;
+        font-size: 12px;
+        fill: #68756f;
+    }
+    text.name { font-family: "Newsreader", Georgia, serif; font-size: 18px; fill: #1b2522; }
+</style>
+</head>
+<body>
+<div class="sheet">
+    <img src="base-ridge.jpg" alt="" />
+    <div class="wash"></div>
+    <svg preserveAspectRatio="none" id="plate"></svg>
+</div>
+<script>
+    // One artifact at the three profiles the engine is handed: a deck at 1280 by 720, a
+    // document column 816 points wide, and a site that fills whatever width it is given.
+    const S = document.getElementById("plate");
+    const sheet = document.querySelector(".sheet");
+    // the renderer asks for a size in the hash, so the plate is laid out for the shape it
+    // will be cut to rather than stretched into it afterwards
+    const [PW, PH] = (location.hash.slice(1) || "2000x769").split("x").map(Number);
+    sheet.style.setProperty("--w", `${PW}px`);
+    sheet.style.setProperty("--h", `${PH}px`);
+    const wide = PW / PH > 2;
+    const VB = wide ? [1000, 384] : [1000, 667];
+    S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+    const ns = "http://www.w3.org/2000/svg";
+    const el = (name, attrs, text) => {
+        const n = document.createElementNS(ns, name);
+        for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+        if (text !== undefined) n.textContent = text;
+        S.appendChild(n);
+        return n;
+    };
+    const rect = (x, y, w, h, cls) => el("rect", { x, y, width: w, height: h, class: cls });
+    const line = (x1, y1, x2, y2, cls) => el("line", { x1, y1, x2, y2, class: cls });
+    const lines = (x, y, w, n, gap, cls) => {
+        for (let i = 0; i < n; i += 1) {
+            line(x, y + i * gap, x + w - (i % 4 === 3 ? w * 0.22 : 0), y + i * gap, cls);
+        }
+    };
+    // a frame's own measured rule, so the three can be compared at a glance
+    const rule = (x, y, w, name, label) => {
+        line(x, y, x + w, y, "tick");
+        for (let i = 0; i <= 4; i += 1) {
+            const t = x + (w / 4) * i;
+            line(t, y - (i % 4 === 0 ? 6 : 4), t, y, "tick");
+        }
+        el("text", { x: x + w / 2, y: y + 20, "text-anchor": "middle", class: "name" }, name);
+        el("text", { x: x + w / 2, y: y + 38, "text-anchor": "middle" }, label);
+    };
+
+    // the deck: a title band, a column of text and a row of cells
+    const D = wide
+        ? { x: 96, y: 108, w: 300, h: 169 }
+        : { x: 72, y: 252, w: 372, h: 209 };
+    rect(D.x, D.y, D.w, D.h, "ink");
+    rect(D.x + 18, D.y + 18, D.w - 36, 26, "fillbox");
+    rect(D.x + 18, D.y + 18, D.w - 36, 26, "ink thin");
+    const cw = (D.w - 36 - 14) / 2;
+    lines(D.x + 18, D.y + 62, cw, 6, 13, "mist");
+    rect(D.x + 18 + cw + 14, D.y + 56, cw, 44, "ink thin");
+    for (let i = 0; i < 3; i += 1) {
+        const w = (cw - 12) / 3;
+        rect(D.x + 18 + cw + 14 + i * (w + 6), D.y + 110, w, 38, "ink thin");
+    }
+    rule(D.x, D.y + D.h + 22, D.w, "deck", "1280 × 720");
+
+    // the document: the same blocks in one column, continuous rather than paged
+    const C = wide
+        ? { x: 452, y: 60, w: 148, h: 262 }
+        : { x: 496, y: 188, w: 170, h: 268 };
+    rect(C.x, C.y, C.w, C.h, "ink");
+    rect(C.x + 14, C.y + 16, C.w - 28, 18, "fillbox");
+    rect(C.x + 14, C.y + 16, C.w - 28, 18, "ink thin");
+    lines(C.x + 14, C.y + 52, C.w - 28, 6, 13, "mist");
+    rect(C.x + 14, C.y + 140, C.w - 28, 38, "ink thin");
+    lines(C.x + 14, C.y + 196, C.w - 28, 6, 13, "mist");
+    rule(C.x, C.y + C.h + 22, C.w, "document", "816 wide, continuous");
+
+    // the site: the same blocks again, in a frame whose width is an argument
+    const W = wide
+        ? { x: 656, y: 108, w: 268, h: 169 }
+        : { x: 716, y: 252, w: 212, h: 209 };
+    rect(W.x, W.y, W.w, W.h, "mist dash");
+    rect(W.x + 16, W.y + 16, W.w - 32, 24, "fillbox");
+    rect(W.x + 16, W.y + 16, W.w - 32, 24, "ink thin");
+    lines(W.x + 16, W.y + 56, (W.w - 32) * 0.56, 5, 13, "mist");
+    rect(W.x + 16 + (W.w - 32) * 0.62, W.y + 52, (W.w - 32) * 0.38, 46, "ink thin");
+    for (let i = 0; i < 3; i += 1) {
+        const w = (W.w - 32 - 16) / 3;
+        rect(W.x + 16 + i * (w + 8), W.y + 112, w, 38, "ink thin");
+    }
+    // the width is whatever it is handed, so the rule has arrows instead of a number
+    const ay = W.y + W.h + 22;
+    line(W.x - 18, ay, W.x + W.w + 18, ay, "water");
+    for (const [x, s] of [[W.x - 18, 1], [W.x + W.w + 18, -1]]) {
+        line(x, ay, x + 7 * s, ay - 4, "water");
+        line(x, ay, x + 7 * s, ay + 4, "water");
+    }
+    el("text", { x: W.x + W.w / 2, y: ay + 20, "text-anchor": "middle", class: "name" }, "site");
+    el("text", { x: W.x + W.w / 2, y: ay + 38, "text-anchor": "middle" }, "whatever width it is given");
+
+    // one tree above the three: a root, and a branch down to the top edge of each frame
+    const root = { x: 500, y: wide ? 22 : 96 };
+    el("circle", { cx: root.x, cy: root.y, r: 3.4, fill: "#1b2522" });
+    for (const f of [D, C, W]) {
+        const t = f.x + f.w / 2;
+        el("path", {
+            d: `M${root.x} ${root.y + 5} C ${root.x} ${root.y + 30}, ${t} ${f.y - 48}, ${t} ${f.y - 10}`,
+            class: "mist",
+        });
+    }
+
+    // registration ticks at the corners of the plate
+    const R = 18;
+        const B = VB[1] - 26;
+    for (const [x, y, sx, sy] of [[30, 26, 1, 1], [970, 26, -1, 1], [30, B, 1, -1], [970, B, -1, -1]]) {
+        line(x, y, x + R * sx, y, "ink thin");
+        line(x, y, x, y + R * sy, "ink thin");
+    }
+</script>
+</body>
+</html>

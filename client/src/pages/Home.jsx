@@ -1,124 +1,163 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import WeekSection from "../components/WeekSection";
+import { Link } from "react-router-dom";
+import { POSTS, readableDate } from "../data/writing";
+import Ask from "../components/Ask";
+import PageArt from "../components/PageArt";
+import "./Home.css";
 
-const INITIAL_WEEKS = 3; // Load 3 weeks initially (all cached, faster load)
-const LOAD_MORE_COUNT = 3; // Load 3 more weeks when scrolling
+const EMAIL = "naib.baghirov@gmail.com";
+// the newest piece carries the photograph; anything after it is a line
+const [feature, ...older] = POSTS.slice(0, 3);
 
 function Home() {
-    const [weeks, setWeeks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [error, setError] = useState(null);
-    const [hasMore, setHasMore] = useState(true);
-    const observerTarget = useRef(null);
-
-    useEffect(() => {
-        fetchWeeks(0, INITIAL_WEEKS);
-    }, []);
-
-    // Infinite scroll observer
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && hasMore && !loadingMore) {
-                    loadMoreWeeks();
-                }
-            },
-            { threshold: 0.1 }
-        );
-
-        if (observerTarget.current) {
-            observer.observe(observerTarget.current);
-        }
-
-        return () => {
-            if (observerTarget.current) {
-                observer.unobserve(observerTarget.current);
-            }
-        };
-    }, [hasMore, loadingMore, weeks]);
-
-    const fetchWeeks = async (offset, limit) => {
-        try {
-            const response = await fetch(`/api/weeks?offset=${offset}&limit=${limit}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch weeks");
-            }
-            const data = await response.json();
-            setWeeks(data.weeks);
-            setHasMore(data.weeks.length === limit); // If we got fewer weeks, no more to load
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const loadMoreWeeks = useCallback(async () => {
-        if (loadingMore || !hasMore) return;
-
-        setLoadingMore(true);
-        try {
-            const offset = weeks.length;
-            const response = await fetch(`/api/weeks?offset=${offset}&limit=${LOAD_MORE_COUNT}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch more weeks");
-            }
-            const data = await response.json();
-
-            if (data.weeks.length === 0) {
-                setHasMore(false);
-            } else {
-                setWeeks((prev) => [...prev, ...data.weeks]);
-                setHasMore(data.weeks.length === LOAD_MORE_COUNT);
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoadingMore(false);
-        }
-    }, [weeks, loadingMore, hasMore]);
-
-    if (loading) {
-        return (
-            <div className="container">
-                <p>Loading...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="container">
-                <p>Error: {error}</p>
-            </div>
-        );
-    }
-
     return (
-        <div className="container">
-            <h1 className="week-title">This Week</h1>
-            {weeks.map((week, index) => (
-                <WeekSection
-                    key={index}
-                    week={week}
-                    isFirstWeek={index === 0}
-                />
-            ))}
-
-            {/* Infinite scroll trigger */}
-            {hasMore && (
-                <div ref={observerTarget} style={{ padding: "20px", textAlign: "center" }}>
-                    {loadingMore && <p>Loading more weeks...</p>}
+        <>
+            <header className="hero">
+                <picture>
+                    <source
+                        media="(max-width: 700px)"
+                        srcSet="/img/hero-tall.webp"
+                    />
+                    <img src="/img/hero.webp" alt="" fetchPriority="high" />
+                </picture>
+                <div className="hero-copy">
+                    <h1>Naib Baghirov</h1>
+                    <p>
+                        I build software products and run them. The writing here
+                        is about how they work and what keeping them running
+                        involves.
+                    </p>
                 </div>
-            )}
+            </header>
 
-            {!hasMore && weeks.length > 0 && (
-                <div style={{ padding: "20px", textAlign: "center", opacity: 0.5 }}>
-                    <p>You've reached the end</p>
+            <section className="entry" aria-label="Where to go">
+                <PageArt kind="fern" side="left" top={210} />
+                <div className="entry-side">
+                    <p className="entry-note">
+                        Each of these is run by one person, so the work includes
+                        the code, the servers, billing, support and sales. The
+                        writing here is mostly about the parts that are not
+                        code.
+                    </p>
+
+                    <nav className="doors" aria-label="Sections">
+                        <Link className="door" to="/blogs">
+                            <h2>Writing</h2>
+                            <p>
+                                How the things underneath are built, in detail.
+                            </p>
+                        </Link>
+                        <Link className="door" to="/projects">
+                            <h2>Projects</h2>
+                            <p>
+                                What each product is, who uses it, and where it
+                                stands.
+                            </p>
+                        </Link>
+                        <Link className="door" to="/about">
+                            <h2>Résumé</h2>
+                            <p>The working history, as a page or a PDF.</p>
+                        </Link>
+                        <a className="door" href={`mailto:${EMAIL}`}>
+                            <h2>Contact</h2>
+                            <p>{EMAIL}</p>
+                        </a>
+                    </nav>
                 </div>
-            )}
-        </div>
+
+                {feature && (
+                    <div className="reading">
+                        <Link className="feature" to={`/blogs/${feature.slug}`}>
+                            {feature.card && <img src={feature.card} alt="" />}
+                            <h2>{feature.title}</h2>
+                            {feature.summary && (
+                                <p className="feature-sum">{feature.summary}</p>
+                            )}
+                            <p className="feature-meta">
+                                {feature.about} · {readableDate(feature.date)}
+                            </p>
+                        </Link>
+                        {older.length > 0 && (
+                            <ul className="older">
+                                {older.map((post) => (
+                                    <li key={post.slug}>
+                                        <Link to={`/blogs/${post.slug}`}>
+                                            <span className="older-title">
+                                                {post.title}
+                                            </span>
+                                            <span className="older-meta">
+                                                {post.about} ·{" "}
+                                                {readableDate(post.date)}
+                                            </span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                )}
+            </section>
+
+            <section className="ask-band" aria-labelledby="ask-title">
+                <div className="ask-inner">
+                    <div className="ask-head">
+                        <h2 id="ask-title">Ask about the work</h2>
+                        <p className="ask-lede">
+                            An agent with read access to the repositories and
+                            their history. It answers from the code rather than
+                            from a summary, so it can say how something is built
+                            and when it changed.
+                        </p>
+                    </div>
+                    <Ask />
+                </div>
+            </section>
+
+            <footer className="site-foot">
+                <img src="/img/foot.webp" alt="" loading="lazy" />
+                <div className="foot-inner">
+                    <div className="foot-left">
+                        <div className="foot-mark">
+                            <img src="/img/portrait.webp" alt="" />
+                            <div>
+                                <p className="foot-name">Naib Baghirov</p>
+                                <p className="foot-line">
+                                    Five products, built and run from here.
+                                </p>
+                            </div>
+                        </div>
+                        <p className="foot-mail">
+                            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                        </p>
+                    </div>
+
+                    <nav className="foot-cols" aria-label="Site">
+                        <div>
+                            <p className="foot-label">Pages</p>
+                            <Link to="/blogs">Writing</Link>
+                            <Link to="/projects">Projects</Link>
+                            <Link to="/about">Résumé</Link>
+                        </div>
+                        <div>
+                            <p className="foot-label">Elsewhere</p>
+                            <a
+                                href="https://www.linkedin.com/in/naibbaghirov/"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                LinkedIn
+                            </a>
+                            <a
+                                href="https://github.com/nbaghiro"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                GitHub
+                            </a>
+                        </div>
+                    </nav>
+                </div>
+            </footer>
+        </>
     );
 }
 
