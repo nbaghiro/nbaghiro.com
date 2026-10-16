@@ -32,14 +32,21 @@ function Projects() {
                 ))}
             </ul>
 
-            <p className="also">
-                Also built, and still running:{" "}
-                {ALSO.map((a) => (
-                    <span key={a.name}>
-                        <b>{a.name}</b>, {a.note}.
-                    </span>
+            <h2 className="also-head">Also built</h2>
+            <ul className="rows">
+                {ALSO.map((p) => (
+                    <li key={p.id}>
+                        <div className="row">
+                            <h3>{p.name}</h3>
+                            <p className="row-note">{p.note}</p>
+                            <p className="row-side">
+                                <span className="state">{p.state}</span>
+                                <span className="detail">{p.detail}</span>
+                            </p>
+                        </div>
+                    </li>
                 ))}
-            </p>
+            </ul>
 
             <figure className="quote">
                 <img src="/img/band.webp" alt="" />

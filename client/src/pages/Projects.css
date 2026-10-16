@@ -58,15 +58,19 @@
     color: var(--water);
 }
 
-.also {
-    margin-top: 26px;
-    color: var(--ink-faint);
-    font-size: 15px;
-    max-width: 68ch;
-}
-.also b {
-    font-weight: 600;
+.also-head {
+    margin-top: clamp(40px, 5vw, 64px);
+    font-size: clamp(20px, 2.1vw, 25px);
     color: var(--ink-soft);
+}
+.also-head + .rows {
+    margin-top: 18px;
+}
+.rows .row h3 {
+    font-size: clamp(22px, 2.6vw, 30px);
+}
+.rows li:has(.row:not(a)) .row-note {
+    color: var(--ink-faint);
 }
 
 /* the one photograph on this page, full-bleed out of the text column */

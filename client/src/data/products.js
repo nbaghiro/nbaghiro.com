@@ -46,14 +46,20 @@ export const PRODUCTS = [
     },
 ];
 
-/** Built earlier, still running, not the ones I write about. */
+/** Built earlier and still running, kept off the public posts but not hidden. */
 export const ALSO = [
     {
+        id: "branchpad",
         name: "BranchPad",
-        note: "a macOS workbench for running coding agents across stacked git worktrees",
+        state: "Desktop app",
+        note: "A macOS workbench for running terminals and coding agents across a stack of git worktrees, where committing low in the stack restacks the layers above it.",
+        detail: "Built for my own work, and still what I use.",
     },
     {
+        id: "sourcewell",
         name: "Sourcewell",
-        note: "a reader that turns long source material into something you can follow",
+        state: "In development",
+        note: "An agent platform for outbound work, starting with recruiting: the sequence, the replies and the record of who was contacted.",
+        detail: "The one furthest from finished.",
     },
 ];
