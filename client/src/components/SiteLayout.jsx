@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigationType } from "react-router-dom";
 import { useFavicon } from "../favicon";
 import "./SiteLayout.css";
 
 // The header floats over the hero in white, then takes the page ground once the hero has
 // scrolled past. Anything other than the landing page starts solid.
 function SiteLayout() {
-    const { pathname } = useLocation();
+    const { pathname, hash } = useLocation();
     const overImage = pathname === "/";
     useFavicon("photo");
+
+    // A client-side navigation keeps the old scroll position, which lands you halfway down a
+    // piece you have just opened. Going back keeps its place, and an anchor decides its own.
+    const navigation = useNavigationType();
+    useEffect(() => {
+        if (hash || navigation === "POP") return;
+        window.scrollTo(0, 0);
+    }, [pathname, hash, navigation]);
     const [solid, setSolid] = useState(!overImage);
 
     useEffect(() => {
