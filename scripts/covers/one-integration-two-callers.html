@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>One integration, two callers</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* Two callers arriving at one function, drawn over the same fog the rest of the site is
+       photographed in, in the ink language the post's figures use: hairlines, registration
+       ticks at the corners, a water-coloured accent for the one thing that varies. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 46%;
+                filter: saturate(0.68) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.06) 0%,
+                    rgba(233, 236, 234, 0.4) 28%,
+                    rgba(233, 236, 234, 0.74) 56%,
+                    rgba(233, 236, 234, 0.84) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .mist.dash {
+                stroke-dasharray: 5 4;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .head {
+                fill: #4e7872;
+                stroke: none;
+            }
+            .fillbox {
+                fill: rgba(27, 37, 34, 0.08);
+                stroke: none;
+            }
+            .solid {
+                fill: rgba(27, 37, 34, 0.18);
+                stroke: none;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.mono {
+                font-size: 11.5px;
+                fill: #46544f;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="base-lake.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // A node on one side, a model's tool call on the other, both arriving at one operation
+            // that calls the service once.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, class: cls });
+            const line = (x1, y1, x2, y2, cls) =>
+                el("line", { x1, y1, x2, y2, class: cls });
+            const defs = document.createElementNS(ns, "defs");
+            defs.innerHTML =
+                '<marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">' +
+                '<path d="M0 0 L8 4 L0 8" class="head"/></marker>';
+            S.appendChild(defs);
+            const arrow = (d) =>
+                el("path", { d, class: "water", "marker-end": "url(#a)" });
+
+            // the two callers
+            const cw = wide ? 250 : 300;
+            const A = wide ? { x: 70, y: 74 } : { x: 60, y: 120 };
+            const B = wide ? { x: 680, y: 74 } : { x: 640, y: 120 };
+            const card = (p, title, note, dashed, rows) => {
+                const h = 96;
+                rect(p.x, p.y, cw, h, "fillbox");
+                rect(p.x, p.y, cw, h, dashed ? "mist dash" : "ink");
+                el("text", { x: p.x, y: p.y - 22, class: "name" }, title);
+                el("text", { x: p.x, y: p.y - 7 }, note);
+                rows.forEach((r, i) => {
+                    el(
+                        "text",
+                        { x: p.x + 14, y: p.y + 26 + i * 22, class: "mono" },
+                        r[0]
+                    );
+                    rect(p.x + 110, p.y + 14 + i * 22, cw - 126, 16, "solid");
+                    el(
+                        "text",
+                        { x: p.x + 118, y: p.y + 26 + i * 22, class: "mono" },
+                        r[1]
+                    );
+                });
+                return { x: p.x + cw / 2, y: p.y + h };
+            };
+            const a = card(A, "a node", "a person filled this in", false, [
+                ["channel", "#support"],
+                ["text", "the reply"],
+                ["thread_ts", "1760…"],
+            ]);
+            const b = card(B, "a tool call", "the model wrote this", true, [
+                ["channel", "#support"],
+                ["text", "the reply"],
+            ]);
+
+            // the one function they both reach
+            const op = {
+                x: wide ? 350 : 300,
+                y: wide ? 262 : 420,
+                w: 300,
+                h: 56,
+            };
+            rect(op.x, op.y, op.w, op.h, "fillbox");
+            rect(op.x, op.y, op.w, op.h, "ink");
+            el(
+                "text",
+                { x: op.x + 16, y: op.y + 24, class: "mono" },
+                "executeSendMessage(client, params)"
+            );
+            el(
+                "text",
+                { x: op.x + 16, y: op.y + 42 },
+                "one function, one set of retries"
+            );
+
+            const mid = op.y - 34;
+            for (const p of [a, b]) {
+                line(p.x, p.y + 8, p.x, mid, "water");
+                line(p.x, mid, op.x + op.w / 2, mid, "water");
+            }
+            arrow(`M${op.x + op.w / 2} ${mid} V${op.y - 6}`);
+
+            // registration ticks
+            const R = 18;
+            const B2 = VB[1] - 26;
+            for (const [x, y, sx, sy] of [
+                [30, 26, 1, 1],
+                [970, 26, -1, 1],
+                [30, B2, 1, -1],
+                [970, B2, -1, -1],
+            ]) {
+                line(x, y, x + R * sx, y, "ink thin");
+                line(x, y, x, y + R * sy, "ink thin");
+            }
+        </script>
+    </body>
+</html>

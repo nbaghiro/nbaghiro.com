@@ -129,6 +129,18 @@
     fill: var(--ink-soft);
 }
 
+/* the counted things beside a drawing, and the head on a water-coloured arrow */
+.fig .fig-count {
+    font-family: var(--font-display);
+    font-size: 26px;
+    fill: var(--ink);
+    letter-spacing: -0.01em;
+}
+.fig-head {
+    fill: var(--water);
+    stroke: none;
+}
+
 /* The one figure that moves. Its resting state is its finished state, so the animation only
    ever delays what is already drawn: a reader who arrives with motion turned off, or who
    never scrolls this far, sees the whole diagram. */

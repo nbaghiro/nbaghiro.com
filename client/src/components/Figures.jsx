@@ -1734,6 +1734,487 @@ export function ReuseSettle() {
     );
 }
 
+// Break a note into lines of about `max` characters, since SVG text does not wrap.
+function wrap(text, max) {
+    const out = [];
+    let line = "";
+    for (const word of text.split(" ")) {
+        if (line && (line + " " + word).length > max) {
+            out.push(line);
+            line = word;
+        } else {
+            line = line ? line + " " + word : word;
+        }
+    }
+    if (line) out.push(line);
+    return out;
+}
+
+/* ---- one integration, two callers ---- */
+
+const CALLER_GROUND = {
+    wide: [{ y: 268, amp: 9 }],
+    narrow: [{ y: 628, amp: 8 }],
+};
+
+// A card with a title, a quiet second line and some rows of content under it.
+function Card({ x, y, w, h, title, note, children, dashed, d }) {
+    return (
+        <g>
+            <rect
+                className="fig-wash"
+                x={x}
+                y={y}
+                width={w}
+                height={h}
+                data-anim="in"
+                style={at(d)}
+            />
+            <rect
+                className={dashed ? "fig-mist dash" : "fig-ink"}
+                x={x}
+                y={y}
+                width={w}
+                height={h}
+                data-anim="in"
+                style={at(d)}
+            />
+            <text
+                className="fig-title sm"
+                x={x}
+                y={y - 20}
+                data-anim="in"
+                style={at(d)}
+            >
+                {title}
+            </text>
+            <text
+                className="fig-sub"
+                x={x}
+                y={y - 5}
+                data-anim="in"
+                style={at(d)}
+            >
+                {note}
+            </text>
+            <g data-anim="in" style={at(d)}>
+                {children}
+            </g>
+        </g>
+    );
+}
+
+// An arrow from one point to another, drawn in the water colour. It fades rather than
+// draws: the draw animation keeps its dash array, which breaks a path longer than 100 units
+// into dashes once it has finished.
+function Arrow({ d: path, delay }) {
+    return (
+        <path
+            className="fig-water"
+            d={path}
+            markerEnd="url(#fig-arrow)"
+            data-anim="in"
+            style={at(delay)}
+        />
+    );
+}
+
+const FIELDS = [
+    { k: "channel", v: "#support" },
+    { k: "text", v: "the reply" },
+    { k: "thread_ts", v: "1760…" },
+];
+
+export function TwoCallers() {
+    const narrow = useNarrow();
+    const [host, shown] = useReveal();
+    const [run, setRun] = useState(0);
+    const box = narrow ? { w: NARROW, h: 680 } : { w: WIDE, h: 292 };
+    const cw = narrow ? NARROW : 286;
+    const node = { x: 0, y: narrow ? 42 : 46, w: cw, h: 108 };
+    const tool = narrow
+        ? { x: 0, y: 252, w: cw, h: 96 }
+        : { x: box.w - cw, y: 46, w: cw, h: 108 };
+    const op = narrow
+        ? { x: 0, y: 470, w: cw, h: 86 }
+        : { x: Math.round((box.w - 300) / 2), y: 214, w: 300, h: 60 };
+    return (
+        <div className="fig-host" ref={host}>
+            <svg
+                key={run}
+                className={shown ? "fig playing" : "fig"}
+                viewBox={frame(box.w, box.h)}
+                role="img"
+                aria-label="A workflow node and a model's tool call arriving at the same operation function, which then calls the service once."
+            >
+                <defs>
+                    <marker
+                        id="fig-arrow"
+                        viewBox="0 0 8 8"
+                        refX="7"
+                        refY="4"
+                        markerWidth="7"
+                        markerHeight="7"
+                        orient="auto"
+                    >
+                        <path d="M0 0 L8 4 L0 8" className="fig-head" />
+                    </marker>
+                </defs>
+                <Plate
+                    w={box.w}
+                    h={box.h}
+                    ground={CALLER_GROUND[narrow ? "narrow" : "wide"]}
+                >
+                    <Card
+                        x={node.x}
+                        y={node.y}
+                        w={node.w}
+                        h={node.h}
+                        title="a node on the canvas"
+                        note="a person filled this in"
+                        d={0}
+                    >
+                        {FIELDS.map((f, i) => (
+                            <g key={f.k}>
+                                <text
+                                    className="fig-row"
+                                    x={node.x + 14}
+                                    y={node.y + 28 + i * 27}
+                                >
+                                    {f.k}
+                                </text>
+                                <rect
+                                    className="fig-chip"
+                                    x={node.x + 118}
+                                    y={node.y + 15 + i * 27}
+                                    width={node.w - 132}
+                                    height="19"
+                                />
+                                <text
+                                    className="fig-sub"
+                                    x={node.x + 126}
+                                    y={node.y + 28 + i * 27}
+                                >
+                                    {f.v}
+                                </text>
+                            </g>
+                        ))}
+                    </Card>
+
+                    <Card
+                        x={tool.x}
+                        y={tool.y}
+                        w={tool.w}
+                        h={tool.h}
+                        title="a tool call from a model"
+                        note="the model wrote this"
+                        dashed
+                        d={0.9}
+                    >
+                        <text
+                            className="fig-row"
+                            x={tool.x + 14}
+                            y={tool.y + 28}
+                        >
+                            slack_sendMessage
+                        </text>
+                        {FIELDS.slice(0, 2).map((f, i) => (
+                            <text
+                                key={f.k}
+                                className="fig-sub"
+                                x={tool.x + 26}
+                                y={tool.y + 54 + i * 20}
+                            >
+                                {f.k}: {f.v}
+                            </text>
+                        ))}
+                    </Card>
+
+                    <Arrow
+                        delay={0.5}
+                        d={
+                            narrow
+                                ? `M${node.w / 2} ${node.y + node.h + 6} V${tool.y - 26}`
+                                : `M${node.w / 2} ${node.y + node.h + 6} V${op.y - 26} H${op.x + op.w / 2} V${op.y - 6}`
+                        }
+                    />
+                    <Arrow
+                        delay={1.5}
+                        d={
+                            narrow
+                                ? `M${tool.x + tool.w / 2} ${tool.y + tool.h + 6} V${op.y - 6}`
+                                : `M${tool.x + tool.w / 2} ${tool.y + tool.h + 6} V${op.y - 26} H${op.x + op.w / 2} V${op.y - 6}`
+                        }
+                    />
+
+                    <rect
+                        className="fig-wash strong"
+                        x={op.x}
+                        y={op.y}
+                        width={op.w}
+                        height={op.h}
+                        data-anim="pop"
+                        style={at(1.95)}
+                    />
+                    <rect
+                        className="fig-ink"
+                        x={op.x}
+                        y={op.y}
+                        width={op.w}
+                        height={op.h}
+                        data-anim="pop"
+                        style={at(1.95)}
+                    />
+                    <text
+                        className="fig-row"
+                        x={op.x + 16}
+                        y={op.y + 25}
+                        data-anim="in"
+                        style={at(2.1)}
+                    >
+                        executeSendMessage(client, params)
+                    </text>
+                    <text
+                        className="fig-sub"
+                        x={op.x + 16}
+                        y={op.y + 45}
+                        data-anim="in"
+                        style={at(2.1)}
+                    >
+                        one function, one set of retries
+                    </text>
+                </Plate>
+            </svg>
+            <button
+                type="button"
+                className="fig-replay"
+                onClick={() => {
+                    setRun((n) => n + 1);
+                }}
+            >
+                Play the two calls again
+            </button>
+        </div>
+    );
+}
+
+/* ---- one definition, three readers ---- */
+
+const READERS = [
+    {
+        t: "the canvas",
+        h: "the node's form",
+        p: "fields and their types, so a new parameter needs no UI work",
+    },
+    {
+        t: "the engine",
+        h: "the validation",
+        p: "the same schema parses the parameters before the call",
+    },
+    {
+        t: "the model",
+        h: "the tool spec",
+        p: "converted to JSON Schema and handed over as the tool's input",
+    },
+];
+
+export function OneDefinition() {
+    const narrow = useNarrow();
+    const box = narrow ? { w: NARROW, h: 620 } : { w: WIDE, h: 318 };
+    const def = narrow
+        ? { x: 0, y: 44, w: NARROW, h: 92 }
+        : { x: Math.round((box.w - 330) / 2), y: 40, w: 330, h: 92 };
+    const cw = narrow ? NARROW : 236;
+    const top = narrow ? 212 : 206;
+    const gap = narrow ? 136 : 0;
+    return (
+        <svg
+            className="fig"
+            viewBox={frame(box.w, box.h)}
+            role="img"
+            aria-label="One operation definition read by three things: the node's form, the engine's validation, and the tool spec given to the model."
+        >
+            <Plate
+                w={box.w}
+                h={box.h}
+                ground={[{ y: narrow ? 586 : 292, amp: 8 }]}
+            >
+                <text className="fig-title sm" x={def.x} y={def.y - 20}>
+                    one OperationDefinition
+                </text>
+                <text className="fig-sub" x={def.x} y={def.y - 5}>
+                    slack · sendMessage
+                </text>
+                <rect
+                    className="fig-wash strong"
+                    x={def.x}
+                    y={def.y}
+                    width={def.w}
+                    height={def.h}
+                />
+                <rect
+                    className="fig-ink"
+                    x={def.x}
+                    y={def.y}
+                    width={def.w}
+                    height={def.h}
+                />
+                <rect
+                    className="fig-chip"
+                    x={def.x + 12}
+                    y={def.y + 44}
+                    width={def.w - 24}
+                    height="26"
+                />
+                {["id, name, description", "inputSchema: z.object({ … })"].map(
+                    (line, i) => (
+                        <text
+                            key={line}
+                            className={i ? "fig-row" : "fig-sub"}
+                            x={def.x + 16}
+                            y={def.y + 32 + i * 30}
+                        >
+                            {line}
+                        </text>
+                    )
+                )}
+
+                {READERS.map((r, i) => {
+                    const x = narrow ? 0 : i * (cw + 56);
+                    const y = top + i * gap;
+                    return (
+                        <g key={r.t}>
+                            <path
+                                className="fig-mist"
+                                d={
+                                    narrow
+                                        ? `M18 ${def.y + def.h + 6} V${y - 10}`
+                                        : `M${def.x + def.w / 2} ${def.y + def.h + 6} V${def.y + def.h + 30} H${x + cw / 2} V${y - 10}`
+                                }
+                            />
+                            <text className="fig-sub" x={x} y={y + 2}>
+                                {r.t}
+                            </text>
+                            <text className="fig-title sm" x={x} y={y + 24}>
+                                {r.h}
+                            </text>
+                            <text className="fig-note" x={x} y={y + 46}>
+                                {wrap(r.p, narrow ? 46 : 32).map((line, j) => (
+                                    <tspan key={line} x={x} dy={j ? 16 : 0}>
+                                        {line}
+                                    </tspan>
+                                ))}
+                            </text>
+                        </g>
+                    );
+                })}
+            </Plate>
+        </svg>
+    );
+}
+
+/* ---- the shape of a provider ---- */
+
+const PROVIDER_FILES = [
+    { f: "SlackProvider.ts", n: "both surfaces, declared", both: true },
+    { f: "client/SlackClient.ts", n: "auth, pooling, retries" },
+    { f: "operations/sendMessage.ts", n: "the work" },
+    { f: "operations/listChannels.ts", n: "the work" },
+    { f: "mcp/SlackMCPAdapter.ts", n: "46 lines of renaming", mcp: true },
+];
+
+const COUNTS = [
+    { n: "156", p: "providers, one registry line each" },
+    { n: "1,759", p: "operation files, shared by both callers" },
+    { n: "46", p: "lines in the Slack adapter" },
+];
+
+export function ProviderShape() {
+    const narrow = useNarrow();
+    const box = narrow ? { w: NARROW, h: 520 } : { w: WIDE, h: 300 };
+    const pitch = 34;
+    const top = narrow ? 50 : 56;
+    const colX = narrow ? 0 : 470;
+    const colY = narrow ? top + PROVIDER_FILES.length * pitch + 44 : top;
+    return (
+        <svg
+            className="fig"
+            viewBox={frame(box.w, box.h)}
+            role="img"
+            aria-label="The files of one provider, with the operations shared by both callers and a small adapter for the model, beside the counts across the repository."
+        >
+            <Plate
+                w={box.w}
+                h={box.h}
+                ground={[{ y: narrow ? 486 : 274, amp: 8 }]}
+            >
+                <text className="fig-title sm" x="0" y={top - 26}>
+                    providers/slack
+                </text>
+                <text className="fig-sub" x="0" y={top - 10}>
+                    one of 156, loaded when something asks for it
+                </text>
+                {PROVIDER_FILES.map((row, i) => {
+                    const y = top + i * pitch;
+                    return (
+                        <g key={row.f}>
+                            <rect
+                                className={
+                                    row.both ? "fig-wash strong" : "fig-wash"
+                                }
+                                x="0"
+                                y={y}
+                                width={narrow ? NARROW : 420}
+                                height="26"
+                            />
+                            <rect
+                                className={
+                                    row.mcp ? "fig-mist dash" : "fig-ink"
+                                }
+                                x="0"
+                                y={y}
+                                width={narrow ? NARROW : 420}
+                                height="26"
+                            />
+                            <text className="fig-row" x="12" y={y + 18}>
+                                {row.f}
+                            </text>
+                            {!narrow && (
+                                <text className="fig-sub" x="252" y={y + 18}>
+                                    {row.n}
+                                </text>
+                            )}
+                        </g>
+                    );
+                })}
+                {narrow && (
+                    <text
+                        className="fig-note"
+                        x="0"
+                        y={top + PROVIDER_FILES.length * pitch + 16}
+                    >
+                        the operations are the work; the adapter only renames
+                    </text>
+                )}
+
+                {COUNTS.map((c, i) => (
+                    <g
+                        key={c.n}
+                        transform={`translate(${colX} ${colY + i * 62})`}
+                    >
+                        <text className="fig-count" x="0" y="26">
+                            {c.n}
+                        </text>
+                        <text className="fig-note" x="0" y="44">
+                            {c.p}
+                        </text>
+                    </g>
+                ))}
+            </Plate>
+        </svg>
+    );
+}
+
 export const FIGURES = {
     "three-passes": ThreePasses,
     "three-formats": ThreeFormats,
@@ -1743,4 +2224,7 @@ export const FIGURES = {
     "five-passes": FivePasses,
     "tile-pyramid": TilePyramid,
     "reuse-settle": ReuseSettle,
+    "two-callers": TwoCallers,
+    "one-definition": OneDefinition,
+    "provider-shape": ProviderShape,
 };
