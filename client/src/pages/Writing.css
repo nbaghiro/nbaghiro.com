@@ -46,14 +46,17 @@
     color: var(--water);
 }
 
-/* one piece */
+/* one piece. The cover is a drawn plate rather than a photograph, so it is shown whole at
+   its own proportions instead of being cropped to a band. */
 .post-cover {
     display: block;
     width: 100%;
-    height: clamp(220px, 34vh, 380px);
-    object-fit: cover;
+    aspect-ratio: 2000 / 769;
+    max-height: 62vh;
+    object-fit: contain;
+    object-position: center top;
     margin-top: 68px; /* clears the fixed bar */
-    background: var(--mist);
+    background: #dfe4e2;
 }
 .post .page {
     padding-top: clamp(40px, 6vw, 76px);
