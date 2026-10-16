@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { POSTS, readableDate } from "../data/writing";
 import Ask from "../components/Ask";
+import PageArt from "../components/PageArt";
 import "./Home.css";
 
 const EMAIL = "naib.baghirov@gmail.com";
@@ -29,6 +30,7 @@ function Home() {
             </header>
 
             <section className="entry" aria-label="Where to go">
+                <PageArt kind="reflection" side="left" top={150} />
                 <div className="entry-side">
                     <p className="entry-note">
                         Each of these is run by one person, so the work includes
@@ -97,12 +99,15 @@ function Home() {
 
             <section className="ask-band" aria-labelledby="ask-title">
                 <div className="ask-inner">
-                    <h2 id="ask-title">Ask about the work</h2>
-                    <p className="ask-lede">
-                        An agent with read access to the repositories and their
-                        history. It answers from the code rather than from a
-                        summary.
-                    </p>
+                    <div className="ask-head">
+                        <h2 id="ask-title">Ask about the work</h2>
+                        <p className="ask-lede">
+                            An agent with read access to the repositories and
+                            their history. It answers from the code rather than
+                            from a summary, so it can say how something is built
+                            and when it changed.
+                        </p>
+                    </div>
                     <Ask />
                 </div>
             </section>
@@ -110,23 +115,46 @@ function Home() {
             <footer className="site-foot">
                 <img src="/img/foot.webp" alt="" loading="lazy" />
                 <div className="foot-inner">
-                    <nav className="foot-links" aria-label="Elsewhere">
-                        <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-                        <a
-                            href="https://www.linkedin.com/in/naibbaghirov/"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            LinkedIn
-                        </a>
-                        <a
-                            href="https://github.com/nbaghiro"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            GitHub
-                        </a>
-                        <Link to="/dark">The old site</Link>
+                    <div className="foot-left">
+                        <div className="foot-mark">
+                            <img src="/img/portrait.webp" alt="" />
+                            <div>
+                                <p className="foot-name">Naib Baghirov</p>
+                                <p className="foot-line">
+                                    Five products, built and run from here.
+                                </p>
+                            </div>
+                        </div>
+                        <p className="foot-mail">
+                            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                        </p>
+                    </div>
+
+                    <nav className="foot-cols" aria-label="Site">
+                        <div>
+                            <p className="foot-label">Pages</p>
+                            <Link to="/blogs">Writing</Link>
+                            <Link to="/projects">Projects</Link>
+                            <Link to="/about">Résumé</Link>
+                        </div>
+                        <div>
+                            <p className="foot-label">Elsewhere</p>
+                            <a
+                                href="https://www.linkedin.com/in/naibbaghirov/"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                LinkedIn
+                            </a>
+                            <a
+                                href="https://github.com/nbaghiro"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                GitHub
+                            </a>
+                            <Link to="/dark">The old site</Link>
+                        </div>
                     </nav>
                 </div>
             </footer>
