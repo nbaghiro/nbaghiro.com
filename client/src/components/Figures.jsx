@@ -1102,9 +1102,645 @@ export function Fragment() {
     );
 }
 
+/* ---- what the browser's compositor was holding ---- */
+
+const LAYERS = [
+    { zoom: "0.084", mb: 216 },
+    { zoom: "0.039", mb: 415 },
+    { zoom: "0.0069", mb: 540, note: "the opening view" },
+];
+const LAYER_GROUND = {
+    wide: [{ y: 286, amp: 9 }],
+    narrow: [{ y: 582, amp: 8 }],
+};
+
+// One bar per measured zoom, on one scale, with the page's own total left to the bracket
+// beside them rather than drawn at a second scale.
+function Bar({ x, base, w, mb, zoom, note, tall }) {
+    const h = Math.round((mb / 540) * tall);
+    return (
+        <g>
+            <rect
+                className="fig-wash strong"
+                x={x}
+                y={base - h}
+                width={w}
+                height={h}
+            />
+            <rect className="fig-ink" x={x} y={base - h} width={w} height={h} />
+            <text
+                className="fig-dim"
+                x={x + w / 2}
+                y={base - h - 9}
+                textAnchor="middle"
+            >
+                {mb} MB
+            </text>
+            <text
+                className="fig-row"
+                x={x + w / 2}
+                y={base + 17}
+                textAnchor="middle"
+            >
+                zoom {zoom}
+            </text>
+            {note && (
+                <text
+                    className="fig-sub"
+                    x={x + w / 2}
+                    y={base + 32}
+                    textAnchor="middle"
+                >
+                    {note}
+                </text>
+            )}
+        </g>
+    );
+}
+
+export function LayerMemory() {
+    const narrow = useNarrow();
+    const box = narrow ? { w: NARROW, h: 620 } : { w: WIDE, h: 300 };
+    const base = narrow ? 400 : 232;
+    const tall = narrow ? 250 : 150;
+    const w = narrow ? 64 : 76;
+    const step = narrow ? 104 : 124;
+    const x0 = narrow ? 6 : 40;
+    const bx = narrow ? 0 : x0 + step * 2 + w + 54;
+    const by = narrow ? base + 74 : base - tall;
+    return (
+        <svg
+            className="fig"
+            viewBox={frame(box.w, box.h)}
+            role="img"
+            aria-label="The backing store of one composited layer at three camera zooms: 216 MB, 415 MB and 540 MB, growing as the camera draws back."
+        >
+            <Plate
+                w={box.w}
+                h={box.h}
+                ground={LAYER_GROUND[narrow ? "narrow" : "wide"]}
+            >
+                <text className="fig-title" x={x0} y={narrow ? 26 : 32}>
+                    one layer, drawn back
+                </text>
+                <text className="fig-sub" x={x0} y={narrow ? 44 : 50}>
+                    sized as if the map were at scale one
+                </text>
+                <line
+                    className="fig-mist"
+                    x1={narrow ? 0 : x0 - 6}
+                    y1={base}
+                    x2={narrow ? NARROW : bx - 18}
+                    y2={base}
+                />
+                {LAYERS.map((l, i) => (
+                    <Bar
+                        key={l.zoom}
+                        x={x0 + i * step}
+                        base={base}
+                        w={w}
+                        mb={l.mb}
+                        zoom={l.zoom}
+                        note={l.note}
+                        tall={tall}
+                    />
+                ))}
+                {/* the page's total is a number rather than a fourth bar, since it is five times the scale */}
+                <path
+                    className="fig-water"
+                    d={
+                        narrow
+                            ? `M${bx} ${by} h${NARROW - 20}`
+                            : `M${bx} ${by} h10 v${tall} h-10`
+                    }
+                />
+                <text
+                    className="fig-title sm"
+                    x={bx + 20}
+                    y={by + (narrow ? 24 : 26)}
+                >
+                    × 71 layers
+                </text>
+                <text
+                    className="fig-note"
+                    x={bx + 20}
+                    y={by + (narrow ? 44 : 46)}
+                >
+                    2,557 MB of them at the
+                    <tspan x={bx + 20} dy="15">
+                        opening view, with 27,089
+                    </tspan>
+                    <tspan x={bx + 20} dy="15">
+                        elements and 500 MB of
+                    </tspan>
+                    <tspan x={bx + 20} dy="15">
+                        heap above that
+                    </tspan>
+                </text>
+                <text
+                    className="fig-dim"
+                    x={bx + 20}
+                    y={by + (narrow ? 112 : 116)}
+                >
+                    iOS kills the tab at 2,048 MB
+                </text>
+            </Plate>
+        </svg>
+    );
+}
+
+/* ---- the five passes of a frame ---- */
+
+const FRAME_PASSES = [
+    {
+        n: "1",
+        title: "the paper grid",
+        sub: "from a shader, one device pixel wide",
+    },
+    {
+        n: "2",
+        title: "the terrain tiles",
+        sub: "masked by what the child has reached",
+    },
+    { n: "3", title: "the child's ink", sub: "roads walked, land known" },
+    {
+        n: "4",
+        title: "every drawing in view",
+        sub: "one instanced batch to a page",
+    },
+    {
+        n: "5",
+        title: "the plane and the token",
+        sub: "the only things moving every frame",
+    },
+];
+const FRAME_GROUND = {
+    wide: [{ y: 300, amp: 9 }],
+    narrow: [{ y: 610, amp: 8 }],
+};
+
+// The right-hand frame builds up in the same order as the rows, one pass to a delay.
+function Built({ x, y, w, h, d }) {
+    const grid = [];
+    for (let gx = x + 12; gx < x + w; gx += 18) grid.push(gx);
+    const rows = [];
+    for (let gy = y + 12; gy < y + h; gy += 18) rows.push(gy);
+    return (
+        <g>
+            <g className="fig-mist" data-anim="in" style={at(d)}>
+                {grid.map((gx) => (
+                    <line
+                        key={`v${gx}`}
+                        x1={gx}
+                        y1={y + 2}
+                        x2={gx}
+                        y2={y + h - 2}
+                    />
+                ))}
+                {rows.map((gy) => (
+                    <line
+                        key={`h${gy}`}
+                        x1={x + 2}
+                        y1={gy}
+                        x2={x + w - 2}
+                        y2={gy}
+                    />
+                ))}
+            </g>
+            <path
+                className="fig-wash strong"
+                data-anim="in"
+                style={at(d + 0.2)}
+                d={`M${x + 14} ${y + h - 26} C ${x + w * 0.3} ${y + h - 70}, ${x + w * 0.42} ${y + 30}, ${x + w * 0.68} ${y + 44} C ${x + w * 0.9} ${y + 54}, ${x + w - 10} ${y + h - 60}, ${x + w - 16} ${y + h - 20} Z`}
+            />
+            <path
+                className="fig-ink"
+                data-anim="draw"
+                style={at(d + 0.4)}
+                d={`M${x + 18} ${y + h - 18} C ${x + w * 0.4} ${y + h - 40}, ${x + w * 0.55} ${y + 46}, ${x + w - 22} ${y + 30}`}
+            />
+            <g data-anim="pop" style={at(d + 0.6)}>
+                <Pic x={x + 30} y={y + h - 58} w={26} h={22} />
+                <Pic x={x + w * 0.46} y={y + 54} w={30} h={24} />
+                <Pic x={x + w - 66} y={y + h - 74} w={24} h={20} />
+            </g>
+            <g className="fig-water" data-anim="in" style={at(d + 0.8)}>
+                <path d={`M${x + w * 0.52} ${y + 24} l10 6 l-10 6 l3 -6 Z`} />
+                <path
+                    className="fig-open"
+                    d={`M${x + 24} ${y + h - 10} C ${x + w * 0.4} ${y + h - 30}, ${x + w * 0.46} ${y + 30}, ${x + w * 0.52} ${y + 30}`}
+                />
+            </g>
+        </g>
+    );
+}
+
+export function FivePasses() {
+    const narrow = useNarrow();
+    const [host, shown] = useReveal();
+    const [run, setRun] = useState(0);
+    const box = narrow ? { w: NARROW, h: 650 } : { w: WIDE, h: 314 };
+    const rowY = narrow ? 36 : 54;
+    const pitch = narrow ? 44 : 44;
+    const sheet = narrow
+        ? { x: 14, y: 290, w: NARROW - 28, h: 290 }
+        : { x: 430, y: 46, w: 360, h: 232 };
+    return (
+        <div className="fig-host" ref={host}>
+            <svg
+                key={run}
+                className={shown ? "fig playing" : "fig"}
+                viewBox={frame(box.w, box.h)}
+                role="img"
+                aria-label="A frame in five passes: the paper grid, the terrain tiles, the child's ink, every drawing in view, then the plane and the guide's token."
+            >
+                <Plate
+                    w={box.w}
+                    h={box.h}
+                    ground={FRAME_GROUND[narrow ? "narrow" : "wide"]}
+                >
+                    <text className="fig-title" x="0" y={narrow ? 18 : 26}>
+                        one frame, in order
+                    </text>
+                    {FRAME_PASSES.map((p, i) => (
+                        <g
+                            key={p.n}
+                            data-anim="in"
+                            style={at(+(i * 0.2).toFixed(2))}
+                        >
+                            <text
+                                className="fig-num"
+                                x="0"
+                                y={rowY + i * pitch + 14}
+                            >
+                                {p.n}
+                            </text>
+                            <text
+                                className="fig-title sm"
+                                x="28"
+                                y={rowY + i * pitch + 2}
+                            >
+                                {p.title}
+                            </text>
+                            <text
+                                className="fig-sub"
+                                x="28"
+                                y={rowY + i * pitch + 18}
+                            >
+                                {p.sub}
+                            </text>
+                            <line
+                                className="fig-mist"
+                                x1="0"
+                                y1={rowY + i * pitch + 30}
+                                x2={narrow ? NARROW : 390}
+                                y2={rowY + i * pitch + 30}
+                            />
+                        </g>
+                    ))}
+                    <rect
+                        className="fig-ink"
+                        x={sheet.x}
+                        y={sheet.y}
+                        width={sheet.w}
+                        height={sheet.h}
+                    />
+                    <Built
+                        x={sheet.x}
+                        y={sheet.y}
+                        w={sheet.w}
+                        h={sheet.h}
+                        d={0}
+                    />
+                    <text className="fig-sub" x={sheet.x} y={sheet.y - 12}>
+                        the canvas, after all five
+                    </text>
+                </Plate>
+            </svg>
+            <button
+                type="button"
+                className="fig-replay"
+                onClick={() => setRun((n) => n + 1)}
+            >
+                Play the passes again
+            </button>
+        </div>
+    );
+}
+
+/* ---- the tile pyramid, folded ---- */
+
+const LEVELS = [
+    { n: 0, grid: "1 × 1", cells: 1 },
+    { n: 1, grid: "2 × 2", cells: 4 },
+    { n: 2, grid: "4 × 4", cells: 16 },
+    { n: 3, grid: "8 × 7", cells: 56 },
+    { n: 4, grid: "16 × 14", cells: 224 },
+    { n: 5, grid: "32 × 28", cells: 896 },
+    { n: 6, grid: "64 × 56", cells: 3584 },
+];
+const PYRAMID_GROUND = {
+    wide: [{ y: 330, amp: 9 }],
+    narrow: [{ y: 612, amp: 8 }],
+};
+
+export function TilePyramid() {
+    const narrow = useNarrow();
+    const box = narrow ? { w: NARROW, h: 650 } : { w: WIDE, h: 348 };
+    const top = narrow ? 44 : 52;
+    const pitch = narrow ? 32 : 34;
+    const wMax = narrow ? 150 : 210;
+    const foldX = narrow ? 8 : 438;
+    const foldY = narrow ? 320 : 56;
+    return (
+        <svg
+            className="fig"
+            viewBox={frame(box.w, box.h)}
+            role="img"
+            aria-label="Seven levels of tiles in seven layers, 33,467 cell and layer slots, folded by content address into 6,680 images and 26 MB."
+        >
+            <Plate
+                w={box.w}
+                h={box.h}
+                ground={PYRAMID_GROUND[narrow ? "narrow" : "wide"]}
+            >
+                <text className="fig-title" x="0" y={narrow ? 20 : 26}>
+                    seven levels
+                </text>
+                {LEVELS.map((l, i) => {
+                    const w = Math.round(
+                        wMax * ((i + 1.6) / (LEVELS.length + 0.6))
+                    );
+                    const y = top + i * pitch;
+                    const cols = Math.min(8, 2 ** i || 1);
+                    const ticks = [];
+                    for (let c = 1; c < cols; c += 1)
+                        ticks.push(Math.round((w / cols) * c));
+                    return (
+                        <g key={l.n}>
+                            <rect
+                                className="fig-wash"
+                                x="0"
+                                y={y}
+                                width={w}
+                                height={22}
+                            />
+                            <rect
+                                className="fig-ink"
+                                x="0"
+                                y={y}
+                                width={w}
+                                height={22}
+                            />
+                            <g className="fig-mist">
+                                {ticks.map((t) => (
+                                    <line
+                                        key={t}
+                                        x1={t}
+                                        y1={y}
+                                        x2={t}
+                                        y2={y + 22}
+                                    />
+                                ))}
+                            </g>
+                            <text className="fig-row" x={w + 12} y={y + 15}>
+                                {l.grid}
+                            </text>
+                            <text className="fig-sub" x={w + 74} y={y + 15}>
+                                {l.cells.toLocaleString("en-GB")}
+                                {l.cells === 1 ? " cell" : " cells"}
+                            </text>
+                        </g>
+                    );
+                })}
+                <text
+                    className="fig-note"
+                    x="0"
+                    y={top + LEVELS.length * pitch + 18}
+                >
+                    4,781 cells, each in seven layers
+                </text>
+
+                <g transform={`translate(${foldX} ${foldY})`}>
+                    <text className="fig-title sm" x="0" y="0">
+                        33,467 slots
+                    </text>
+                    <text className="fig-sub" x="0" y="17">
+                        {narrow
+                            ? "sea and blank paper, mostly alike"
+                            : "sea, blank paper, flat land, mostly alike"}
+                    </text>
+                    <g className="fig-mist">
+                        {Array.from({ length: 7 }, (_, i) => (
+                            <rect
+                                key={i}
+                                x={i * 7}
+                                y={32 + i * 5}
+                                width={narrow ? 120 : 150}
+                                height="34"
+                            />
+                        ))}
+                    </g>
+                    <path
+                        className="fig-water"
+                        d={
+                            narrow
+                                ? "M60 106 v26 m0 0 l-4 -7 m4 7 l4 -7"
+                                : "M190 56 h44 m0 0 l-7 -4 m7 4 l-7 4"
+                        }
+                    />
+                    <g
+                        transform={
+                            narrow ? "translate(0 146)" : "translate(250 0)"
+                        }
+                    >
+                        <rect
+                            className="fig-wash strong"
+                            x="0"
+                            y="32"
+                            width={narrow ? 120 : 130}
+                            height="34"
+                        />
+                        <rect
+                            className="fig-ink"
+                            x="0"
+                            y="32"
+                            width={narrow ? 120 : 130}
+                            height="34"
+                        />
+                        <text className="fig-title sm" x="0" y="0">
+                            6,680 images
+                        </text>
+                        <text className="fig-sub" x="0" y="17">
+                            26 MB on disk
+                        </text>
+                        <text className="fig-dim" x="0" y="86">
+                            content addressed, so
+                        </text>
+                        <text className="fig-dim" x="0" y="101">
+                            alike tiles are one file
+                        </text>
+                    </g>
+                </g>
+            </Plate>
+        </svg>
+    );
+}
+
+/* ---- keeping the pixels you already have ---- */
+
+const SETTLE_GROUND = {
+    wide: [{ y: 268, amp: 9 }],
+    narrow: [{ y: 470, amp: 8 }],
+};
+
+// A soft drawing and a sharp one, the same drawing at two rasterisations.
+function Leafy({ x, y, s, soft }) {
+    const c = soft ? "fig-mist" : "fig-ink";
+    return (
+        <g transform={`translate(${x} ${y}) scale(${s})`}>
+            <path
+                className={c}
+                d="M0 40 C 0 18, 12 4, 26 0 C 26 22, 14 36, 0 40 Z"
+            />
+            <path
+                className={soft ? "fig-mist" : "fig-ink"}
+                d="M0 40 C 8 30, 16 20, 24 6"
+            />
+            {!soft && (
+                <g className="fig-mist">
+                    <path d="M4 34 C 8 30, 12 28, 16 27" />
+                    <path d="M8 28 C 12 24, 15 22, 19 20" />
+                    <path d="M12 22 C 15 19, 18 16, 21 13" />
+                </g>
+            )}
+        </g>
+    );
+}
+
+export function ReuseSettle() {
+    const narrow = useNarrow();
+    const box = narrow ? { w: NARROW, h: 500 } : { w: WIDE, h: 282 };
+    const axis = narrow ? 300 : 206;
+    const x0 = 0;
+    const x1 = narrow ? NARROW - 16 : 760;
+    const stop = narrow ? 0.42 : 0.44;
+    const sharp = narrow ? 0.72 : 0.7;
+    const at1 = x0 + (x1 - x0) * stop;
+    const at2 = x0 + (x1 - x0) * sharp;
+    return (
+        <svg
+            className="fig"
+            viewBox={frame(box.w, box.h)}
+            role="img"
+            aria-label="While the camera moves a drawing keeps the texture it has; 200 milliseconds after it rests the drawing is rasterised at the size it is seen, and the sharper pixels fade in over 150 milliseconds."
+        >
+            <Plate
+                w={box.w}
+                h={box.h}
+                ground={SETTLE_GROUND[narrow ? "narrow" : "wide"]}
+            >
+                <text className="fig-title" x="0" y={narrow ? 20 : 26}>
+                    while the camera moves
+                </text>
+                <text className="fig-sub" x="0" y={narrow ? 38 : 44}>
+                    a drawing keeps the texture it has,
+                    {narrow ? (
+                        <tspan x="0" dy="15">
+                            unless it would look twice as soft
+                        </tspan>
+                    ) : (
+                        <tspan> unless it would look twice as soft</tspan>
+                    )}
+                </text>
+
+                <g
+                    transform={`translate(${narrow ? 34 : 60} ${narrow ? 96 : 84})`}
+                >
+                    <Leafy x={0} y={0} s={narrow ? 1.5 : 1.7} soft />
+                    <text className="fig-row" x={20} y="-8" textAnchor="middle">
+                        kept
+                    </text>
+                </g>
+                <g
+                    transform={`translate(${narrow ? 176 : 480} ${narrow ? 96 : 84})`}
+                >
+                    <Leafy x={0} y={0} s={narrow ? 1.5 : 1.7} />
+                    <text className="fig-row" x={20} y="-8" textAnchor="middle">
+                        drawn again
+                    </text>
+                </g>
+
+                <line
+                    className="fig-mist"
+                    x1={x0}
+                    y1={axis}
+                    x2={x1}
+                    y2={axis}
+                />
+                <rect
+                    className="fig-wash"
+                    x={x0}
+                    y={axis - 26}
+                    width={at1 - x0}
+                    height="26"
+                />
+                <text className="fig-row" x={x0 + 8} y={axis - 8}>
+                    the camera is moving
+                </text>
+                <g className="fig-water">
+                    <line x1={at1} y1={axis - 34} x2={at1} y2={axis + 10} />
+                    <line x1={at2} y1={axis - 34} x2={at2} y2={axis + 10} />
+                    <path
+                        d={`M${at1} ${axis + 18} H${at2} m0 0 l-6 -4 m6 4 l-6 4 M${at1} ${axis + 18} l6 -4 m-6 4 l6 4`}
+                    />
+                </g>
+                <text
+                    className="fig-dim"
+                    x={(at1 + at2) / 2}
+                    y={axis + 36}
+                    textAnchor="middle"
+                >
+                    200 ms
+                </text>
+                <text
+                    className="fig-sub"
+                    x={at1 - 6}
+                    y={axis - 42}
+                    textAnchor="end"
+                >
+                    it rests
+                </text>
+                <text
+                    className="fig-sub"
+                    x={narrow ? NARROW : at2 + 6}
+                    y={axis - 42}
+                    textAnchor={narrow ? "end" : "start"}
+                >
+                    {narrow ? "drawn sharp" : "drawn at the size it is seen"}
+                </text>
+                <text
+                    className="fig-note"
+                    x={narrow ? 0 : at2 + 6}
+                    y={axis + (narrow ? 76 : 36)}
+                >
+                    the sharper pixels fade in over 150 ms,
+                    <tspan x={narrow ? 0 : at2 + 6} dy="15">
+                        the softer ones kept underneath
+                    </tspan>
+                </text>
+            </Plate>
+        </svg>
+    );
+}
+
 export const FIGURES = {
     "three-passes": ThreePasses,
     "three-formats": ThreeFormats,
     "command-list": CommandList,
     fragment: Fragment,
+    "layer-memory": LayerMemory,
+    "five-passes": FivePasses,
+    "tile-pyramid": TilePyramid,
+    "reuse-settle": ReuseSettle,
 };

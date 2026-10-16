@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>The map a phone could not hold</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* Five passes stacked into one canvas, with the words left in a sheet above it, over the
+       same fog the rest of the site is photographed in. The ink language matches the figures
+       inside the post: hairlines, a measured rule, registration ticks at the corners. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 52%;
+                filter: saturate(0.7) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.06) 0%,
+                    rgba(233, 236, 234, 0.4) 30%,
+                    rgba(233, 236, 234, 0.74) 58%,
+                    rgba(233, 236, 234, 0.84) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .mist.dash {
+                stroke-dasharray: 5 4;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .fillbox {
+                fill: rgba(27, 37, 34, 0.08);
+                stroke: none;
+            }
+            .land {
+                fill: rgba(78, 120, 114, 0.14);
+                stroke: none;
+            }
+            .tick {
+                stroke: #46544f;
+                stroke-width: 1.1;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="base-lake.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // One country, drawn by five passes into a single canvas, with everything a person reads
+            // or presses left in a sheet of DOM above it.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, class: cls });
+            const line = (x1, y1, x2, y2, cls) =>
+                el("line", { x1, y1, x2, y2, class: cls });
+
+            // the five passes, as thin sheets that stack
+            const PASSES = [
+                "the paper grid",
+                "the terrain tiles",
+                "the child's ink",
+                "every drawing in view",
+                "the plane",
+            ];
+            const S0 = wide
+                ? { x: 70, y: 96, w: 250, h: 26, step: 34 }
+                : { x: 110, y: 120, w: 300, h: 30, step: 42 };
+            PASSES.forEach((name, i) => {
+                const y = S0.y + i * S0.step;
+                const skew = (PASSES.length - 1 - i) * (wide ? 9 : 11);
+                rect(S0.x + skew, y, S0.w, S0.h, i === 0 ? "fillbox" : "mist");
+                rect(S0.x + skew, y, S0.w, S0.h, "ink thin");
+                el("text", { x: S0.x + skew + 12, y: y + 17 }, name);
+            });
+
+            // the canvas they stack into
+            const C = wide
+                ? { x: 560, y: 86, w: 360, h: 210 }
+                : { x: 150, y: 372, w: 700, h: 226 };
+            rect(C.x, C.y, C.w, C.h, "ink");
+            // one country inside it, drawn through a closed loop of points rather than as a blob
+            const SHORE = [
+                [0.1, 0.72],
+                [0.15, 0.46],
+                [0.27, 0.3],
+                [0.39, 0.35],
+                [0.45, 0.19],
+                [0.58, 0.15],
+                [0.69, 0.27],
+                [0.8, 0.21],
+                [0.89, 0.37],
+                [0.83, 0.55],
+                [0.9, 0.71],
+                [0.73, 0.81],
+                [0.57, 0.73],
+                [0.43, 0.83],
+                [0.27, 0.79],
+            ];
+            const loop = (pts) => {
+                const P = pts.map(([fx, fy]) => [
+                    C.x + C.w * fx,
+                    C.y + C.h * fy,
+                ]);
+                const n = P.length;
+                let d = `M${P[0][0].toFixed(1)} ${P[0][1].toFixed(1)}`;
+                for (let i = 0; i < n; i += 1) {
+                    const p0 = P[(i - 1 + n) % n],
+                        p1 = P[i],
+                        p2 = P[(i + 1) % n],
+                        p3 = P[(i + 2) % n];
+                    const c1 = [
+                        p1[0] + (p2[0] - p0[0]) / 6,
+                        p1[1] + (p2[1] - p0[1]) / 6,
+                    ];
+                    const c2 = [
+                        p2[0] - (p3[0] - p1[0]) / 6,
+                        p2[1] - (p3[1] - p1[1]) / 6,
+                    ];
+                    d += ` C ${c1[0].toFixed(1)} ${c1[1].toFixed(1)}, ${c2[0].toFixed(1)} ${c2[1].toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+                }
+                return `${d} Z`;
+            };
+            const coast = loop(SHORE);
+            el("path", { class: "land", d: coast });
+            el("path", { class: "mist", d: coast });
+            // two isles, and the contour just inside the shore
+            for (const [fx, fy, r] of [
+                [0.18, 0.2, 7],
+                [0.93, 0.86, 5],
+            ]) {
+                el("circle", {
+                    cx: C.x + C.w * fx,
+                    cy: C.y + C.h * fy,
+                    r,
+                    class: "land",
+                });
+                el("circle", {
+                    cx: C.x + C.w * fx,
+                    cy: C.y + C.h * fy,
+                    r,
+                    class: "mist",
+                });
+            }
+            // a road the child has walked, and the places along it
+            el("path", {
+                class: "water",
+                d: `M${C.x + C.w * 0.22} ${C.y + C.h * 0.66} C ${C.x + C.w * 0.36} ${C.y + C.h * 0.5}, ${C.x + C.w * 0.46} ${C.y + C.h * 0.6}, ${C.x + C.w * 0.58} ${C.y + C.h * 0.42} S ${C.x + C.w * 0.7} ${C.y + C.h * 0.3}, ${C.x + C.w * 0.76} ${C.y + C.h * 0.33}`,
+            });
+            for (const [px, py] of [
+                [0.22, 0.66],
+                [0.58, 0.42],
+                [0.76, 0.33],
+            ]) {
+                el("circle", {
+                    cx: C.x + C.w * px,
+                    cy: C.y + C.h * py,
+                    r: 3.2,
+                    fill: "#1b2522",
+                });
+            }
+            el(
+                "text",
+                { x: C.x, y: C.y + C.h + 20, class: "name" },
+                "one canvas"
+            );
+            el(
+                "text",
+                { x: C.x, y: C.y + C.h + 38 },
+                "one matrix a frame, whatever the camera does"
+            );
+
+            // the sheet of DOM above it: the words and the buttons
+            const O = { x: C.x + 26, y: C.y - 46, w: C.w - 52, h: 30 };
+            rect(O.x, O.y, O.w, O.h, "mist dash");
+            el(
+                "text",
+                { x: O.x + 12, y: O.y + 19 },
+                "names and buttons, still in the page"
+            );
+            for (const t of [0.3, 0.62]) {
+                line(O.x + O.w * t, O.y + O.h, O.x + O.w * t, C.y, "mist");
+            }
+
+            // the stack feeding the canvas
+            const feedY = S0.y + (PASSES.length * S0.step) / 2;
+            el("path", {
+                class: "water",
+                d: wide
+                    ? `M${S0.x + S0.w + 30} ${feedY} H${C.x - 22} m0 0 l-8 -4 m8 4 l-8 4`
+                    : `M${S0.x + S0.w / 2 + 20} ${S0.y + PASSES.length * S0.step + 14} V${C.y - 70} m0 0 l-4 -8 m4 8 l4 -8`,
+            });
+
+            // a measured rule under the canvas, as the figures have
+            const ry = C.y + C.h + 62;
+            line(C.x, ry, C.x + C.w, ry, "tick");
+            for (let i = 0; i <= 8; i += 1) {
+                const x = C.x + (C.w / 8) * i;
+                line(x, ry - (i % 4 === 0 ? 6 : 4), x, ry, "tick");
+            }
+
+            // registration ticks at the corners of the plate
+            const R = 18;
+            const B = VB[1] - 26;
+            for (const [x, y, sx, sy] of [
+                [30, 26, 1, 1],
+                [970, 26, -1, 1],
+                [30, B, 1, -1],
+                [970, B, -1, -1],
+            ]) {
+                line(x, y, x + R * sx, y, "ink thin");
+                line(x, y, x, y + R * sy, "ink thin");
+            }
+        </script>
+    </body>
+</html>

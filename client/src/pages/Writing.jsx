@@ -7,7 +7,7 @@ import "./Writing.css";
 export function Writing() {
     return (
         <article className="page">
-            <PageArt kind="cones" side="right" top={150} />
+            <PageArt seed="writing" count={2} />
             <header className="page-head">
                 <h1>Writing</h1>
                 <p>
@@ -75,8 +75,7 @@ export function Post() {
                 </picture>
             )}
             <div className="page">
-                <PageArt kind="fern" side="left" top={420} />
-                <PageArt kind="seedling" side="right" top={1700} />
+                <PageArt seed={post.slug} count={4} />
                 <header className="page-head">
                     <h1>{post.title}</h1>
                     <p className="post-meta">
