@@ -5,8 +5,6 @@ import PageArt from "../components/PageArt";
 import "./Home.css";
 
 const EMAIL = "naib.baghirov@gmail.com";
-// the newest piece carries the photograph; anything after it is a line
-const [feature, ...older] = POSTS.slice(0, 3);
 
 function Home() {
     return (
@@ -70,39 +68,39 @@ function Home() {
                         </a>
                     </nav>
                 </div>
-
-                {feature && (
-                    <div className="reading">
-                        <Link className="feature" to={`/blogs/${feature.slug}`}>
-                            {feature.card && <img src={feature.card} alt="" />}
-                            <h2>{feature.title}</h2>
-                            {feature.summary && (
-                                <p className="feature-sum">{feature.summary}</p>
-                            )}
-                            <p className="feature-meta">
-                                {feature.about} · {readableDate(feature.date)}
-                            </p>
-                        </Link>
-                        {older.length > 0 && (
-                            <ul className="older">
-                                {older.map((post) => (
-                                    <li key={post.slug}>
-                                        <Link to={`/blogs/${post.slug}`}>
-                                            <span className="older-title">
-                                                {post.title}
-                                            </span>
-                                            <span className="older-meta">
-                                                {post.about} ·{" "}
-                                                {readableDate(post.date)}
-                                            </span>
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-                )}
             </section>
+
+            {POSTS.length > 0 && (
+                <section className="strip" aria-labelledby="recent-writing">
+                    <div className="strip-head">
+                        <h2 id="recent-writing">Recent writing</h2>
+                        <Link to="/blogs">All {POSTS.length} articles</Link>
+                    </div>
+                    {/* a row rather than a column, so several covers are in view at once */}
+                    <ul className="films">
+                        {POSTS.map((post) => (
+                            <li key={post.slug}>
+                                <Link
+                                    className="film"
+                                    to={`/blogs/${post.slug}`}
+                                >
+                                    {post.card && (
+                                        <img
+                                            src={post.card}
+                                            alt=""
+                                            loading="lazy"
+                                        />
+                                    )}
+                                    <h3>{post.title}</h3>
+                                    <p className="film-meta">
+                                        {post.about} · {readableDate(post.date)}
+                                    </p>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+            )}
 
             <section className="ask-band" aria-labelledby="ask-title">
                 <div className="ask-inner">
