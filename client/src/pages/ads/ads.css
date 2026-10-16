@@ -1590,3 +1590,49 @@
     color: #71767b;
     margin-top: 10px;
 }
+
+/* choosing the pair: thumbnails under the mock, the chosen one ringed */
+.ads .xpick {
+    max-width: 660px;
+    margin: 0 0 26px;
+}
+.ads .xpick-row + .xpick-row {
+    margin-top: 14px;
+}
+.ads .xpick-label {
+    font-size: 13px;
+    color: #71767b;
+    margin-bottom: 8px;
+}
+.ads .xpick-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.ads .xpick-items button {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+    padding: 6px;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #9aa3a0;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+.ads .xpick-items button img {
+    width: 92px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #000;
+}
+.ads .xpick-items button.on {
+    border-color: #4e7872;
+    color: #e7e9ea;
+}
+.ads .xpick + .pics {
+    margin-top: 0;
+}

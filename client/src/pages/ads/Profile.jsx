@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Fields, ShareButton } from "./actions";
 import { fileName } from "./store";
 
@@ -46,6 +47,68 @@ export function Profile({ manifest, url }) {
                         <p className="xmock-meta">
                             {[where, site].filter(Boolean).join("  ·  ")}
                         </p>
+                    </div>
+                </div>
+            )}
+            {(avatars.length > 1 || headers.length > 1) && (
+                <div className="xpick">
+                    {[
+                        ["Photo", avatars, a, setA],
+                        ["Header", headers, h, setH],
+                    ]
+                        .filter(([, list]) => list.length > 1)
+                        .map(([label, list, active, set]) => (
+                            <div className="xpick-row" key={label}>
+                                <p className="xpick-label">{label}</p>
+                                <div className="xpick-items">
+                                    {list.map((item, i) => (
+                                        <button
+                                            type="button"
+                                            key={item.file}
+                                            className={
+                                                i === active ? "on" : undefined
+                                            }
+                                            onClick={() => set(i)}
+                                        >
+                                            <img
+                                                crossOrigin="anonymous"
+                                                src={url(item.file)}
+                                                alt={item.label}
+                                            />
+                                            <span>{item.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    <div className="actions">
+                        <ShareButton
+                            label="Save the pair"
+                            items={() => [
+                                {
+                                    url: url(avatar.file),
+                                    name: fileName(avatar.file),
+                                },
+                                {
+                                    url: url(header.file),
+                                    name: fileName(header.file),
+                                },
+                            ]}
+                        />
+                        <a
+                            className="btn"
+                            href={url(avatar.file)}
+                            download={fileName(avatar.file)}
+                        >
+                            Photo
+                        </a>
+                        <a
+                            className="btn"
+                            href={url(header.file)}
+                            download={fileName(header.file)}
+                        >
+                            Header
+                        </a>
                     </div>
                 </div>
             )}
