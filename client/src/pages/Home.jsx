@@ -1,124 +1,114 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import WeekSection from "../components/WeekSection";
+import { Link } from "react-router-dom";
+import { POSTS, readableDate } from "../data/writing";
+import Ask from "../components/Ask";
+import "./Home.css";
 
-const INITIAL_WEEKS = 3; // Load 3 weeks initially (all cached, faster load)
-const LOAD_MORE_COUNT = 3; // Load 3 more weeks when scrolling
+const EMAIL = "naib.baghirov@gmail.com";
+const latest = POSTS.slice(0, 2);
 
 function Home() {
-    const [weeks, setWeeks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [error, setError] = useState(null);
-    const [hasMore, setHasMore] = useState(true);
-    const observerTarget = useRef(null);
-
-    useEffect(() => {
-        fetchWeeks(0, INITIAL_WEEKS);
-    }, []);
-
-    // Infinite scroll observer
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && hasMore && !loadingMore) {
-                    loadMoreWeeks();
-                }
-            },
-            { threshold: 0.1 }
-        );
-
-        if (observerTarget.current) {
-            observer.observe(observerTarget.current);
-        }
-
-        return () => {
-            if (observerTarget.current) {
-                observer.unobserve(observerTarget.current);
-            }
-        };
-    }, [hasMore, loadingMore, weeks]);
-
-    const fetchWeeks = async (offset, limit) => {
-        try {
-            const response = await fetch(`/api/weeks?offset=${offset}&limit=${limit}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch weeks");
-            }
-            const data = await response.json();
-            setWeeks(data.weeks);
-            setHasMore(data.weeks.length === limit); // If we got fewer weeks, no more to load
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const loadMoreWeeks = useCallback(async () => {
-        if (loadingMore || !hasMore) return;
-
-        setLoadingMore(true);
-        try {
-            const offset = weeks.length;
-            const response = await fetch(`/api/weeks?offset=${offset}&limit=${LOAD_MORE_COUNT}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch more weeks");
-            }
-            const data = await response.json();
-
-            if (data.weeks.length === 0) {
-                setHasMore(false);
-            } else {
-                setWeeks((prev) => [...prev, ...data.weeks]);
-                setHasMore(data.weeks.length === LOAD_MORE_COUNT);
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoadingMore(false);
-        }
-    }, [weeks, loadingMore, hasMore]);
-
-    if (loading) {
-        return (
-            <div className="container">
-                <p>Loading...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="container">
-                <p>Error: {error}</p>
-            </div>
-        );
-    }
-
     return (
-        <div className="container">
-            <h1 className="week-title">This Week</h1>
-            {weeks.map((week, index) => (
-                <WeekSection
-                    key={index}
-                    week={week}
-                    isFirstWeek={index === 0}
-                />
-            ))}
-
-            {/* Infinite scroll trigger */}
-            {hasMore && (
-                <div ref={observerTarget} style={{ padding: "20px", textAlign: "center" }}>
-                    {loadingMore && <p>Loading more weeks...</p>}
+        <>
+            <header className="hero">
+                <picture>
+                    <source
+                        media="(max-width: 700px)"
+                        srcSet="/img/hero-tall.webp"
+                    />
+                    <img src="/img/hero.webp" alt="" fetchPriority="high" />
+                </picture>
+                <div className="hero-copy">
+                    <h1>Naib Baghirov</h1>
+                    <p>
+                        I build software products and run them, and write about
+                        the decisions along the way.
+                    </p>
                 </div>
-            )}
+            </header>
 
-            {!hasMore && weeks.length > 0 && (
-                <div style={{ padding: "20px", textAlign: "center", opacity: 0.5 }}>
-                    <p>You've reached the end</p>
+            <section className="entry" aria-label="Where to go">
+                <p className="entry-note">
+                    Five products, most with a handful of people using them who
+                    found them on their own. I am working out which one should
+                    get all of the time.
+                </p>
+
+                <nav className="doors" aria-label="Sections">
+                    <Link className="door" to="/writing">
+                        <h2>Writing</h2>
+                        <p>How the things underneath are built, in detail.</p>
+                    </Link>
+                    <Link className="door" to="/projects">
+                        <h2>Projects</h2>
+                        <p>
+                            What each product is, who uses it, and where it
+                            stands.
+                        </p>
+                    </Link>
+                    <Link className="door" to="/about">
+                        <h2>Résumé</h2>
+                        <p>The working history, as a page or a PDF.</p>
+                    </Link>
+                    <a className="door" href={`mailto:${EMAIL}`}>
+                        <h2>Contact</h2>
+                        <p>{EMAIL}</p>
+                    </a>
+                </nav>
+
+                {latest.length > 0 && (
+                    <ul className="latest">
+                        {latest.map((post) => (
+                            <li key={post.slug}>
+                                <Link to={`/writing/${post.slug}`}>
+                                    <span className="latest-title">
+                                        {post.title}
+                                    </span>
+                                    <span className="latest-meta">
+                                        {post.about} · {readableDate(post.date)}
+                                    </span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </section>
+
+            <section className="ask-band" aria-labelledby="ask-title">
+                <div className="ask-inner">
+                    <h2 id="ask-title">Ask about the work</h2>
+                    <p className="ask-lede">
+                        An agent with read access to the repositories and their
+                        history. It answers from the code rather than from a
+                        summary.
+                    </p>
+                    <Ask />
                 </div>
-            )}
-        </div>
+            </section>
+
+            <footer className="site-foot">
+                <img src="/img/foot.webp" alt="" loading="lazy" />
+                <div className="foot-inner">
+                    <nav className="foot-links" aria-label="Elsewhere">
+                        <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                        <a
+                            href="https://www.linkedin.com/in/naibbaghirov/"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            LinkedIn
+                        </a>
+                        <a
+                            href="https://github.com/nbaghiro"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            GitHub
+                        </a>
+                        <Link to="/dark">The old site</Link>
+                    </nav>
+                </div>
+            </footer>
+        </>
     );
 }
 

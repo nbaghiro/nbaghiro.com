@@ -1,19 +1,42 @@
-import { Link, Outlet } from "react-router-dom";
-import Mark from "./Mark";
+import { useEffect, useState } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import "./SiteLayout.css";
 
+// The header floats over the hero in white, then takes the page ground once the hero has
+// scrolled past. Anything other than the landing page starts solid.
 function SiteLayout() {
+    const { pathname } = useLocation();
+    const overImage = pathname === "/";
+    const [solid, setSolid] = useState(!overImage);
+
+    useEffect(() => {
+        if (!overImage) {
+            setSolid(true);
+            return undefined;
+        }
+        const onScroll = () =>
+            setSolid(window.scrollY > window.innerHeight * 0.6);
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, [overImage]);
+
     return (
         <div className="site">
-            <header className="site-header">
+            <header className={solid ? "site-header solid" : "site-header"}>
                 <Link to="/" className="site-logo">
-                    <Mark size={40} />
-                    <span>nbaghiro</span>
+                    Naib Baghirov
                 </Link>
                 <nav className="site-nav" aria-label="Primary">
-                    <Link to="/about">About</Link>
-                    <a href="https://github.com/nbaghiro" target="_blank" rel="noreferrer">
-                        GitHub
+                    <Link to="/writing">Writing</Link>
+                    <Link to="/projects">Projects</Link>
+                    <Link to="/about">Résumé</Link>
+                    <a
+                        href="https://www.linkedin.com/in/naibbaghirov/"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        LinkedIn
                     </a>
                 </nav>
             </header>

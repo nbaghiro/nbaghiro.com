@@ -1,0 +1,91 @@
+/* One input and one answer, on the dark band. */
+.ask-form {
+    display: flex;
+    gap: 10px;
+    max-width: 620px;
+}
+.ask-form input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 16px;
+    color: #e7edea;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(231, 237, 234, 0.22);
+    border-radius: 2px;
+    padding: 13px 16px;
+}
+.ask-form input::placeholder {
+    color: #879b95;
+}
+.ask-form input:disabled {
+    opacity: 0.6;
+}
+.ask-form button {
+    font: inherit;
+    font-size: 16px;
+    padding: 0 22px;
+    border: 1px solid rgba(231, 237, 234, 0.22);
+    border-radius: 2px;
+    background: #e7edea;
+    color: var(--pine);
+    cursor: pointer;
+}
+.ask-form button:disabled {
+    background: transparent;
+    color: #879b95;
+    cursor: default;
+}
+
+.ask-suggestions {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+.ask-suggestions button {
+    font: inherit;
+    font-size: 14px;
+    color: #9fb3ad;
+    background: none;
+    border: 1px solid rgba(231, 237, 234, 0.18);
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+}
+.ask-suggestions button:hover:not(:disabled) {
+    color: #e7edea;
+    border-color: rgba(231, 237, 234, 0.4);
+}
+
+.ask-thread {
+    margin-top: 28px;
+    max-width: 68ch;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.ask-q {
+    color: #cfdcd7;
+    font-family: var(--font-display);
+    font-size: 21px;
+    line-height: 1.35;
+}
+.ask-a {
+    color: #c3d2cd;
+}
+.ask-a p + p {
+    margin-top: 12px;
+}
+.ask-a code {
+    font-size: 0.92em;
+    color: #e7edea;
+}
+.ask-error {
+    color: #e2a79c;
+}
+.ask-activity {
+    font-size: 14px;
+    color: #879b95;
+}

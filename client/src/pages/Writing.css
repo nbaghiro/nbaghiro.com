@@ -1,0 +1,104 @@
+@import "./Projects.css";
+
+.post-list {
+    list-style: none;
+    margin-top: clamp(40px, 6vw, 72px);
+    border-top: 1px solid var(--mist);
+}
+.post-list li {
+    border-bottom: 1px solid var(--mist);
+}
+.post-list a {
+    display: block;
+    padding: 28px 0;
+}
+.post-list h2 {
+    font-size: clamp(24px, 3vw, 34px);
+    max-width: 24ch;
+}
+.post-summary {
+    margin-top: 8px;
+    max-width: 58ch;
+    color: var(--ink-soft);
+}
+.post-meta {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--ink-faint);
+}
+.post-list a:hover h2 {
+    color: var(--water);
+}
+
+/* one piece */
+.post .page-head h1 {
+    max-width: 18ch;
+}
+.post .post-meta {
+    margin-top: 16px;
+}
+.prose {
+    margin-top: clamp(36px, 5vw, 60px);
+    max-width: 66ch;
+    font-size: 18px;
+    line-height: 1.72;
+}
+.prose > * + * {
+    margin-top: 22px;
+}
+.prose h2 {
+    margin-top: 48px;
+    font-size: clamp(24px, 2.6vw, 30px);
+}
+.prose h3 {
+    margin-top: 34px;
+    font-size: 21px;
+}
+.prose ul,
+.prose ol {
+    padding-left: 22px;
+}
+.prose li + li {
+    margin-top: 8px;
+}
+.prose a {
+    border-bottom: 1px solid var(--mist);
+    color: var(--water);
+}
+.prose a:hover {
+    border-bottom-color: var(--water);
+}
+.prose code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+    background: rgba(78, 120, 114, 0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+.prose pre {
+    background: var(--pine);
+    color: #d7e1de;
+    padding: 20px 22px;
+    overflow-x: auto;
+    border-radius: 3px;
+}
+.prose pre code {
+    background: none;
+    padding: 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.prose blockquote {
+    border-left: 2px solid var(--mist);
+    padding-left: 20px;
+    color: var(--ink-soft);
+}
+.post-back {
+    margin-top: clamp(48px, 7vw, 88px);
+    padding-top: 24px;
+    border-top: 1px solid var(--mist);
+    font-size: 15px;
+}
+.post-back a {
+    color: var(--water);
+}
