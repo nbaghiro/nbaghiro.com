@@ -20,22 +20,23 @@ function Home() {
                 <div className="hero-copy">
                     <h1>Naib Baghirov</h1>
                     <p>
-                        I build software products and run them, and write about
-                        the decisions along the way.
+                        I build software products and run them. The writing here
+                        is about how they work and what keeping them running
+                        involves.
                     </p>
                 </div>
             </header>
 
             <section className="entry" aria-label="Where to go">
                 <p className="entry-note">
-                    Everything here is something I built and then had to run:
-                    the code, the hosting, the billing, the support, and finding
-                    the people it is for. That second half is the part worth
-                    writing down.
+                    I work on these on my own, which means the code, the
+                    hosting, the billing, the support, and finding the people
+                    each one is for. Most of what I have learned came from the
+                    parts that are not code.
                 </p>
 
                 <nav className="doors" aria-label="Sections">
-                    <Link className="door" to="/writing">
+                    <Link className="door" to="/blogs">
                         <h2>Writing</h2>
                         <p>How the things underneath are built, in detail.</p>
                     </Link>
@@ -60,12 +61,22 @@ function Home() {
                     <ul className="latest">
                         {latest.map((post) => (
                             <li key={post.slug}>
-                                <Link to={`/writing/${post.slug}`}>
-                                    <span className="latest-title">
-                                        {post.title}
-                                    </span>
-                                    <span className="latest-meta">
-                                        {post.about} · {readableDate(post.date)}
+                                <Link to={`/blogs/${post.slug}`}>
+                                    {post.card && (
+                                        <img
+                                            src={post.card}
+                                            alt=""
+                                            loading="lazy"
+                                        />
+                                    )}
+                                    <span>
+                                        <span className="latest-title">
+                                            {post.title}
+                                        </span>
+                                        <span className="latest-meta">
+                                            {post.about} ·{" "}
+                                            {readableDate(post.date)}
+                                        </span>
                                     </span>
                                 </Link>
                             </li>
