@@ -11,10 +11,16 @@ const first = (fields, label) =>
 // have, because the two pictures are only ever judged as a pair.
 export function Profile({ manifest, url }) {
     const p = manifest.profile || {};
-    const avatar = p.pictures?.find((x) => /avatar/i.test(x.label));
-    const header = p.pictures?.find((x) =>
-        /header|cover|banner/i.test(x.label)
-    );
+    // where the kit offers alternatives, the pair is picked here rather than in a rebuild
+    const avatars = p.choices?.avatars ?? [];
+    const headers = p.choices?.headers ?? [];
+    const [a, setA] = useState(0);
+    const [h, setH] = useState(0);
+    const avatar =
+        avatars[a] ?? p.pictures?.find((x) => /avatar/i.test(x.label));
+    const header =
+        headers[h] ??
+        p.pictures?.find((x) => /header|cover|banner/i.test(x.label));
     const name = first(p.fields, "Name");
     const handle = first(p.fields, "Handle");
     const bio = first(p.fields, "Bio");
