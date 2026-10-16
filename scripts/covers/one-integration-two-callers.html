@@ -34,7 +34,7 @@
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-                object-position: center 46%;
+                object-position: center var(--crop, 46%);
                 filter: saturate(0.68) contrast(1);
             }
             .wash {
@@ -42,10 +42,10 @@
                 inset: 0;
                 background: linear-gradient(
                     to bottom,
-                    rgba(233, 236, 234, 0.06) 0%,
-                    rgba(233, 236, 234, 0.4) 28%,
-                    rgba(233, 236, 234, 0.74) 56%,
-                    rgba(233, 236, 234, 0.84) 100%
+                    rgba(233, 236, 234, 0.32) 0%,
+                    rgba(233, 236, 234, 0.54) 16%,
+                    rgba(233, 236, 234, 0.82) 32%,
+                    rgba(233, 236, 234, 0.9) 100%
                 );
             }
             svg {
@@ -120,6 +120,8 @@
             sheet.style.setProperty("--w", `${PW}px`);
             sheet.style.setProperty("--h", `${PH}px`);
             const wide = PW / PH > 2;
+            // a wide plate crops hard, so it is aimed at the treeline rather than the dark water under it
+            sheet.style.setProperty("--crop", wide ? "8%" : "32%");
             const VB = wide ? [1000, 384] : [1000, 667];
             S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
 
