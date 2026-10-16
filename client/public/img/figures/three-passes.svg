@@ -1,0 +1,54 @@
+<svg width="560" height="226" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 226" role="img" aria-label="The same four-node tree resolved by three passes: widths top-down, heights bottom-up, positions top-down.">
+  <style>
+    .n { fill: none; stroke: #141C1A; stroke-width: 1.2; }
+    .e { stroke: #CBD4D1; stroke-width: 1.2; fill: none; }
+    .a { stroke: #4E7872; stroke-width: 1.5; fill: none; }
+    .k { fill: #4E7872; }
+    .t { font: 500 17px system-ui, sans-serif; fill: #141C1A; }
+    .s { font: 400 15px system-ui, sans-serif; fill: #46544F; }
+  </style>
+  <defs>
+    <marker id="ar" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L8 4 L0 8 z" fill="#4E7872" />
+    </marker>
+  </defs>
+
+  <g transform="translate(14 0)">
+    <text class="t" x="34" y="24">1. widths</text>
+    <text class="s" x="34" y="44">down</text>
+    <path class="a" d="M8 62 V200" marker-end="url(#ar)" />
+    <rect class="n" x="47" y="66" width="62" height="22" rx="3" />
+    <rect class="n" x="14" y="122" width="62" height="22" rx="3" />
+    <rect class="n" x="88" y="122" width="48" height="22" rx="3" />
+    <rect class="n" x="14" y="178" width="62" height="22" rx="3" />
+    <path class="e" d="M78 88 V105 H45 V122 M78 105 H112 V122 M45 144 V178" />
+    <path class="a" d="M47 96 H109 M14 152 H76 M88 152 H136 M14 208 H76" />
+  </g>
+
+  <g transform="translate(200 0)">
+    <text class="t" x="34" y="24">2. heights</text>
+    <text class="s" x="34" y="44">up</text>
+    <path class="a" d="M8 200 V62" marker-end="url(#ar)" />
+    <rect class="n" x="47" y="66" width="62" height="22" rx="3" />
+    <rect class="n" x="14" y="122" width="62" height="22" rx="3" />
+    <rect class="n" x="88" y="122" width="48" height="30" rx="3" />
+    <rect class="n" x="14" y="178" width="62" height="22" rx="3" />
+    <path class="e" d="M78 88 V105 H45 V122 M78 105 H112 V122 M45 144 V178" />
+    <path class="a" d="M117 66 V88 M84 122 V144 M144 122 V152 M84 178 V200" />
+  </g>
+
+  <g transform="translate(386 0)">
+    <text class="t" x="34" y="24">3. positions</text>
+    <text class="s" x="34" y="44">down</text>
+    <path class="a" d="M8 62 V200" marker-end="url(#ar)" />
+    <rect class="n" x="47" y="66" width="62" height="22" rx="3" />
+    <rect class="n" x="14" y="122" width="62" height="22" rx="3" />
+    <rect class="n" x="88" y="122" width="48" height="30" rx="3" />
+    <rect class="n" x="14" y="178" width="62" height="22" rx="3" />
+    <path class="e" d="M78 88 V105 H45 V122 M78 105 H112 V122 M45 144 V178" />
+    <circle class="k" cx="47" cy="66" r="3.6" />
+    <circle class="k" cx="14" cy="122" r="3.6" />
+    <circle class="k" cx="88" cy="122" r="3.6" />
+    <circle class="k" cx="14" cy="178" r="3.6" />
+  </g>
+</svg>

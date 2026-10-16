@@ -1,0 +1,46 @@
+<svg width="560" height="226" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 226" role="img" aria-label="A tall command list cut into two pages: the break misses a block, and a card's background fill is clipped to each page window instead of forbidding the break.">
+  <style>
+    .card { fill: none; stroke: #4E7872; stroke-width: 1.4; }
+    .blk { fill: #CBD4D1; }
+    .pg { fill: none; stroke: #141C1A; stroke-width: 1.2; }
+    .cut { stroke: #4E7872; stroke-width: 1.4; stroke-dasharray: 5 4; }
+    .t { font: 500 17px system-ui, sans-serif; fill: #141C1A; }
+    .s { font: 400 15px system-ui, sans-serif; fill: #46544F; }
+    .a { stroke: #CBD4D1; stroke-width: 1.2; fill: none; }
+  </style>
+  <defs>
+    <marker id="ar4" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L8 4 L0 8 z" fill="#CBD4D1" />
+    </marker>
+  </defs>
+
+  <text class="t" x="14" y="26">one flow</text>
+  <rect class="card" x="14" y="44" width="150" height="128" rx="4" />
+  <rect class="blk" x="28" y="58" width="104" height="8" rx="2" />
+  <rect class="blk" x="28" y="76" width="122" height="6" rx="2" />
+  <rect class="blk" x="28" y="88" width="122" height="6" rx="2" />
+  <rect class="blk" x="28" y="108" width="122" height="34" rx="2" />
+  <rect class="blk" x="28" y="152" width="86" height="6" rx="2" />
+  <rect class="blk" x="14" y="186" width="150" height="26" rx="2" />
+  <line class="cut" x1="4" y1="132" x2="174" y2="132" />
+  <text class="s" x="180" y="137">cut</text>
+
+  <path class="a" d="M212 120 H244" marker-end="url(#ar4)" />
+
+  <g transform="translate(258 0)">
+    <text class="t" x="0" y="26">page 1</text>
+    <rect class="pg" x="0" y="42" width="130" height="86" rx="2" />
+    <rect class="card" x="10" y="50" width="110" height="78" rx="4" />
+    <rect class="blk" x="22" y="60" width="80" height="8" rx="2" />
+    <rect class="blk" x="22" y="78" width="88" height="6" rx="2" />
+    <rect class="blk" x="22" y="90" width="88" height="6" rx="2" />
+  </g>
+
+  <g transform="translate(416 0)">
+    <text class="t" x="0" y="26">page 2</text>
+    <rect class="pg" x="0" y="42" width="130" height="86" rx="2" />
+    <rect class="card" x="10" y="42" width="110" height="46" rx="4" />
+    <rect class="blk" x="22" y="50" width="88" height="30" rx="2" />
+    <rect class="blk" x="10" y="100" width="110" height="20" rx="2" />
+  </g>
+</svg>

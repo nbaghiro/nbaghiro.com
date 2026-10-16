@@ -1,0 +1,53 @@
+<svg width="560" height="248" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 248" role="img" aria-label="One layout pass produces a flat command list, which four paint backends consume, and a separate region list, which hit-testing consumes.">
+  <style>
+    .n { fill: none; stroke: #141C1A; stroke-width: 1.2; }
+    .e { stroke: #CBD4D1; stroke-width: 1.2; fill: none; }
+    .c { fill: none; stroke: #4E7872; stroke-width: 1.4; }
+    .o { fill: none; stroke: #141C1A; stroke-width: 1.1; }
+    .t { font: 500 16px system-ui, sans-serif; fill: #141C1A; }
+    .m { font: 400 15px system-ui, sans-serif; fill: #141C1A; }
+    .a { stroke: #CBD4D1; stroke-width: 1.2; fill: none; }
+  </style>
+  <defs>
+    <marker id="ar3" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L8 4 L0 8 z" fill="#CBD4D1" />
+    </marker>
+  </defs>
+
+  <text class="t" x="6" y="26">tree</text>
+  <rect class="n" x="18" y="44" width="56" height="18" rx="3" />
+  <rect class="n" x="4" y="84" width="40" height="18" rx="3" />
+  <rect class="n" x="52" y="84" width="40" height="18" rx="3" />
+  <path class="e" d="M46 62 V73 H24 V84 M46 73 H72 V84" />
+  <path class="a" d="M100 94 H126" marker-end="url(#ar3)" />
+
+  <text class="t" x="140" y="26">commands</text>
+  <rect class="c" x="140" y="40" width="122" height="106" rx="3" />
+  <text class="m" x="154" y="64">rect</text>
+  <text class="m" x="154" y="88">text</text>
+  <text class="m" x="154" y="112">image</text>
+  <text class="m" x="154" y="136">surface</text>
+
+  <text class="t" x="140" y="180">regions</text>
+  <rect class="c" x="140" y="192" width="122" height="30" rx="3" />
+  <text class="m" x="154" y="213">boxes + ids</text>
+
+  <path class="a" d="M272 66 H306" marker-end="url(#ar3)" />
+  <path class="a" d="M272 94 H306" marker-end="url(#ar3)" />
+  <path class="a" d="M272 122 H306" marker-end="url(#ar3)" />
+  <path class="a" d="M272 150 H306" marker-end="url(#ar3)" />
+  <path class="a" d="M272 207 H306" marker-end="url(#ar3)" />
+
+  <g transform="translate(318 0)">
+    <rect class="o" x="0" y="52" width="160" height="28" rx="3" />
+    <text class="m" x="14" y="71">DOM, on screen</text>
+    <rect class="o" x="0" y="86" width="160" height="28" rx="3" />
+    <text class="m" x="14" y="105">canvas, present</text>
+    <rect class="o" x="0" y="120" width="160" height="28" rx="3" />
+    <text class="m" x="14" y="139">PDF, vector</text>
+    <rect class="o" x="0" y="154" width="160" height="28" rx="3" />
+    <text class="m" x="14" y="173">PPTX, shapes</text>
+    <rect class="o" x="0" y="192" width="160" height="30" rx="3" />
+    <text class="m" x="14" y="213">hit-testing</text>
+  </g>
+</svg>
