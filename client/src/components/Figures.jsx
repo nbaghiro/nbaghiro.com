@@ -1240,7 +1240,7 @@ export function LayerMemory() {
                 <text
                     className="fig-dim"
                     x={bx + 20}
-                    y={by + (narrow ? 108 : 92)}
+                    y={by + (narrow ? 112 : 116)}
                 >
                     iOS kills the tab at 2,048 MB
                 </text>
@@ -1412,11 +1412,7 @@ export function FivePasses() {
                         h={sheet.h}
                         d={0}
                     />
-                    <text
-                        className="fig-sub"
-                        x={sheet.x}
-                        y={sheet.y + sheet.h + 18}
-                    >
+                    <text className="fig-sub" x={sheet.x} y={sheet.y - 12}>
                         the canvas, after all five
                     </text>
                 </Plate>
@@ -1444,14 +1440,14 @@ const LEVELS = [
     { n: 6, grid: "64 × 56", cells: 3584 },
 ];
 const PYRAMID_GROUND = {
-    wide: [{ y: 318, amp: 9 }],
-    narrow: [{ y: 600, amp: 8 }],
+    wide: [{ y: 330, amp: 9 }],
+    narrow: [{ y: 612, amp: 8 }],
 };
 
 export function TilePyramid() {
     const narrow = useNarrow();
-    const box = narrow ? { w: NARROW, h: 640 } : { w: WIDE, h: 332 };
-    const top = narrow ? 44 : 56;
+    const box = narrow ? { w: NARROW, h: 650 } : { w: WIDE, h: 348 };
+    const top = narrow ? 44 : 52;
     const pitch = narrow ? 32 : 34;
     const wMax = narrow ? 150 : 210;
     const foldX = narrow ? 8 : 438;
@@ -1511,7 +1507,8 @@ export function TilePyramid() {
                                 {l.grid}
                             </text>
                             <text className="fig-sub" x={w + 74} y={y + 15}>
-                                {l.cells.toLocaleString("en-GB")} cells
+                                {l.cells.toLocaleString("en-GB")}
+                                {l.cells === 1 ? " cell" : " cells"}
                             </text>
                         </g>
                     );
@@ -1529,7 +1526,9 @@ export function TilePyramid() {
                         33,467 slots
                     </text>
                     <text className="fig-sub" x="0" y="17">
-                        sea, blank paper, flat land, mostly alike
+                        {narrow
+                            ? "sea and blank paper, mostly alike"
+                            : "sea, blank paper, flat land, mostly alike"}
                     </text>
                     <g className="fig-mist">
                         {Array.from({ length: 7 }, (_, i) => (
@@ -1544,21 +1543,29 @@ export function TilePyramid() {
                     </g>
                     <path
                         className="fig-water"
-                        d={`M${narrow ? 140 : 190} 56 h${narrow ? 40 : 44} m0 0 l-7 -4 m7 4 l-7 4`}
+                        d={
+                            narrow
+                                ? "M60 106 v26 m0 0 l-4 -7 m4 7 l4 -7"
+                                : "M190 56 h44 m0 0 l-7 -4 m7 4 l-7 4"
+                        }
                     />
-                    <g transform={`translate(${narrow ? 190 : 250} 0)`}>
+                    <g
+                        transform={
+                            narrow ? "translate(0 146)" : "translate(250 0)"
+                        }
+                    >
                         <rect
                             className="fig-wash strong"
                             x="0"
                             y="32"
-                            width={narrow ? 100 : 130}
+                            width={narrow ? 120 : 130}
                             height="34"
                         />
                         <rect
                             className="fig-ink"
                             x="0"
                             y="32"
-                            width={narrow ? 100 : 130}
+                            width={narrow ? 120 : 130}
                             height="34"
                         />
                         <text className="fig-title sm" x="0" y="0">
@@ -1638,34 +1645,28 @@ export function ReuseSettle() {
                 </text>
                 <text className="fig-sub" x="0" y={narrow ? 38 : 44}>
                     a drawing keeps the texture it has,
-                    <tspan x="0" dy={narrow ? 15 : 0}>
-                        {narrow ? "" : " "}unless it would look twice as soft
-                    </tspan>
+                    {narrow ? (
+                        <tspan x="0" dy="15">
+                            unless it would look twice as soft
+                        </tspan>
+                    ) : (
+                        <tspan> unless it would look twice as soft</tspan>
+                    )}
                 </text>
 
                 <g
-                    transform={`translate(${narrow ? 34 : 60} ${narrow ? 88 : 72})`}
+                    transform={`translate(${narrow ? 34 : 60} ${narrow ? 96 : 84})`}
                 >
                     <Leafy x={0} y={0} s={narrow ? 1.5 : 1.7} soft />
-                    <text
-                        className="fig-row"
-                        x={20}
-                        y={narrow ? 84 : 92}
-                        textAnchor="middle"
-                    >
+                    <text className="fig-row" x={20} y="-8" textAnchor="middle">
                         kept
                     </text>
                 </g>
                 <g
-                    transform={`translate(${narrow ? 176 : 480} ${narrow ? 88 : 72})`}
+                    transform={`translate(${narrow ? 176 : 480} ${narrow ? 96 : 84})`}
                 >
                     <Leafy x={0} y={0} s={narrow ? 1.5 : 1.7} />
-                    <text
-                        className="fig-row"
-                        x={20}
-                        y={narrow ? 84 : 92}
-                        textAnchor="middle"
-                    >
+                    <text className="fig-row" x={20} y="-8" textAnchor="middle">
                         drawn again
                     </text>
                 </g>
