@@ -29,10 +29,9 @@ function Home() {
 
             <section className="entry" aria-label="Where to go">
                 <p className="entry-note">
-                    I work on these on my own, which means the code, the
-                    hosting, the billing, the support, and finding the people
-                    each one is for. Most of what I have learned came from the
-                    parts that are not code.
+                    Each of these is run by one person, so the work includes the
+                    code, the servers, billing, support and sales. The writing
+                    here is mostly about the parts that are not code.
                 </p>
 
                 <nav className="doors" aria-label="Sections">
