@@ -2215,6 +2215,442 @@ export function ProviderShape() {
     );
 }
 
+/* ---- reads replicate, writes are commands ---- */
+
+// One arrow in the figures' language: a hairline with a small head, and an optional label
+// set along it.
+function FlowArrow({ from, to, label, dash, d }) {
+    const [x1, y1] = from;
+    const [x2, y2] = to;
+    const horizontal = y1 === y2;
+    const head = horizontal
+        ? `M${x2} ${y2} l-7 -4 M${x2} ${y2} l-7 4`
+        : `M${x2} ${y2} l-4 ${y2 > y1 ? -7 : 7} M${x2} ${y2} l4 ${y2 > y1 ? -7 : 7}`;
+    return (
+        <g
+            data-anim={d === undefined ? undefined : "in"}
+            style={d === undefined ? undefined : at(d)}
+        >
+            <path
+                className={dash ? "fig-mist dash" : "fig-water"}
+                d={`M${x1} ${y1} H${x2} V${y2}`}
+            />
+            <path className={dash ? "fig-mist" : "fig-water"} d={head} />
+            {label && (
+                <text
+                    className="fig-dim"
+                    x={horizontal ? (x1 + x2) / 2 : x1 + 8}
+                    y={horizontal ? y1 - 9 : (y1 + y2) / 2}
+                    textAnchor={horizontal ? "middle" : "start"}
+                >
+                    {label}
+                </text>
+            )}
+        </g>
+    );
+}
+
+// A labelled box: the name inside, a quiet line under it when there is one.
+function Boxed({ x, y, w, h, name, note, wash }) {
+    return (
+        <g>
+            {wash && (
+                <rect className="fig-wash" x={x} y={y} width={w} height={h} />
+            )}
+            <rect className="fig-ink" x={x} y={y} width={w} height={h} />
+            <text
+                className="fig-title sm"
+                x={x + 14}
+                y={y + (note ? 26 : h / 2 + 6)}
+            >
+                {name}
+            </text>
+            {note && (
+                <text className="fig-sub" x={x + 14} y={y + 44}>
+                    {note}
+                </text>
+            )}
+        </g>
+    );
+}
+
+const PATHS_GROUND = {
+    wide: [{ y: 300, amp: 9 }],
+    narrow: [{ y: 486, amp: 8 }],
+};
+
+export function TwoPaths() {
+    const narrow = useNarrow();
+    const box = narrow ? { w: NARROW, h: 520 } : { w: WIDE, h: 322 };
+    if (narrow) {
+        const w = NARROW - 40;
+        const rows = [
+            { name: "Postgres", note: "the source of truth", y: 40 },
+            {
+                name: "SQLite on the device",
+                note: "only this business's rows",
+                y: 150,
+            },
+            { name: "the screen", note: "a local query, no request", y: 260 },
+            { name: "a command", note: "lock, check, write, audit", y: 370 },
+        ];
+        return (
+            <svg
+                className="fig"
+                viewBox={frame(box.w, box.h)}
+                role="img"
+                aria-label="Reads leave Postgres through the replication log and arrive in the device's own SQLite, which the screen queries. A write goes the other way as a command, and returns to every device through the same log."
+            >
+                <Plate w={box.w} h={box.h} ground={PATHS_GROUND.narrow}>
+                    {rows.map((r) => (
+                        <Boxed
+                            key={r.name}
+                            x={0}
+                            y={r.y}
+                            w={w}
+                            h={62}
+                            name={r.name}
+                            note={r.note}
+                            wash={r.name === "a command"}
+                        />
+                    ))}
+                    <FlowArrow
+                        from={[w / 2, 102]}
+                        to={[w / 2, 150]}
+                        label="replication log"
+                    />
+                    <FlowArrow from={[w / 2, 212]} to={[w / 2, 260]} />
+                    <FlowArrow
+                        from={[w / 2, 322]}
+                        to={[w / 2, 370]}
+                        label="a write"
+                    />
+                    <path
+                        className="fig-water"
+                        d={`M${w} 401 H${w + 22} V71 H${w}`}
+                    />
+                    <path
+                        className="fig-water"
+                        d={`M${w} 71 l7 -4 M${w} 71 l7 4`}
+                    />
+                    <text className="fig-dim" x={w - 4} y="24" textAnchor="end">
+                        and back out the same way
+                    </text>
+                </Plate>
+            </svg>
+        );
+    }
+    return (
+        <svg
+            className="fig"
+            viewBox={frame(box.w, box.h)}
+            role="img"
+            aria-label="Reads leave Postgres through the replication log and arrive in the device's own SQLite, which the screen queries. A write goes the other way as a command, and returns to every device through the same log."
+        >
+            <Plate w={box.w} h={box.h} ground={PATHS_GROUND.wide}>
+                <text className="fig-title" x="0" y="22">
+                    one loop
+                </text>
+                <Boxed
+                    x={0}
+                    y={52}
+                    w={176}
+                    h={62}
+                    name="Postgres"
+                    note="the source of truth"
+                />
+                <Boxed
+                    x={292}
+                    y={52}
+                    w={210}
+                    h={62}
+                    name="SQLite on the device"
+                    note="only this business's rows"
+                />
+                <Boxed
+                    x={620}
+                    y={52}
+                    w={200}
+                    h={62}
+                    name="the screen"
+                    note="a local query, no request"
+                />
+                <FlowArrow
+                    from={[176, 83]}
+                    to={[292, 83]}
+                    label="replication log"
+                />
+                <FlowArrow from={[502, 83]} to={[620, 83]} />
+                <Boxed
+                    x={292}
+                    y={196}
+                    w={210}
+                    h={62}
+                    name="a command"
+                    note="lock, check, write, audit"
+                    wash
+                />
+                <FlowArrow from={[720, 114]} to={[720, 196]} label="a write" />
+                <path className="fig-water" d="M720 196 H502" />
+                <path className="fig-water" d="M502 196 l7 -4 M502 196 l7 4" />
+                <path className="fig-water" d="M292 227 H88 V114" />
+                <path className="fig-water" d="M88 114 l-4 7 M88 114 l4 7" />
+                <text className="fig-dim" x="96" y="168">
+                    and back out the same way
+                </text>
+                <text className="fig-sub" x="0" y="286">
+                    the API is not in the read loop, and it is the only way into
+                    the write one
+                </text>
+            </Plate>
+        </svg>
+    );
+}
+
+/* ---- the five checks inside one command ---- */
+
+const CHECKS = [
+    "the member is not on time off",
+    "the business is not closed",
+    "the time is inside their working hours",
+    "the seat, or the visits around it, leave room",
+    "the resource the service needs is free",
+];
+const WRITTEN = ["the slot", "the booking", "the audit row"];
+const CHECK_GROUND = {
+    wide: [{ y: 312, amp: 9 }],
+    narrow: [{ y: 582, amp: 8 }],
+};
+
+export function FiveChecks() {
+    const narrow = useNarrow();
+    const box = narrow ? { w: NARROW, h: 620 } : { w: WIDE, h: 334 };
+    const top = narrow ? 92 : 78;
+    const pitch = narrow ? 42 : 40;
+    const tx = narrow
+        ? { x: 0, y: 352, w: NARROW, h: 180 }
+        : { x: 530, y: 68, w: 290, h: 196 };
+    return (
+        <svg
+            className="fig"
+            viewBox={frame(box.w, box.h)}
+            role="img"
+            aria-label="One command: an advisory lock on the team member, five checks against rows another device may be changing, then the slot, the booking and the audit row written in a single transaction."
+        >
+            <Plate
+                w={box.w}
+                h={box.h}
+                ground={CHECK_GROUND[narrow ? "narrow" : "wide"]}
+            >
+                <text className="fig-title" x="0" y={narrow ? 18 : 22}>
+                    one command
+                </text>
+                <rect
+                    className="fig-wash"
+                    x="0"
+                    y={narrow ? 36 : 44}
+                    width={narrow ? NARROW : 470}
+                    height="26"
+                />
+                <rect
+                    className="fig-ink"
+                    x="0"
+                    y={narrow ? 36 : 44}
+                    width={narrow ? NARROW : 470}
+                    height="26"
+                />
+                <text className="fig-sub" x="12" y={narrow ? 54 : 62}>
+                    advisory lock on the member, held to the end
+                </text>
+                {CHECKS.map((c, i) => (
+                    <g key={c}>
+                        <text
+                            className="fig-num"
+                            x="0"
+                            y={top + i * pitch + 12}
+                        >
+                            {i + 1}
+                        </text>
+                        <text
+                            className="fig-row"
+                            x="26"
+                            y={top + i * pitch + 12}
+                        >
+                            {c}
+                        </text>
+                        <line
+                            className="fig-mist"
+                            x1="0"
+                            y1={top + i * pitch + 24}
+                            x2={narrow ? NARROW : 470}
+                            y2={top + i * pitch + 24}
+                        />
+                    </g>
+                ))}
+                <rect
+                    className="fig-ink"
+                    x={tx.x}
+                    y={tx.y}
+                    width={tx.w}
+                    height={tx.h}
+                />
+                <text className="fig-title sm" x={tx.x + 18} y={tx.y + 32}>
+                    one transaction
+                </text>
+                {WRITTEN.map((wname, i) => (
+                    <g key={wname}>
+                        <rect
+                            className="fig-wash strong"
+                            x={tx.x + 18}
+                            y={tx.y + 50 + i * 38}
+                            width={tx.w - 36}
+                            height="28"
+                        />
+                        <text
+                            className="fig-sub"
+                            x={tx.x + 30}
+                            y={tx.y + 69 + i * 38}
+                        >
+                            {wname}
+                        </text>
+                    </g>
+                ))}
+                {!narrow && <FlowArrow from={[470, 166]} to={[530, 166]} />}
+                {narrow && (
+                    <FlowArrow
+                        from={[NARROW / 2, 306]}
+                        to={[NARROW / 2, 352]}
+                    />
+                )}
+            </Plate>
+        </svg>
+    );
+}
+
+/* ---- the life of one offline proposal ---- */
+
+const STATES = [
+    { name: "queued", note: "absorbs more edits" },
+    { name: "sending", note: "payload frozen" },
+    { name: "accepted", note: "a revision comes back" },
+    { name: "retired", note: "the replica shows it" },
+];
+const WEEK_GROUND = {
+    wide: [{ y: 318, amp: 9 }],
+    narrow: [{ y: 524, amp: 8 }],
+};
+
+export function OutboxWeek() {
+    const narrow = useNarrow();
+    const [host, shown] = useReveal();
+    const [run, setRun] = useState(0);
+    const box = narrow ? { w: NARROW, h: 562 } : { w: WIDE, h: 340 };
+    const cw = narrow ? NARROW : 176;
+    const gap = narrow ? 0 : 38;
+    const top = narrow ? 46 : 70;
+    const at0 = (i) => +(i * 0.34).toFixed(2);
+    return (
+        <div className="fig-host" ref={host}>
+            <svg
+                key={run}
+                className={shown ? "fig playing" : "fig"}
+                viewBox={frame(box.w, box.h)}
+                role="img"
+                aria-label="One proposal's life: queued and still editable, frozen the moment it is sent, accepted with a revision, and retired only when that revision appears in the replica. A refusal stops the chain and keeps the week for review."
+            >
+                <Plate
+                    w={box.w}
+                    h={box.h}
+                    ground={WEEK_GROUND[narrow ? "narrow" : "wide"]}
+                >
+                    <text className="fig-title" x="0" y={narrow ? 18 : 24}>
+                        one working week, offline
+                    </text>
+                    {STATES.map((st, i) => {
+                        const x = narrow ? 0 : i * (cw + gap);
+                        const y = narrow ? top + i * 84 : top;
+                        return (
+                            <g key={st.name} data-anim="in" style={at(at0(i))}>
+                                <Boxed
+                                    x={x}
+                                    y={y}
+                                    w={cw}
+                                    h={66}
+                                    name={st.name}
+                                    note={st.note}
+                                    wash={i < 2}
+                                />
+                            </g>
+                        );
+                    })}
+                    {STATES.slice(1).map((st, i) =>
+                        narrow ? (
+                            <FlowArrow
+                                key={st.name}
+                                from={[cw / 2, top + i * 84 + 66]}
+                                to={[cw / 2, top + (i + 1) * 84]}
+                                d={at0(i + 1)}
+                            />
+                        ) : (
+                            <FlowArrow
+                                key={st.name}
+                                from={[(i + 1) * cw + i * gap, top + 33]}
+                                to={[(i + 1) * (cw + gap), top + 33]}
+                                d={at0(i + 1)}
+                            />
+                        )
+                    )}
+                    <g data-anim="in" style={at(at0(4))}>
+                        <rect
+                            className="fig-ink"
+                            x={narrow ? 0 : 214}
+                            y={narrow ? 396 : 196}
+                            width={narrow ? NARROW : 338}
+                            height="66"
+                        />
+                        <text
+                            className="fig-title sm"
+                            x={(narrow ? 0 : 214) + 14}
+                            y={(narrow ? 396 : 196) + 26}
+                        >
+                            refused
+                        </text>
+                        <text
+                            className="fig-sub"
+                            x={(narrow ? 0 : 214) + 14}
+                            y={(narrow ? 396 : 196) + 44}
+                        >
+                            the chain stops, the week is kept for review
+                        </text>
+                        <text
+                            className="fig-sub"
+                            x={narrow ? 0 : 214}
+                            y={(narrow ? 396 : 196) + 92}
+                        >
+                            apply it again against the fresh revision, or
+                            discard it
+                        </text>
+                    </g>
+                    <g data-anim="in" style={at(at0(4))}>
+                        <FlowArrow
+                            from={narrow ? [cw / 2, 214] : [302, top + 66]}
+                            to={narrow ? [cw / 2, 396] : [302, 196]}
+                            dash
+                        />
+                    </g>
+                </Plate>
+            </svg>
+            <button
+                type="button"
+                className="fig-replay"
+                onClick={() => setRun((n) => n + 1)}
+            >
+                Play the states again
+            </button>
+        </div>
+    );
+}
+
 export const FIGURES = {
     "three-passes": ThreePasses,
     "three-formats": ThreeFormats,
@@ -2227,4 +2663,7 @@ export const FIGURES = {
     "two-callers": TwoCallers,
     "one-definition": OneDefinition,
     "provider-shape": ProviderShape,
+    "two-paths": TwoPaths,
+    "five-checks": FiveChecks,
+    "outbox-week": OutboxWeek,
 };
