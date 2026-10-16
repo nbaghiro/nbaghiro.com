@@ -71,11 +71,26 @@
 }
 
 .ask-q {
-    max-width: 62ch;
-    color: #cfdcd7;
+    position: relative;
+    max-width: 46ch;
+    margin-left: auto;
+    padding-top: 14px;
+    text-align: right;
+    color: #eef3f1;
     font-family: var(--font-display);
     font-size: 21px;
     line-height: 1.35;
+}
+.ask-q::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 34px;
+    border-top: 1px solid var(--water);
+}
+.ask-q + .ask-a {
+    margin-top: -4px;
 }
 .ask-a {
     max-width: 68ch;
@@ -222,4 +237,40 @@
 }
 .ask-modal .ask-form {
     margin-top: 4px;
+}
+
+@media (max-width: 819px) {
+    .ask-modal {
+        width: 100vw;
+        max-width: 100vw;
+        height: 100dvh;
+        max-height: none;
+        margin: 0;
+    }
+    .ask-modal-inner {
+        position: relative;
+        height: 100dvh;
+        grid-template-rows: 27dvh 1fr;
+    }
+    .ask-plate {
+        height: auto;
+    }
+    .ask-panel {
+        position: static;
+        min-height: 0;
+        padding: 16px 18px calc(14px + env(safe-area-inset-bottom));
+    }
+    .ask-close {
+        top: 12px;
+        right: 14px;
+        color: #eef3f1;
+        text-shadow: 0 1px 6px rgba(10, 18, 16, 0.6);
+    }
+    .ask-thread {
+        padding: 14px 0 16px;
+        gap: 16px;
+    }
+    .ask-q {
+        font-size: 19px;
+    }
 }
