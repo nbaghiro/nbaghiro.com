@@ -30,7 +30,7 @@ function Home() {
             </header>
 
             <section className="entry" aria-label="Where to go">
-                <PageArt kind="fern" side="left" top={210} />
+                <PageArt seed="home" count={2} />
                 <div className="entry-side">
                     <p className="entry-note">
                         Each of these is run by one person, so the work includes

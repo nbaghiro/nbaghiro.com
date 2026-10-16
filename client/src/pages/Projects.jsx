@@ -5,8 +5,7 @@ import "./Projects.css";
 function Projects() {
     return (
         <article className="page">
-            <PageArt kind="cattails" side="left" top={330} />
-            <PageArt kind="branch" side="right" top={720} flip />
+            <PageArt seed="projects" count={3} />
             <header className="page-head">
                 <h1>Projects</h1>
                 <p>

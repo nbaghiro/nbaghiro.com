@@ -6,7 +6,7 @@ import "./About.css";
 function About() {
     return (
         <article className="page about">
-            <PageArt kind="seedling" side="right" top={360} />
+            <PageArt seed="about" count={2} />
             <header className="page-head">
                 <h1>Résumé</h1>
                 <p>
