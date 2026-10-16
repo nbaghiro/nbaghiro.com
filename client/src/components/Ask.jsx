@@ -97,9 +97,7 @@ function Ask() {
                     <figure className="ask-plate">
                         <img src="/img/ask.webp" alt="" />
                         <figcaption>
-                            <p className="ask-plate-title">
-                                Talk to my agent
-                            </p>
+                            <p className="ask-plate-title">Talk to my agent</p>
                             <p className="ask-plate-line">
                                 An AI assistant with access to the project code
                                 and its history.
@@ -175,7 +173,9 @@ function Ask() {
                                 value={reply}
                                 onChange={(e) => setReply(e.target.value)}
                                 placeholder={
-                                    busy ? "Reading the code" : "Ask a follow-up question"
+                                    busy
+                                        ? "Reading the code"
+                                        : "Ask a follow-up question"
                                 }
                                 aria-label="Ask another question"
                                 disabled={busy}
