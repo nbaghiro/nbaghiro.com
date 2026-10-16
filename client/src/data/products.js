@@ -10,7 +10,7 @@ export const PRODUCTS = [
         url: "https://clientbridge.ca",
         state: "On a waitlist",
         note: "Booking, invoicing, card payments and sales tax by province, in one app, for service businesses from one person to a small team.",
-        detail: "Newest, and where most of my time goes.",
+        detail: "The one with the most moving parts: money, scheduling and tax.",
     },
     {
         id: "galleo",
@@ -18,7 +18,7 @@ export const PRODUCTS = [
         url: "https://galleo.app",
         state: "Live",
         note: "Decks, documents and websites from one set of blocks, where one layout engine draws both the screen and the exported file.",
-        detail: "Used mostly by people working alone who need a sales or marketing deck.",
+        detail: "Used mostly by people working alone who need a deck.",
     },
     {
         id: "lumischool",
@@ -26,7 +26,7 @@ export const PRODUCTS = [
         url: "https://lumischool.ai",
         state: "Live",
         note: "Lessons for children aged 5 to 10 across nine subjects, drawn in one hand-drawn style, every question checked by a program before a child sees it.",
-        detail: "The people using it are families.",
+        detail: "Made for families teaching at home.",
     },
     {
         id: "flowmaestro",
@@ -42,7 +42,7 @@ export const PRODUCTS = [
         url: "https://llamatrade.ai",
         state: "One user",
         note: "Write a trading strategy in a small language, test it over years of data, and trade it through a broker on the same code.",
-        detail: "Public as a waitlist; so far the only person using it is me.",
+        detail: "Built for one user, me.",
     },
 ];
 

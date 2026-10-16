@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { useFavicon } from "../favicon";
 import "./SiteLayout.css";
 
 // The header floats over the hero in white, then takes the page ground once the hero has
@@ -7,6 +8,7 @@ import "./SiteLayout.css";
 function SiteLayout() {
     const { pathname } = useLocation();
     const overImage = pathname === "/";
+    useFavicon("photo");
     const [solid, setSolid] = useState(!overImage);
 
     useEffect(() => {
@@ -24,8 +26,16 @@ function SiteLayout() {
     return (
         <div className="site">
             <header className={solid ? "site-header solid" : "site-header"}>
-                <Link to="/" className="site-logo">
-                    Naib Baghirov
+                {/* the landing page already says the name, in the hero; the bar only
+                    adds it once that has scrolled away */}
+                <Link to="/" className="site-logo" aria-label="Home">
+                    <img
+                        src="/img/portrait.webp"
+                        alt=""
+                        width="34"
+                        height="34"
+                    />
+                    <span>Naib Baghirov</span>
                 </Link>
                 <nav className="site-nav" aria-label="Primary">
                     <Link to="/writing">Writing</Link>

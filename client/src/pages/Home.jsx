@@ -28,9 +28,10 @@ function Home() {
 
             <section className="entry" aria-label="Where to go">
                 <p className="entry-note">
-                    Five products, most with a handful of people using them who
-                    found them on their own. I am working out which one should
-                    get all of the time.
+                    Everything here is something I built and then had to run:
+                    the code, the hosting, the billing, the support, and finding
+                    the people it is for. That second half is the part worth
+                    writing down.
                 </p>
 
                 <nav className="doors" aria-label="Sections">

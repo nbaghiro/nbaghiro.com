@@ -26,10 +26,33 @@
 }
 
 .site-logo {
+    display: flex;
+    align-items: center;
+    gap: 11px;
     font-family: var(--font-display);
     font-size: 19px;
     letter-spacing: -0.01em;
     white-space: nowrap;
+}
+.site-logo img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+.site-header.solid .site-logo img {
+    box-shadow: 0 0 0 1px var(--mist);
+}
+/* over the hero the name is already set in type below, so only the portrait shows */
+.site-header:not(.solid) .site-logo span {
+    opacity: 0;
+    transform: translateX(-6px);
+}
+.site-logo span {
+    transition:
+        opacity 0.25s,
+        transform 0.25s;
 }
 
 .site-nav {

@@ -7,9 +7,8 @@ function Projects() {
             <header className="page-head">
                 <h1>Projects</h1>
                 <p>
-                    Five products I build and run. Most have a handful of people
-                    using them who found them on their own, before any outreach
-                    from me.
+                    The products I build and run. Each one is live, in testing
+                    or in progress; where it stands is noted beside it.
                 </p>
             </header>
 

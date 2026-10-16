@@ -9,8 +9,8 @@ export function Writing() {
             <header className="page-head">
                 <h1>Writing</h1>
                 <p>
-                    How the parts underneath are built: the decisions, what they
-                    cost, and what I would do differently.
+                    How the parts underneath are built: the decisions, what
+                    they cost, and what I would do differently.
                 </p>
             </header>
             <ul className="post-list">
