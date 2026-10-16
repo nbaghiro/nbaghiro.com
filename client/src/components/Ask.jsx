@@ -65,7 +65,7 @@ function Ask() {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Ask about a project"
-                    aria-label="Ask about the work"
+                    aria-label="Talk to my agent"
                 />
                 <button type="submit" disabled={!text.trim()}>
                     Ask
@@ -98,7 +98,7 @@ function Ask() {
                         <img src="/img/ask.webp" alt="" />
                         <figcaption>
                             <p className="ask-plate-title">
-                                Ask about the work
+                                Talk to my agent
                             </p>
                             <p className="ask-plate-line">
                                 An AI assistant with access to the project code

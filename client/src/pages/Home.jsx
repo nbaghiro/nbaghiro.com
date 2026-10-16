@@ -28,7 +28,7 @@ function Home() {
                         type="button"
                         onClick={openAsk}
                     >
-                        Ask about the work
+                        Talk to my agent
                     </button>
                 </div>
             </header>
@@ -105,7 +105,7 @@ function Home() {
             <section className="ask-band" aria-labelledby="ask-title">
                 <div className="ask-inner">
                     <div className="ask-head">
-                        <h2 id="ask-title">Ask about the work</h2>
+                        <h2 id="ask-title">Talk to my agent</h2>
                         <p className="ask-lede">
                             An AI assistant that can read the project code and
                             its history. Ask how a feature works, why it was
