@@ -9,19 +9,29 @@ export function Writing() {
             <header className="page-head">
                 <h1>Writing</h1>
                 <p>
-                    How the parts underneath are built: the decisions, what
-                    they cost, and what I would do differently.
+                    How the parts underneath are built: the decisions, what they
+                    cost, and what I would do differently.
                 </p>
             </header>
             <ul className="post-list">
                 {POSTS.map((post) => (
                     <li key={post.slug}>
-                        <Link to={`/writing/${post.slug}`}>
-                            <h2>{post.title}</h2>
-                            <p className="post-summary">{post.summary}</p>
-                            <p className="post-meta">
-                                {post.about} · {readableDate(post.date)}
-                            </p>
+                        <Link to={`/blogs/${post.slug}`}>
+                            {post.card && (
+                                <img
+                                    className="post-card"
+                                    src={post.card}
+                                    alt=""
+                                    loading="lazy"
+                                />
+                            )}
+                            <div>
+                                <h2>{post.title}</h2>
+                                <p className="post-summary">{post.summary}</p>
+                                <p className="post-meta">
+                                    {post.about} · {readableDate(post.date)}
+                                </p>
+                            </div>
                         </Link>
                     </li>
                 ))}
@@ -40,24 +50,34 @@ export function Post() {
                     <h1>Not here</h1>
                     <p>
                         That piece does not exist.{" "}
-                        <Link to="/writing">The rest of them.</Link>
+                        <Link to="/blogs">The rest of them.</Link>
                     </p>
                 </header>
             </article>
         );
     }
     return (
-        <article className="page post">
-            <header className="page-head">
-                <h1>{post.title}</h1>
-                <p className="post-meta">
-                    {post.about} · {readableDate(post.date)}
+        <article className="post">
+            {post.cover && (
+                <img
+                    className="post-cover"
+                    src={post.cover}
+                    alt=""
+                    fetchPriority="high"
+                />
+            )}
+            <div className="page">
+                <header className="page-head">
+                    <h1>{post.title}</h1>
+                    <p className="post-meta">
+                        {post.about} · {readableDate(post.date)}
+                    </p>
+                </header>
+                <Prose text={post.body} />
+                <p className="post-back">
+                    <Link to="/blogs">More writing</Link>
                 </p>
-            </header>
-            <Prose text={post.body} />
-            <p className="post-back">
-                <Link to="/writing">More writing</Link>
-            </p>
+            </div>
         </article>
     );
 }

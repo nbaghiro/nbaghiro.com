@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route, useParams } from "react-router-dom";
 import SiteLayout from "./components/SiteLayout";
 import DarkLayout from "./components/DarkLayout";
 import Home from "./pages/Home";
@@ -8,14 +8,25 @@ import Overworld from "./pages/Overworld";
 import About from "./pages/About";
 import Ads from "./pages/ads/Ads";
 
+function WritingRedirect() {
+    const { slug } = useParams();
+    return <Navigate to={`/blogs/${slug}`} replace />;
+}
+
 function App() {
     return (
         <Routes>
             <Route path="/" element={<SiteLayout />}>
                 <Route index element={<Home />} />
                 <Route path="projects" element={<Projects />} />
-                <Route path="writing" element={<Writing />} />
-                <Route path="writing/:slug" element={<Post />} />
+                <Route path="blogs" element={<Writing />} />
+                <Route path="blogs/:slug" element={<Post />} />
+                {/* the section moved from /writing; anything already linked still lands */}
+                <Route
+                    path="writing"
+                    element={<Navigate to="/blogs" replace />}
+                />
+                <Route path="writing/:slug" element={<WritingRedirect />} />
                 <Route path="about" element={<About />} />
             </Route>
             {/* The first version of the site, kept for anyone who liked it; the ad studios

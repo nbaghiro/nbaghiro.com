@@ -38,7 +38,7 @@ function SiteLayout() {
                     <span>Naib Baghirov</span>
                 </Link>
                 <nav className="site-nav" aria-label="Primary">
-                    <Link to="/writing">Writing</Link>
+                    <Link to="/blogs">Writing</Link>
                     <Link to="/projects">Projects</Link>
                     <Link to="/about">Résumé</Link>
                     <a

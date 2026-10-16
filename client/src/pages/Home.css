@@ -117,16 +117,29 @@
 
 .latest {
     list-style: none;
-    margin-top: 30px;
+    margin-top: 34px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
 }
 .latest a {
+    display: grid;
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+}
+.latest img {
+    width: 86px;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    display: block;
+    background: var(--mist);
+}
+.latest a > span {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 6px 14px;
+    gap: 2px 14px;
 }
 .latest-title {
     font-family: var(--font-display);
