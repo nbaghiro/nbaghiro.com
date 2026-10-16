@@ -50,6 +50,21 @@ function Prose({ text }) {
                     <code>{code.join("\n")}</code>
                 </pre>
             );
+        } else if (/^!\[[^\]]*\]\([^)\s]+\)$/.test(line.trim())) {
+            // a figure on its own line: the alt text doubles as the caption, since a diagram
+            // that needs explaining in the caption needs the same words read aloud. Not lazy:
+            // these carry the argument, and a deferred one has no height to reserve space with.
+            const fig = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(line.trim());
+            const src = fig[2];
+            out.push(
+                src.startsWith("/") ? (
+                    <figure key={out.length}>
+                        <img src={src} alt={fig[1]} />
+                        <figcaption>{fig[1]}</figcaption>
+                    </figure>
+                ) : null
+            );
+            i += 1;
         } else if (/^#{1,3} /.test(line)) {
             // the piece's title is the page's h1, so a heading in the body starts at h2
             const level = line.indexOf(" ");
@@ -88,7 +103,7 @@ function Prose({ text }) {
             while (
                 i < lines.length &&
                 lines[i].trim() &&
-                !/^(#{1,3} |> |```|[-*] |\d+\. )/.test(lines[i])
+                !/^(#{1,3} |> |```|[-*] |\d+\. |!\[)/.test(lines[i])
             ) {
                 para.push(lines[i]);
                 i += 1;

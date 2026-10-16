@@ -26,6 +26,8 @@ function parse(path, raw) {
         date: meta.date ?? "",
         summary: meta.summary ?? "",
         about: meta.about ?? "",
+        cover: meta.cover ?? "",
+        card: meta.card ?? "",
         body: rest.join("\n\n"),
     };
 }
