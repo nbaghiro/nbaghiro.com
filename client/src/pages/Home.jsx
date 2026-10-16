@@ -30,7 +30,7 @@ function Home() {
             </header>
 
             <section className="entry" aria-label="Where to go">
-                <PageArt kind="reflection" side="left" top={150} />
+                <PageArt kind="shore" side="left" top={170} />
                 <div className="entry-side">
                     <p className="entry-note">
                         Each of these is run by one person, so the work includes
@@ -153,7 +153,6 @@ function Home() {
                             >
                                 GitHub
                             </a>
-                            <Link to="/dark">The old site</Link>
                         </div>
                     </nav>
                 </div>

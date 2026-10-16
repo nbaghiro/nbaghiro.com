@@ -1,11 +1,13 @@
 import { Link, useParams } from "react-router-dom";
 import { POSTS, postBySlug, readableDate } from "../data/writing";
 import Prose from "../components/Prose";
+import PageArt from "../components/PageArt";
 import "./Writing.css";
 
 export function Writing() {
     return (
         <article className="page">
+            <PageArt kind="branch" side="right" top={190} />
             <header className="page-head">
                 <h1>Writing</h1>
                 <p>
@@ -67,6 +69,8 @@ export function Post() {
                 />
             )}
             <div className="page">
+                <PageArt kind="reeds" side="left" top={340} />
+                <PageArt kind="shore" side="right" top={1700} />
                 <header className="page-head">
                     <h1>{post.title}</h1>
                     <p className="post-meta">

@@ -1,0 +1,60 @@
+/* The margins only. A plate sits outside the page column, never over the measure, and it
+   fades at both ends and towards the text, so it reads as weather beside the page rather
+   than as a picture pinned to it. Below the width where the margin closes up it is not
+   drawn at all. */
+
+.page-art {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    user-select: none;
+    width: clamp(118px, 12vw, 230px);
+    height: var(--plate-h, 520px);
+}
+.page-art.left {
+    right: calc(100% + 26px);
+}
+.page-art.right {
+    left: calc(100% + 26px);
+}
+.page-art img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--plate-pos, 50% 50%);
+    /* the fog is already transparent in the file, so only the subject prints on the paper */
+    opacity: 0.9;
+    /* no hard edge on any side: the plate dissolves into the paper all the way round */
+    mask-image:
+        linear-gradient(
+            to bottom,
+            transparent,
+            #000 16%,
+            #000 80%,
+            transparent
+        ),
+        linear-gradient(to right, transparent, #000 24%, #000 76%, transparent);
+    mask-composite: intersect;
+    -webkit-mask-image:
+        linear-gradient(
+            to bottom,
+            transparent,
+            #000 16%,
+            #000 80%,
+            transparent
+        ),
+        linear-gradient(to right, transparent, #000 24%, #000 76%, transparent);
+    -webkit-mask-composite: source-in;
+}
+.page-art.flip img {
+    transform: scaleX(-1);
+}
+
+/* below this the margin is narrower than the plate it would hold, and half a plate is
+   worse than none */
+@media (max-width: 1411px) {
+    .page-art {
+        display: none;
+    }
+}

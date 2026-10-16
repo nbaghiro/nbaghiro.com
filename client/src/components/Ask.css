@@ -70,20 +70,15 @@
     color: #e7edea;
 }
 
-.ask-thread {
-    margin-top: 28px;
-    max-width: 68ch;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
 .ask-q {
+    max-width: 62ch;
     color: #cfdcd7;
     font-family: var(--font-display);
     font-size: 21px;
     line-height: 1.35;
 }
 .ask-a {
+    max-width: 68ch;
     color: #c3d2cd;
 }
 .ask-a p + p {
@@ -99,4 +94,132 @@
 .ask-activity {
     font-size: 14px;
     color: #879b95;
+}
+
+/* The conversation happens over the page: a plate on one side, the thread and the field on
+   the other, so an answer never pushes the footer down or scrolls the page away. */
+.ask-resume {
+    margin-top: 18px;
+    font: inherit;
+    font-size: 15px;
+    color: #9fb3ad;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid rgba(231, 237, 234, 0.3);
+    padding: 0 0 3px;
+    cursor: pointer;
+}
+.ask-resume:hover {
+    color: #e7edea;
+}
+
+.ask-modal {
+    /* the reset in index.css drops the dialog's own auto margins, which is what centres it */
+    margin: auto;
+    width: min(1040px, 94vw);
+    max-height: min(82vh, 760px);
+    padding: 0;
+    border: 0;
+    background: var(--pine);
+    color: #e7edea;
+    box-shadow: 0 40px 90px rgba(10, 18, 16, 0.45);
+}
+.ask-modal::backdrop {
+    background: rgba(14, 22, 20, 0.62);
+    backdrop-filter: blur(3px);
+}
+.ask-modal-inner {
+    display: grid;
+    height: min(82vh, 760px);
+}
+@media (min-width: 820px) {
+    .ask-modal-inner {
+        grid-template-columns: 0.42fr 1fr;
+    }
+}
+
+.ask-plate {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    background: #1a2724;
+}
+.ask-plate img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+}
+.ask-plate figcaption {
+    position: relative;
+    padding: 26px 26px 28px;
+    background: linear-gradient(
+        to top,
+        rgba(16, 26, 23, 0.92),
+        rgba(16, 26, 23, 0)
+    );
+}
+.ask-plate-title {
+    font-family: var(--font-display);
+    font-size: 27px;
+    line-height: 1.15;
+}
+.ask-plate-line {
+    margin-top: 8px;
+    font-size: 14.5px;
+    color: #b6c6c1;
+}
+@media (max-width: 819px) {
+    .ask-plate {
+        height: 132px;
+    }
+    .ask-plate figcaption {
+        padding: 16px 20px 18px;
+    }
+    .ask-plate-title {
+        font-size: 22px;
+    }
+    .ask-plate-line {
+        display: none;
+    }
+}
+
+.ask-panel {
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 0;
+    padding: 26px clamp(20px, 3vw, 34px) clamp(20px, 3vw, 30px);
+}
+.ask-close {
+    position: absolute;
+    top: 18px;
+    right: clamp(20px, 3vw, 34px);
+    font: inherit;
+    font-size: 14px;
+    color: #9fb3ad;
+    background: none;
+    border: 0;
+    padding: 4px 0;
+    cursor: pointer;
+}
+.ask-close:hover {
+    color: #e7edea;
+}
+
+.ask-thread {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 18px 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(231, 237, 234, 0.24) transparent;
+}
+.ask-modal .ask-form {
+    margin-top: 4px;
 }

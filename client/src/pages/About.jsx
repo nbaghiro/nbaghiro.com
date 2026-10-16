@@ -1,3 +1,4 @@
+import PageArt from "../components/PageArt";
 import "./About.css";
 
 // The résumé as an image of the page rather than an embedded PDF viewer: no viewer redraw
@@ -5,6 +6,7 @@ import "./About.css";
 function About() {
     return (
         <article className="page about">
+            <PageArt kind="shore" side="right" top={340} />
             <header className="page-head">
                 <h1>Résumé</h1>
                 <p>

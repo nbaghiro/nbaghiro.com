@@ -1,5 +1,7 @@
-/* Shared by the inner pages: a header under the fixed site bar, then the content. */
+/* Shared by the inner pages: a header under the fixed site bar, then the content. The
+   column is also what the margin drawings are positioned against (see PageArt.css). */
 .page {
+    position: relative;
     width: var(--page);
     margin: 0 auto;
     padding: calc(68px + clamp(44px, 7vw, 92px)) 0 clamp(60px, 9vw, 120px);
@@ -58,19 +60,9 @@
     color: var(--water);
 }
 
-.also-head {
-    margin-top: clamp(40px, 5vw, 64px);
-    font-size: clamp(20px, 2.1vw, 25px);
+/* the two that were never written about sit in the same list, told apart by having no link */
+.rows li:has(.row:not(a)) h2 {
     color: var(--ink-soft);
-}
-.also-head + .rows {
-    margin-top: 18px;
-}
-.rows .row h3 {
-    font-size: clamp(22px, 2.6vw, 30px);
-}
-.rows li:has(.row:not(a)) .row-note {
-    color: var(--ink-faint);
 }
 
 /* the one photograph on this page, full-bleed out of the text column */

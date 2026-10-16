@@ -1,9 +1,12 @@
 import { PRODUCTS, ALSO } from "../data/products";
+import PageArt from "../components/PageArt";
 import "./Projects.css";
 
 function Projects() {
     return (
         <article className="page">
+            <PageArt kind="reeds" side="left" top={300} />
+            <PageArt kind="branch" side="right" top={760} flip />
             <header className="page-head">
                 <h1>Projects</h1>
                 <p>
@@ -30,14 +33,10 @@ function Projects() {
                         </a>
                     </li>
                 ))}
-            </ul>
-
-            <h2 className="also-head">Also built</h2>
-            <ul className="rows">
                 {ALSO.map((p) => (
                     <li key={p.id}>
                         <div className="row">
-                            <h3>{p.name}</h3>
+                            <h2>{p.name}</h2>
                             <p className="row-note">{p.note}</p>
                             <p className="row-side">
                                 <span className="state">{p.state}</span>
