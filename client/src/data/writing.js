@@ -27,6 +27,9 @@ function parse(path, raw) {
         summary: meta.summary ?? "",
         about: meta.about ?? "",
         cover: meta.cover ?? "",
+        // the header shows the plate as two layers, named after the composed one
+        coverBg: (meta.cover ?? "").replace("-wide.", "-bg."),
+        coverArt: (meta.cover ?? "").replace("-wide.", "-art."),
         card: meta.card ?? "",
         body: rest.join("\n\n"),
     };

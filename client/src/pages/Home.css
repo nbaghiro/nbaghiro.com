@@ -55,6 +55,22 @@
     font-size: clamp(44px, 7.4vw, 92px);
     letter-spacing: -0.02em;
 }
+/* the quiet way in: one line under the hero, opening the same conversation as the band */
+.hero-ask {
+    margin-top: 22px;
+    font: inherit;
+    font-size: 15.5px;
+    color: rgba(255, 255, 255, 0.9);
+    background: none;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 0 0 4px;
+    cursor: pointer;
+}
+.hero-ask:hover {
+    color: #fff;
+    border-bottom-color: #fff;
+}
 .hero-copy p {
     margin-top: 18px;
     max-width: 42ch;

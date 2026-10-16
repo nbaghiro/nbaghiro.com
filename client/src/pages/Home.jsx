@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { POSTS, readableDate } from "../data/writing";
-import Ask from "../components/Ask";
+import Ask, { openAsk } from "../components/Ask";
 import PageArt from "../components/PageArt";
 import "./Home.css";
 
@@ -26,6 +26,13 @@ function Home() {
                         is about how they work and what keeping them running
                         involves.
                     </p>
+                    <button
+                        className="hero-ask"
+                        type="button"
+                        onClick={openAsk}
+                    >
+                        Ask about the work
+                    </button>
                 </div>
             </header>
 

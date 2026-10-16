@@ -3,6 +3,11 @@ import { useChat } from "./ProjectChat";
 import AnswerText from "./AnswerText";
 import "./Ask.css";
 
+// Anywhere on the page can open the conversation; the dialog itself stays in one place.
+export function openAsk() {
+    window.dispatchEvent(new Event("ask:open"));
+}
+
 const SUGGESTIONS = [
     "What are you working on right now?",
     "How does Galleo keep an export identical to the screen?",
@@ -25,6 +30,12 @@ function Ask() {
         const d = dialog.current;
         if (d && !d.open) d.showModal();
     };
+
+    useEffect(() => {
+        const open = () => dialog.current?.showModal();
+        window.addEventListener("ask:open", open);
+        return () => window.removeEventListener("ask:open", open);
+    }, []);
 
     // keep the newest words in view as they stream in
     useEffect(() => {
@@ -128,6 +139,26 @@ function Ask() {
                                 <p className="ask-activity">
                                     {activity || "Reading the code"}
                                 </p>
+                            )}
+                            {!answered && !busy && (
+                                <>
+                                    <p className="ask-invite">
+                                        Ask anything about how these are built,
+                                        or start from one of these.
+                                    </p>
+                                    <ul className="ask-suggestions">
+                                        {SUGGESTIONS.map((s) => (
+                                            <li key={s}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => put(s)}
+                                                >
+                                                    {s}
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </>
                             )}
                         </div>
 
