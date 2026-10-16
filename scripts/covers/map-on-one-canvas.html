@@ -34,18 +34,20 @@
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-                object-position: center 52%;
+                object-position: center var(--crop, 52%);
                 filter: saturate(0.7) contrast(1);
             }
+            /* the trees stay legible at the top; the paper thickens where the ink runs, so a
+               label is never set on a dark ground */
             .wash {
                 position: absolute;
                 inset: 0;
                 background: linear-gradient(
                     to bottom,
-                    rgba(233, 236, 234, 0.06) 0%,
-                    rgba(233, 236, 234, 0.4) 30%,
-                    rgba(233, 236, 234, 0.74) 58%,
-                    rgba(233, 236, 234, 0.84) 100%
+                    rgba(233, 236, 234, 0.3) 0%,
+                    rgba(233, 236, 234, 0.52) 18%,
+                    rgba(233, 236, 234, 0.8) 34%,
+                    rgba(233, 236, 234, 0.88) 100%
                 );
             }
             svg {
@@ -116,6 +118,9 @@
             sheet.style.setProperty("--w", `${PW}px`);
             sheet.style.setProperty("--h", `${PH}px`);
             const wide = PW / PH > 2;
+            // a wide plate crops a tall photograph hard, so it is aimed at the treeline rather
+            // than at the reflection under it
+            sheet.style.setProperty("--crop", wide ? "6%" : "30%");
             const VB = wide ? [1000, 384] : [1000, 667];
             S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
             const ns = "http://www.w3.org/2000/svg";
@@ -141,7 +146,7 @@
                 "the plane",
             ];
             const S0 = wide
-                ? { x: 70, y: 96, w: 250, h: 26, step: 34 }
+                ? { x: 70, y: 128, w: 250, h: 26, step: 32 }
                 : { x: 110, y: 120, w: 300, h: 30, step: 42 };
             PASSES.forEach((name, i) => {
                 const y = S0.y + i * S0.step;
@@ -153,8 +158,8 @@
 
             // the canvas they stack into
             const C = wide
-                ? { x: 560, y: 86, w: 360, h: 210 }
-                : { x: 150, y: 372, w: 700, h: 226 };
+                ? { x: 560, y: 120, w: 360, h: 186 }
+                : { x: 150, y: 374, w: 700, h: 196 };
             rect(C.x, C.y, C.w, C.h, "ink");
             // one country inside it, drawn through a closed loop of points rather than as a blob
             const SHORE = [
