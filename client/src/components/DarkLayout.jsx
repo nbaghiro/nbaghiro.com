@@ -1,11 +1,9 @@
 import { Link, Outlet } from "react-router-dom";
-import { useFavicon } from "../favicon";
 import Mark from "./Mark";
 import "./DarkLayout.css";
 
 // The first version of the site, kept at /dark: the project overworld in its own dark skin.
 function DarkLayout() {
-    useFavicon("mark");
     return (
         <div className="site dark-site">
             <header className="site-header">

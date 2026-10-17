@@ -1,10 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- The portrait mark reduced for tab size: dark disc with a light rim, swept hair, eyes, smile -->
-  <circle cx="32" cy="32" r="30" fill="#111111" stroke="#EDEAE2" stroke-width="3"/>
-  <g fill="none" stroke="#EDEAE2" stroke-linecap="round">
-    <path d="M21 44 Q32 53 43 44" stroke-width="5.5"/>
-  </g>
-  <path d="M14 29 Q13 10 32 9 Q51 10 50 29 Q45 18 32 17 Q19 18 14 29 Z" fill="#EDEAE2"/>
-  <circle cx="24" cy="33" r="5" fill="#EDEAE2"/>
-  <circle cx="40" cy="33" r="5" fill="#EDEAE2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- The ticked rule from the foot of the covers, on the pine the site's footer band uses.
+       One tile in both tab bars: pine is dark enough to sit in a dark one without glare and
+       deep enough to read in a light one. -->
+  <rect width="32" height="32" rx="2" fill="#1e2f2b"/>
+  <path d="M4 21 H28 M6 21 V15 M26 21 V15" fill="none" stroke="#cbd4d1" stroke-width="2.4" stroke-linecap="square"/>
+  <path d="M16 21 V9" fill="none" stroke="#74a79d" stroke-width="2.6" stroke-linecap="square"/>
 </svg>
