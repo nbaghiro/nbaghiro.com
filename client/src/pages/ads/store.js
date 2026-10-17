@@ -5,7 +5,8 @@
 // built in: nothing in this bundle can be used to find the studios without it.
 
 // Set once the bucket has a public URL, so a device can enter the key alone. Not secret.
-export const DEFAULT_BASE = "https://pub-306ef928c38942dc8c24f94481360a5d.r2.dev";
+export const DEFAULT_BASE =
+    "https://pub-306ef928c38942dc8c24f94481360a5d.r2.dev";
 
 const ROOT_KEY = "ads.root";
 

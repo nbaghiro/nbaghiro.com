@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShareButton } from "./actions";
+import { DownloadButton, ShareButton } from "./actions";
 import { fileName } from "./store";
 
 // Profile combinations: pick a photo and a cover and see them together in a mock of the
@@ -56,20 +56,16 @@ export function Combos({ manifest, url }) {
                         { url: url(cover.file), name: fileName(cover.file) },
                     ]}
                 />
-                <a
-                    className="btn"
-                    href={url(avatar.file)}
-                    download={fileName(avatar.file)}
-                >
-                    Photo
-                </a>
-                <a
-                    className="btn"
-                    href={url(cover.file)}
-                    download={fileName(cover.file)}
-                >
-                    Cover
-                </a>
+                <DownloadButton
+                    url={url(avatar.file)}
+                    name={fileName(avatar.file)}
+                    label="Photo"
+                />
+                <DownloadButton
+                    url={url(cover.file)}
+                    name={fileName(cover.file)}
+                    label="Cover"
+                />
             </div>
 
             <div className="picker">

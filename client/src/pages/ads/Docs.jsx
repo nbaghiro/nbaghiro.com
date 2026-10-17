@@ -1,4 +1,4 @@
-import { CopyButton, ShareButton } from "./actions";
+import { CopyButton, DownloadButton, ShareButton } from "./actions";
 import { fileName } from "./store";
 
 // One-pagers and anything else that is a finished document rather than a post: the page as an
@@ -39,13 +39,11 @@ export function Docs({ manifest, url }) {
                                 { url: url(doc.pdf), name: fileName(doc.pdf) },
                             ]}
                         />
-                        <a
-                            className="btn"
-                            href={url(doc.pdf)}
-                            download={fileName(doc.pdf)}
-                        >
-                            PDF
-                        </a>
+                        <DownloadButton
+                            url={url(doc.pdf)}
+                            name={fileName(doc.pdf)}
+                            label="PDF"
+                        />
                         <CopyButton text={url(doc.pdf)} label="Copy link" />
                     </div>
                     {doc.note && <p className="doc-note">{doc.note}</p>}

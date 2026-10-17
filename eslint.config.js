@@ -2,6 +2,7 @@ const globals = require("globals");
 const js = require("@eslint/js");
 const reactPlugin = require("eslint-plugin-react");
 const reactHooksPlugin = require("eslint-plugin-react-hooks");
+const prettierConfig = require("eslint-config-prettier");
 
 module.exports = [
     {
@@ -67,4 +68,7 @@ module.exports = [
             },
         },
     },
+    // Prettier owns layout. Without this, `npm run format` and `npm run lint` disagree about
+    // nested ternaries and the one reports errors the other just wrote.
+    prettierConfig,
 ];

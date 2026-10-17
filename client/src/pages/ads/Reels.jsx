@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CopyButton, ShareButton } from "./actions";
+import { CopyButton, DownloadButton, ShareButton } from "./actions";
 import { themeName } from "./store";
 
 // Reels are video: one file per theme, and the Instagram app needs it in Photos.
@@ -41,13 +41,7 @@ export function Reels({ manifest, url, theme, themes }) {
                                     label="Save video"
                                     items={() => [{ url: url(file), name }]}
                                 />
-                                <a
-                                    className="btn"
-                                    href={url(file)}
-                                    download={name}
-                                >
-                                    File
-                                </a>
+                                <DownloadButton url={url(file)} name={name} />
                                 {reel.caption && (
                                     <CopyButton
                                         text={reel.caption}

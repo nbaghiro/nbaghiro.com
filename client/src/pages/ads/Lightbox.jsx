@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ShareButton } from "./actions";
+import { DownloadButton, ShareButton } from "./actions";
 
 // One frame per screen over everything, swiped between on a phone and arrowed on a
 // keyboard; it moves only within the set it was opened from.
@@ -65,9 +65,7 @@ export function Lightbox({ items, index, onIndex, onClose, title }) {
                     label="Save to Photos"
                     items={() => [{ url: cur.url, name: cur.name }]}
                 />
-                <a className="btn" href={cur.url} download={cur.name}>
-                    File
-                </a>
+                <DownloadButton url={cur.url} name={cur.name} />
                 <button type="button" className="btn" onClick={onClose}>
                     Close
                 </button>

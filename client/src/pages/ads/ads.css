@@ -1253,7 +1253,9 @@
 .ads .details .field {
     margin-top: 4px;
 }
-.ads .kit .main,
+/* grid items default to min-width:auto, so the rail would hold the jump list's full
+   unwrapped width open and push the page wider than the screen */
+.ads .kit > *,
 .ads .kit .spread > *,
 .ads .kit .page-grid > * {
     min-width: 0;

@@ -43,8 +43,34 @@ export function saveBlob(blob, name) {
     setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
+// A `download` attribute is ignored on a cross-origin URL: the browser navigates to the file
+// and leaves the studio behind, so on a phone what was a button becomes a long press on a bare
+// image. Fetching the bytes and saving from a blob the page owns keeps the download and the name.
+export function DownloadButton({ url, name, label = "File" }) {
+    const [busy, setBusy] = useState(false);
+    const go = async () => {
+        setBusy(true);
+        try {
+            saveBlob(await fetchFile(url, name), name);
+        } catch (e) {
+            console.error(e);
+        }
+        setBusy(false);
+    };
+    return (
+        <button type="button" className="btn" disabled={busy} onClick={go}>
+            {busy ? "Saving…" : label}
+        </button>
+    );
+}
+
 // `items` is called at tap time so it can read the current theme and format.
-export function ShareButton({ items, label, primary = true }) {
+export function ShareButton({
+    items,
+    label,
+    deskLabel = "Share",
+    primary = true,
+}) {
     const [state, setState] = useState("idle");
     const held = useRef({ key: "", files: [] });
     if (!canShareFiles) return null;
@@ -77,7 +103,7 @@ export function ShareButton({ items, label, primary = true }) {
 
     // a desktop browser can share files too (macOS Chrome opens the system sheet), but
     // "to Photos" is a phone's promise, so the label is plain there
-    const idle = matchMedia("(pointer: coarse)").matches ? label : "Share";
+    const idle = matchMedia("(pointer: coarse)").matches ? label : deskLabel;
     const text =
         { busy: "Preparing…", ready: "Tap again to save" }[state] ?? idle;
     return (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CopyButton, ShareButton } from "./actions";
+import { CopyButton, DownloadButton, ShareButton } from "./actions";
 import { Lightbox } from "./Lightbox";
 import { Strip } from "./Strip";
 import { fileName } from "./store";
@@ -107,13 +107,10 @@ export function XPosts({ manifest, url }) {
                                                     />
                                                 )}
                                                 {img && (
-                                                    <a
-                                                        className="btn"
-                                                        href={url(img)}
-                                                        download={fileName(img)}
-                                                    >
-                                                        File
-                                                    </a>
+                                                    <DownloadButton
+                                                        url={url(img)}
+                                                        name={fileName(img)}
+                                                    />
                                                 )}
                                             </div>
                                             {it.alt && (

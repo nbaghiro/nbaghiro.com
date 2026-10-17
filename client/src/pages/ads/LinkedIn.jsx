@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Field, Fields, ShareButton } from "./actions";
+import { DownloadButton, Field, Fields, ShareButton } from "./actions";
 import { Lightbox } from "./Lightbox";
 import { Strip } from "./Strip";
 import { Ring } from "./Studio";
@@ -29,13 +29,13 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
     const kit = li.kind === "profile";
     const voices = comparing
         ? editions.map((e) => ({
-            id: e.id,
-            label: `${e.label} · ${selectedSet(e)?.label || "Original"}`,
-            posts: selectedSet(e)?.posts || e.posts,
-        }))
+              id: e.id,
+              label: `${e.label} · ${selectedSet(e)?.label || "Original"}`,
+              posts: selectedSet(e)?.posts || e.posts,
+          }))
         : !edition && li.layout === "compare" && li.sets?.length > 1
-            ? li.sets
-            : null;
+          ? li.sets
+          : null;
     const controls = editions.length > 0 && (
         <div className="editorial-controls">
             <div className="seg" role="group" aria-label="Copy version">
@@ -155,13 +155,10 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                                     },
                                 ]}
                             />
-                            <a
-                                className="btn"
-                                href={url(li.page.logo)}
-                                download={fileName(li.page.logo)}
-                            >
-                                File
-                            </a>
+                            <DownloadButton
+                                url={url(li.page.logo)}
+                                name={fileName(li.page.logo)}
+                            />
                         </div>
                     </figure>
                 )}
@@ -184,13 +181,10 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                                 },
                             ]}
                         />
-                        <a
-                            className="btn"
-                            href={url(li.page.banner)}
-                            download={fileName(li.page.banner)}
-                        >
-                            File
-                        </a>
+                        <DownloadButton
+                            url={url(li.page.banner)}
+                            name={fileName(li.page.banner)}
+                        />
                     </div>
                 </>
             )}
@@ -274,13 +268,10 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                                     },
                                 ]}
                             />
-                            <a
-                                className="btn"
-                                href={url(post.reel.file)}
-                                download={`${post.slug}.mp4`}
-                            >
-                                File
-                            </a>
+                            <DownloadButton
+                                url={url(post.reel.file)}
+                                name={`${post.slug}.mp4`}
+                            />
                         </div>
                     </div>
                 )}
@@ -310,9 +301,24 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                         />
                     )}
                     {pdf && (
-                        <a className="btn" href={url(pdf)} download={pdfName}>
-                            PDF
-                        </a>
+                        <DownloadButton
+                            url={url(pdf)}
+                            name={pdfName}
+                            label="PDF"
+                        />
+                    )}
+                    {pages.length > 0 && (
+                        <ShareButton
+                            primary={false}
+                            label={`Save ${pages.length} pages`}
+                            deskLabel="Share pages"
+                            items={() =>
+                                pages.map((f) => ({
+                                    url: url(f),
+                                    name: fileName(f),
+                                }))
+                            }
+                        />
                     )}
                     {themes.length > 1 && have.length > 1 && (
                         <button

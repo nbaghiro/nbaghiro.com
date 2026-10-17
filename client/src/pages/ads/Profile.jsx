@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Fields, ShareButton } from "./actions";
+import { DownloadButton, Fields, ShareButton } from "./actions";
 import { fileName } from "./store";
 
 const first = (fields, label) =>
@@ -101,20 +101,16 @@ export function Profile({ manifest, url }) {
                                 },
                             ]}
                         />
-                        <a
-                            className="btn"
-                            href={url(avatar.file)}
-                            download={fileName(avatar.file)}
-                        >
-                            Photo
-                        </a>
-                        <a
-                            className="btn"
-                            href={url(header.file)}
-                            download={fileName(header.file)}
-                        >
-                            Header
-                        </a>
+                        <DownloadButton
+                            url={url(avatar.file)}
+                            name={fileName(avatar.file)}
+                            label="Photo"
+                        />
+                        <DownloadButton
+                            url={url(header.file)}
+                            name={fileName(header.file)}
+                            label="Header"
+                        />
                     </div>
                 </div>
             )}
@@ -140,13 +136,10 @@ export function Profile({ manifest, url }) {
                                             },
                                         ]}
                                     />
-                                    <a
-                                        className="btn"
-                                        href={url(pic.file)}
-                                        download={fileName(pic.file)}
-                                    >
-                                        File
-                                    </a>
+                                    <DownloadButton
+                                        url={url(pic.file)}
+                                        name={fileName(pic.file)}
+                                    />
                                 </div>
                             </figure>
                         ))}
