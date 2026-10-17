@@ -260,6 +260,24 @@ export async function amend({ id, patch, syncs = [], dryRun = false }) {
     return built;
 }
 
+// Removes a project and everything under it. A kit that has been folded into another one
+// leaves a project behind that nothing updates any more, and a stale project on the page is
+// worse than none: it looks current. There is no undo beyond running that kit's publish again.
+export async function unpublish({ id, dryRun = false }) {
+    need("key");
+    const prefix = `s3://${env.bucket}/${env.key}/${id}/`;
+    const args = ["s3", "rm", prefix, "--recursive"];
+    if (dryRun) args.push("--dryrun");
+    const out = await aws(args);
+    const lines = out.split("\n").filter((l) => l.startsWith("delete") || l.startsWith("(dryrun)"));
+    console.log(`${id}: ${lines.length} file(s) ${dryRun ? "would be " : ""}removed`);
+    if (dryRun) return;
+    const index = await readIndex();
+    index.projects = index.projects.filter((p) => p.id !== id);
+    await put("index.json", JSON.stringify(index));
+    console.log(`${id}: gone from the index`);
+}
+
 // three frames for the project tile: the first feed slides, else the first document pages,
 // else the reel posters (a kit that is only LinkedIn posts has no feed)
 function covers(m) {
