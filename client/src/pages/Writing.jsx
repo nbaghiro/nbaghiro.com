@@ -67,7 +67,7 @@ export function Post() {
                         className="cover-art"
                         src={post.coverArt}
                         alt=""
-                        fetchPriority="high"
+                        fetchpriority="high"
                     />
                     {post.card && (
                         <img className="cover-card" src={post.card} alt="" />

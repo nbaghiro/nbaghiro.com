@@ -4,9 +4,12 @@ import "./Booking.css";
 
 // Any page can open it; the dialog is mounted once, in the layout. A caller may hand it a
 // message to start from, which is how the agent's project brief gets here without mail.
+// Wired as onClick={openContact} a caller hands this the DOM event instead, so anything that
+// is not a string is dropped rather than rendered into the field as [object Object].
 export function openContact(message) {
+    const text = typeof message === "string" ? message : "";
     window.dispatchEvent(
-        new CustomEvent("contact:open", { detail: { message } })
+        new CustomEvent("contact:open", { detail: { message: text } })
     );
 }
 

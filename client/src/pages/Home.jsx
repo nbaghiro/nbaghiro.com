@@ -17,7 +17,7 @@ function Home() {
                         media="(max-width: 700px)"
                         srcSet="/img/hero-tall.webp"
                     />
-                    <img src="/img/hero.webp" alt="" fetchPriority="high" />
+                    <img src="/img/hero.webp" alt="" fetchpriority="high" />
                 </picture>
                 <div className="hero-copy">
                     <h1>Naib Baghirov</h1>
@@ -73,7 +73,7 @@ function Home() {
                     <button
                         className="door"
                         type="button"
-                        onClick={openContact}
+                        onClick={() => openContact()}
                     >
                         <h2>Contact</h2>
                         <p>Send me a message, or book a short call.</p>

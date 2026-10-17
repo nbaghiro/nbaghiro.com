@@ -14,7 +14,6 @@ module.exports = [
             "client/src/components/ParticleBackground.jsx",
             "client/src/components/WeekSection.jsx",
             "client/src/components/YearSection.jsx",
-            "client/src/pages/Home.jsx",
             "client/src/pages/Random.jsx",
             "client/src/pages/Yearlies.jsx",
             "client/src/utils/particleSystem.js",
@@ -57,6 +56,7 @@ module.exports = [
             quotes: ["error", "double", { avoidEscape: true }],
             semi: ["error", "always"],
             indent: ["error", 4, { SwitchCase: 1 }],
+            "react/jsx-uses-vars": "error", // a JSX reference counts as a use
             "react/react-in-jsx-scope": "off", // Not needed in React 17+
             "react/prop-types": "warn",
             "react-hooks/rules-of-hooks": "error",
