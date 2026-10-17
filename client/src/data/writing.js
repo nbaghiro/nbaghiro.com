@@ -26,6 +26,7 @@ function parse(path, raw) {
         date: meta.date ?? "",
         summary: meta.summary ?? "",
         about: meta.about ?? "",
+        category: meta.category ?? "Product notes",
         cover: meta.cover ?? "",
         // the header shows the plate as two layers, named after the composed one
         coverBg: (meta.cover ?? "").replace("-wide.", "-bg."),

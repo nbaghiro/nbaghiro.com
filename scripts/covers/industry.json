@@ -1,0 +1,79 @@
+[
+  {
+    "slug": "what-a-refund-costs",
+    "title": "What a refund costs the business",
+    "topic": "Payments",
+    "index": 0,
+    "postSlug": "in06-refund-cost"
+  },
+  {
+    "slug": "when-a-payment-times-out",
+    "title": "When a payment times out",
+    "topic": "Payments",
+    "index": 1,
+    "postSlug": "in07-payment-timeout"
+  },
+  {
+    "slug": "recurring-appointments-and-clock-changes",
+    "title": "A weekly appointment across a clock change",
+    "topic": "Scheduling",
+    "index": 2,
+    "postSlug": "in08-recurring-time"
+  },
+  {
+    "slug": "choosing-an-export-for-the-next-person",
+    "title": "Choosing an export for the next person",
+    "topic": "Documents",
+    "index": 3,
+    "postSlug": "in09-export-handoff"
+  },
+  {
+    "slug": "checking-pdf-reading-order",
+    "title": "Checking how a PDF is read",
+    "topic": "Documents",
+    "index": 4,
+    "postSlug": "in10-pdf-reading-order"
+  },
+  {
+    "slug": "what-an-agent-can-change",
+    "title": "What an agent is allowed to change",
+    "topic": "AI systems",
+    "index": 5,
+    "postSlug": "in11-agent-access"
+  },
+  {
+    "slug": "checking-an-agents-results",
+    "title": "Checking whether an agent completed the task",
+    "topic": "AI systems",
+    "index": 6,
+    "postSlug": "in12-agent-outcomes"
+  },
+  {
+    "slug": "learning-after-ai-help",
+    "title": "What students can do after the help is removed",
+    "topic": "Learning",
+    "index": 7,
+    "postSlug": "in13-ai-learning"
+  },
+  {
+    "slug": "remembering-after-practice",
+    "title": "Checking what a learner remembers later",
+    "topic": "Learning",
+    "index": 8,
+    "postSlug": "in14-retrieval-practice"
+  },
+  {
+    "slug": "the-search-behind-a-backtest",
+    "title": "How many strategies were tested before this one",
+    "topic": "Research methods",
+    "index": 9,
+    "postSlug": "in15-backtest-search"
+  },
+  {
+    "slug": "why-i-stopped-pursuing-a-software-factory",
+    "title": "Why I stopped pursuing a software factory",
+    "topic": "Building products",
+    "index": 10,
+    "postSlug": "in16-software-factories"
+  }
+]
