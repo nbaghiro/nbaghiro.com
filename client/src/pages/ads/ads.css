@@ -492,6 +492,38 @@
     font-size: 12px;
     margin-top: 6px;
 }
+/* an ad in both its shapes at once: each frame keeps its own aspect rather than being
+   cropped to the feed's, because the shape is half of what there is to look at */
+.ads .strip.pair figure {
+    width: min(46vw, 200px);
+}
+.ads .strip.pair img {
+    aspect-ratio: auto;
+    object-fit: contain;
+}
+.ads .strip.pair + .dots {
+    display: none;
+}
+/* where each shape runs, beside the frames rather than buried in a caption */
+.ads .where {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+}
+.ads .where li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-size: 14px;
+    color: var(--soft);
+}
+.ads .where b {
+    color: var(--ink);
+    font-weight: 600;
+}
+
 /* the overview strip: a thread's every image in one row, before the items themselves */
 .ads .strip.small {
     scroll-snap-type: none;

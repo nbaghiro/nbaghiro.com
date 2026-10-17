@@ -2,8 +2,15 @@ import { useEffect, useRef, useState } from "react";
 
 // A row of frames. On a phone it snaps one frame at a time and shows the dots Instagram
 // would; on a wide screen it is a plain row at a fixed height. `small` is the overview
-// size: every frame of a set in view at once, each at its own shape.
-export function Strip({ items, story = false, small = false, onOpen }) {
+// size: every frame of a set in view at once, each at its own shape; `pair` is the same for
+// two frames of one thing, which are the same picture in different shapes.
+export function Strip({
+    items,
+    story = false,
+    small = false,
+    pair = false,
+    onOpen,
+}) {
     const ref = useRef(null);
     const [active, setActive] = useState(0);
     useEffect(() => {
@@ -21,7 +28,12 @@ export function Strip({ items, story = false, small = false, onOpen }) {
     return (
         <div>
             <div
-                className={["strip", story && "story", small && "small"]
+                className={[
+                    "strip",
+                    story && "story",
+                    small && "small",
+                    pair && "pair",
+                ]
                     .filter(Boolean)
                     .join(" ")}
                 ref={ref}

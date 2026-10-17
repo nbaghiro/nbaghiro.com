@@ -217,6 +217,49 @@ export async function publish({ project, manifest, syncs, dryRun = false }) {
     return built;
 }
 
+// Adds one section to a manifest another kit owns, leaving the rest of it alone. The product
+// ads are rendered in one place but belong in each product's own project, and rebuilding a
+// kit's manifest here would mean publishing whatever else had changed in that kit since its
+// last run. `publishedAt` is deliberately not bumped: every media URL carries it, so a bump
+// would re-download a kit's whole library to add two files. Each kit's own publish script
+// carries the same section, so its next full publish keeps it.
+export async function amend({ id, patch, syncs = [], dryRun = false }) {
+    need("key");
+    const manifest = await readJson(`${id}/manifest.json`);
+    if (!manifest) throw new Error(`${id} is not published, so there is nothing to amend`);
+    const built = { ...manifest, ...patch };
+
+    for (const s of syncs) {
+        const args = [
+            "s3",
+            "sync",
+            s.from,
+            `s3://${env.bucket}/${env.key}/${id}/${s.to}`,
+            "--no-progress",
+            "--exclude",
+            "*",
+        ];
+        for (const inc of s.include) args.push("--include", inc);
+        args.push("--cache-control", "public, max-age=31536000, immutable");
+        if (dryRun) args.push("--dryrun");
+        const out = await aws(args);
+        const lines = out.split("\n").filter((l) => l.startsWith("upload") || l.startsWith("(dryrun)"));
+        console.log(`${id}: sync ${s.to}, ${lines.length} file(s) ${dryRun ? "would be " : ""}uploaded`);
+    }
+    if (dryRun) {
+        console.log(`${id}: would gain ${Object.keys(patch).join(", ")}`);
+        return built;
+    }
+
+    await put(`${id}/manifest.json`, JSON.stringify(built));
+    const index = await readIndex();
+    const row = index.projects.find((p) => p.id === id);
+    if (row) row.counts = counts(built);
+    await put("index.json", JSON.stringify(index));
+    console.log(`${id}: ${Object.keys(patch).join(", ")} added`);
+    return built;
+}
+
 // three frames for the project tile: the first feed slides, else the first document pages,
 // else the reel posters (a kit that is only LinkedIn posts has no feed)
 function covers(m) {
@@ -229,10 +272,11 @@ function covers(m) {
         (p) => (p.pages?.[p.defaultTheme] ?? p.pages?.default ?? [])[0]
     );
     const fromReels = (m.reels ?? []).map((r) => r.poster?.default);
+    const fromAds = (m.ads?.items ?? []).map((a) => a.files?.feed);
     const extraPages = (m.linkedin?.posts ?? []).flatMap(
         (p) => p.pages?.[p.defaultTheme] ?? p.pages?.default ?? []
     );
-    return [...new Set([...fromPosts, ...fromDocs, ...fromReels, ...extraPages].filter(Boolean))].slice(0, 3);
+    return [...new Set([...fromPosts, ...fromDocs, ...fromReels, ...fromAds, ...extraPages].filter(Boolean))].slice(0, 3);
 }
 
 function preview(m) {
@@ -251,6 +295,7 @@ function counts(m) {
         reels: m.reels?.length ?? 0,
         linkedin: m.linkedin?.posts?.length ?? 0,
         x: m.x?.posts?.length ?? 0,
+        ads: m.ads?.items?.length ?? 0,
         ...(m.combos ? { photos: m.combos.avatars?.length ?? 0, covers: m.combos.covers?.length ?? 0 } : {}),
     };
 }
@@ -271,19 +316,21 @@ async function put(path, body) {
     );
 }
 
-async function readIndex() {
+async function readJson(path, fallback = null) {
     try {
         const out = await aws([
             "s3",
             "cp",
-            `s3://${env.bucket}/${env.key}/index.json`,
+            `s3://${env.bucket}/${env.key}/${path}`,
             "-",
         ]);
         return JSON.parse(out);
     } catch {
-        return { version: 1, projects: [] };
+        return fallback;
     }
 }
+
+const readIndex = () => readJson("index.json", { version: 1, projects: [] });
 
 // ADS_LOCAL_DIR stands in for the bucket during development: the manifests are written there and
 // each synced folder is linked rather than copied, so `serve` below can hand the same files to a

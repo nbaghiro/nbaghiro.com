@@ -9,6 +9,7 @@ import {
     themeOf,
 } from "./store";
 import { Posts } from "./Posts";
+import { AdUnits } from "./AdUnits";
 import { Stories } from "./Stories";
 import { Reels } from "./Reels";
 import { LinkedIn } from "./LinkedIn";
@@ -19,6 +20,7 @@ import { Docs } from "./Docs";
 
 const TABS = [
     ["posts", "Posts", (m) => m.posts?.length],
+    ["ads", "Ads", (m) => m.ads?.items?.length],
     ["stories", "Stories", (m) => m.stories?.length],
     ["reels", "Reels", (m) => m.reels?.length],
     ["linkedin", "LinkedIn", (m) => m.linkedin?.posts?.length || ""],
@@ -197,6 +199,7 @@ export function Studio({ root }) {
             </header>
             <main className="body">
                 {active === "posts" && <Posts {...ctx} />}
+                {active === "ads" && <AdUnits {...ctx} />}
                 {active === "stories" && <Stories {...ctx} />}
                 {active === "reels" && <Reels {...ctx} />}
                 {active === "linkedin" && <LinkedIn {...ctx} />}
