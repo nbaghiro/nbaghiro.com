@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigationType } from "react-router-dom";
+import { useFavicon } from "../favicon";
 import Booking from "./Booking";
 import Contact from "./Contact";
 import "./SiteLayout.css";
@@ -9,6 +10,7 @@ import "./SiteLayout.css";
 function SiteLayout() {
     const { pathname, hash } = useLocation();
     const overImage = pathname === "/";
+    useFavicon("photo");
 
     // A client-side navigation keeps the old scroll position, which lands you halfway down a
     // piece you have just opened. Going back keeps its place, and an anchor decides its own.

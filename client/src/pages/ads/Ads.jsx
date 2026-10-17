@@ -10,6 +10,7 @@ import {
     DEFAULT_BASE,
 } from "./store";
 import { Studio } from "./Studio";
+import { useFavicon } from "../../favicon";
 import "./ads.css";
 
 // The ad studios, one per project, published from each project's own repo into one bucket
@@ -201,6 +202,7 @@ function Projects({ root, onLock }) {
 }
 
 function Ads() {
+    useFavicon("mark");
     const navigate = useNavigate();
     const [root, setRoot] = useState(() => {
         const hash = window.location.hash.slice(1);
