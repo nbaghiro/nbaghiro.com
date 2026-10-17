@@ -132,6 +132,15 @@
     flex-direction: column;
     border-top: 1px solid var(--mist);
     padding: 15px 0 26px;
+    /* one of the four is a button, so it is stripped back to the others */
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
 }
 .door h2 {
     font-size: clamp(21px, 2.1vw, 25px);
@@ -353,12 +362,20 @@
     font-family: var(--font-display);
     font-size: clamp(19px, 2.2vw, 25px);
 }
-.foot-mail a {
+.foot-mail a,
+.foot-mail button {
     color: #cfdcd7;
     border-bottom: 1px solid rgba(231, 237, 234, 0.28);
     padding-bottom: 3px;
+    background: none;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    font: inherit;
+    cursor: pointer;
 }
-.foot-mail a:hover {
+.foot-mail a:hover,
+.foot-mail button:hover {
     color: #fff;
     border-bottom-color: #fff;
 }

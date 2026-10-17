@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigationType } from "react-router-dom";
+import Booking from "./Booking";
+import Contact from "./Contact";
 import "./SiteLayout.css";
 
 // The header floats over the hero in white, then takes the page ground once the hero has
@@ -60,6 +62,8 @@ function SiteLayout() {
             <main>
                 <Outlet />
             </main>
+            <Booking />
+            <Contact />
         </div>
     );
 }

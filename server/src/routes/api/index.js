@@ -1,5 +1,7 @@
 import express from "express";
+import bookingRoutes from "./booking.js";
 import chatRoutes from "./chat.js";
+import contactRoutes from "./contact.js";
 
 const router = express.Router();
 
@@ -13,5 +15,7 @@ router.get("/health", (req, res) => {
 });
 
 router.use(chatRoutes);
+router.use(bookingRoutes);
+router.use(contactRoutes);
 
 export default router;

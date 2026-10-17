@@ -1,0 +1,285 @@
+/* Booking, inside the Ask dialog's shell: the only new furniture is a row of days, the
+   times under it, and three fields. Hairlines and type, so it never reads as an embed. */
+
+.book-panel {
+    grid-template-rows: 1fr;
+}
+.book-body {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 18px 0 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(231, 237, 234, 0.24) transparent;
+}
+
+/* the month, beside the times on a wide panel and above them on a phone */
+.book-pick {
+    display: grid;
+    gap: 22px;
+    margin-top: 18px;
+}
+@media (min-width: 820px) {
+    .book-pick {
+        grid-template-columns: 250px 1fr;
+        gap: 30px;
+        align-items: start;
+    }
+}
+
+.book-month-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+.book-month-name {
+    font-family: var(--font-display);
+    font-size: 19px;
+    color: #eef3f1;
+}
+.book-step {
+    display: flex;
+    gap: 2px;
+}
+.book-step button {
+    font: inherit;
+    font-size: 18px;
+    line-height: 1;
+    color: #9fb3ad;
+    background: none;
+    border: 0;
+    padding: 2px 8px;
+    cursor: pointer;
+}
+.book-step button:hover:not(:disabled) {
+    color: #eef3f1;
+}
+.book-step button:disabled {
+    color: #4d625c;
+    cursor: default;
+}
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(231, 237, 234, 0.14);
+}
+.book-wd {
+    font-size: 11.5px;
+    text-align: center;
+    color: #76918a;
+    padding-bottom: 8px;
+}
+.book-grid button,
+.book-off {
+    font: inherit;
+    font-size: 14.5px;
+    text-align: center;
+    padding: 8px 0 7px;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid transparent;
+}
+/* a day with nothing free is dimmed and inert, which is why it is not a button */
+.book-off {
+    color: rgba(231, 237, 234, 0.22);
+}
+.book-grid button {
+    color: #c3d2cd;
+    cursor: pointer;
+}
+.book-grid button:hover {
+    color: #eef3f1;
+}
+/* the chosen day is marked the way the site marks a current thing: a rule, not a fill */
+.book-grid button.on {
+    color: #fff;
+    border-bottom-color: var(--water);
+}
+/* today is marked faintly, whether or not anything is free on it */
+.today {
+    position: relative;
+}
+.today::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 1px;
+    width: 3px;
+    height: 3px;
+    transform: translateX(-50%);
+    background: rgba(231, 237, 234, 0.4);
+}
+
+.book-chosen {
+    font-size: 13.5px;
+    color: #9fb3ad;
+    padding-bottom: 2px;
+}
+
+.book-times {
+    margin-top: 6px;
+    border-top: 1px solid rgba(231, 237, 234, 0.14);
+    max-height: 46dvh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(231, 237, 234, 0.24) transparent;
+}
+.book-times button {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    color: #c3d2cd;
+}
+.book-local {
+    color: #76918a;
+}
+
+.book-form {
+    margin-top: 20px;
+    display: grid;
+    gap: 14px;
+}
+.book-form label {
+    display: grid;
+    gap: 6px;
+}
+.book-form span {
+    font-size: 13.5px;
+    color: #9fb3ad;
+}
+.book-form input,
+.book-form textarea {
+    font: inherit;
+    font-size: 16px;
+    color: #e7edea;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(231, 237, 234, 0.26);
+    padding: 11px 14px;
+    resize: vertical;
+}
+.book-form input:focus,
+.book-form textarea:focus {
+    outline: none;
+    border-color: rgba(231, 237, 234, 0.55);
+}
+.book-send {
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 6px;
+}
+.book-send button {
+    font: inherit;
+    font-size: 15.5px;
+    color: #eef3f1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(231, 237, 234, 0.3);
+    padding: 11px 26px;
+    cursor: pointer;
+}
+.book-send button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+}
+.book-send button:disabled {
+    color: #879b95;
+    cursor: default;
+}
+.book-back {
+    font: inherit;
+    font-size: inherit;
+    color: #9fb3ad;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid rgba(231, 237, 234, 0.3);
+    padding: 0;
+    cursor: pointer;
+}
+.book-back:hover {
+    color: #e7edea;
+}
+
+/* the plain mail address under the contact form, for anyone who prefers their own client */
+.book-alt {
+    margin-top: 16px;
+    padding-bottom: 6px;
+    font-size: 14px;
+    color: #879b95;
+}
+.book-alt a {
+    color: #9fb3ad;
+    border-bottom: 1px solid rgba(231, 237, 234, 0.24);
+}
+.book-alt a:hover {
+    color: #e7edea;
+}
+
+.book-note {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+    max-width: 52ch;
+    color: #c3d2cd;
+}
+.book-when {
+    font-family: var(--font-display);
+    font-size: 23px;
+    color: #eef3f1;
+}
+.book-mail-open {
+    font: inherit;
+    font-size: inherit;
+    color: #cfdcd7;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid rgba(231, 237, 234, 0.28);
+    padding: 0 0 2px;
+    cursor: pointer;
+}
+.book-mail-open:hover {
+    color: #fff;
+    border-bottom-color: #fff;
+}
+.book-mail a {
+    color: #cfdcd7;
+    border-bottom: 1px solid rgba(231, 237, 234, 0.28);
+    padding-bottom: 2px;
+}
+.book-mail a:hover {
+    color: #fff;
+    border-bottom-color: #fff;
+}
+
+/* the quiet ways in, on the page itself. On the band it sits under the quote and shares
+   its alignment, so it reads as the next line rather than a control parked underneath. */
+.reach {
+    display: block;
+    margin-top: 22px;
+    font: inherit;
+    font-size: 16px;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    border-bottom: 1px solid rgba(20, 28, 26, 0.35);
+    padding: 0 0 3px;
+    cursor: pointer;
+}
+.reach:hover {
+    border-bottom-color: var(--ink);
+}
+.foot-book {
+    justify-self: start;
+    font: inherit;
+    font-size: 15px;
+    color: #9fb3ad;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid rgba(231, 237, 234, 0.28);
+    padding: 0 0 3px;
+    cursor: pointer;
+}
+.foot-book:hover {
+    color: #e7edea;
+    border-bottom-color: #e7edea;
+}

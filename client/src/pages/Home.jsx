@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { POSTS, readableDate } from "../data/writing";
 import { PRODUCTS, ALSO } from "../data/products";
 import Ask, { openAsk } from "../components/Ask";
+import { openContact } from "../components/Contact";
 import PageArt from "../components/PageArt";
 import "./Home.css";
 
@@ -69,11 +70,15 @@ function Home() {
                         <p>My experience and previous work.</p>
                         <span className="door-meta">Page or PDF</span>
                     </Link>
-                    <a className="door" href={`mailto:${EMAIL}`}>
+                    <button
+                        className="door"
+                        type="button"
+                        onClick={openContact}
+                    >
                         <h2>Contact</h2>
-                        <p>Email is the quickest way to reach me.</p>
+                        <p>Send me a message, or book a short call.</p>
                         <span className="door-meta">{EMAIL}</span>
-                    </a>
+                    </button>
                 </nav>
             </section>
 
@@ -137,7 +142,9 @@ function Home() {
                             </div>
                         </div>
                         <p className="foot-mail">
-                            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                            <button type="button" onClick={() => openContact()}>
+                                {EMAIL}
+                            </button>
                         </p>
                     </div>
 

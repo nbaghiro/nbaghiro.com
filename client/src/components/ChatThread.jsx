@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import AnswerText from "./AnswerText";
+import { openContact } from "./Contact";
 import "./ChatThread.css";
 
 // Where finished project briefs go
-const BRIEF_EMAIL = "naib.baghirov@gmail.com";
 
-function briefMailto(brief) {
+function briefText(brief) {
     const body = [
         `What: ${brief.what}`,
         `Stage: ${brief.stage}`,
@@ -17,7 +17,7 @@ function briefMailto(brief) {
     ]
         .filter((line) => line !== null)
         .join("\n");
-    return `mailto:${BRIEF_EMAIL}?subject=${encodeURIComponent(`Project: ${brief.title}`)}&body=${encodeURIComponent(body)}`;
+    return `Project: ${brief.title}\n\n${body}`;
 }
 
 function BriefCard({ brief }) {
@@ -53,9 +53,9 @@ function BriefCard({ brief }) {
                 ))}
             </dl>
             <div className="brief-actions">
-                <a className="brief-send" href={briefMailto(brief)}>
-                    Email it to Careful Labs
-                </a>
+                <button className="brief-send" type="button" onClick={() => openContact(briefText(brief))}>
+                    Send it to me
+                </button>
                 <button type="button" className="brief-copy" onClick={copy}>
                     {copied ? "Copied" : "Copy"}
                 </button>
