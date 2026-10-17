@@ -220,14 +220,19 @@ export async function publish({ project, manifest, syncs, dryRun = false }) {
 // Adds one section to a manifest another kit owns, leaving the rest of it alone. The product
 // ads are rendered in one place but belong in each product's own project, and rebuilding a
 // kit's manifest here would mean publishing whatever else had changed in that kit since its
-// last run. `publishedAt` is deliberately not bumped: every media URL carries it, so a bump
-// would re-download a kit's whole library to add two files. Each kit's own publish script
-// carries the same section, so its next full publish keeps it.
+// last run. Each kit's own publish script carries the same section, so its next full publish
+// keeps it.
+//
+// `publishedAt` moves only when a file actually changed. Every media URL carries it, so a bump
+// re-downloads the kit's whole library, which is too much to pay for adding a file at a path
+// nothing has cached. Replacing a file at a path that is already out there is the other case:
+// those go up immutable with a year on them, so without the bump a reader keeps the old one.
 export async function amend({ id, patch, syncs = [], dryRun = false }) {
     need("key");
     const manifest = await readJson(`${id}/manifest.json`);
     if (!manifest) throw new Error(`${id} is not published, so there is nothing to amend`);
     const built = { ...manifest, ...patch };
+    let uploaded = 0;
 
     for (const s of syncs) {
         const args = [
@@ -244,8 +249,10 @@ export async function amend({ id, patch, syncs = [], dryRun = false }) {
         if (dryRun) args.push("--dryrun");
         const out = await aws(args);
         const lines = out.split("\n").filter((l) => l.startsWith("upload") || l.startsWith("(dryrun)"));
+        uploaded += lines.length;
         console.log(`${id}: sync ${s.to}, ${lines.length} file(s) ${dryRun ? "would be " : ""}uploaded`);
     }
+    if (uploaded) built.publishedAt = new Date().toISOString();
     if (dryRun) {
         console.log(`${id}: would gain ${Object.keys(patch).join(", ")}`);
         return built;
@@ -254,7 +261,10 @@ export async function amend({ id, patch, syncs = [], dryRun = false }) {
     await put(`${id}/manifest.json`, JSON.stringify(built));
     const index = await readIndex();
     const row = index.projects.find((p) => p.id === id);
-    if (row) row.counts = counts(built);
+    if (row) {
+        row.counts = counts(built);
+        row.publishedAt = built.publishedAt;
+    }
     await put("index.json", JSON.stringify(index));
     console.log(`${id}: ${Object.keys(patch).join(", ")} added`);
     return built;
