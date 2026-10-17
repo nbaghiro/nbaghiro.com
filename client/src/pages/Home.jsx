@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { POSTS, readableDate } from "../data/writing";
+import { PRODUCTS, ALSO } from "../data/products";
 import Ask, { openAsk } from "../components/Ask";
 import PageArt from "../components/PageArt";
 import "./Home.css";
@@ -35,39 +36,45 @@ function Home() {
 
             <section className="entry" aria-label="Where to go">
                 <PageArt seed="home" count={2} />
-                <div className="entry-side">
-                    <p className="entry-note">
-                        My work covers development, infrastructure, billing and
-                        customer support. Here I write about how the products
-                        work, the decisions behind them and what I learn from
-                        running them.
-                    </p>
+                <p className="entry-note">
+                    My work covers development, infrastructure, billing and
+                    customer support. Here I write about how the products work,
+                    the decisions behind them and what I learn from running
+                    them.
+                </p>
 
-                    <nav className="doors" aria-label="Sections">
-                        <Link className="door" to="/blogs">
-                            <h2>Writing</h2>
-                            <p>
-                                Technical articles about building and running
-                                the products.
-                            </p>
-                        </Link>
-                        <Link className="door" to="/projects">
-                            <h2>Projects</h2>
-                            <p>
-                                What I’m building, who it’s for and its current
-                                status.
-                            </p>
-                        </Link>
-                        <Link className="door" to="/about">
-                            <h2>Résumé</h2>
-                            <p>My experience and previous work.</p>
-                        </Link>
-                        <a className="door" href={`mailto:${EMAIL}`}>
-                            <h2>Contact</h2>
-                            <p>{EMAIL}</p>
-                        </a>
-                    </nav>
-                </div>
+                <nav className="doors" aria-label="Sections">
+                    <Link className="door" to="/blogs">
+                        <h2>Writing</h2>
+                        <p>
+                            Technical articles about building and running the
+                            products.
+                        </p>
+                        <span className="door-meta">
+                            {POSTS.length} articles
+                        </span>
+                    </Link>
+                    <Link className="door" to="/projects">
+                        <h2>Projects</h2>
+                        <p>
+                            What I’m building, who it’s for and its current
+                            status.
+                        </p>
+                        <span className="door-meta">
+                            {PRODUCTS.length + ALSO.length} built
+                        </span>
+                    </Link>
+                    <Link className="door" to="/about">
+                        <h2>Résumé</h2>
+                        <p>My experience and previous work.</p>
+                        <span className="door-meta">Page or PDF</span>
+                    </Link>
+                    <a className="door" href={`mailto:${EMAIL}`}>
+                        <h2>Contact</h2>
+                        <p>Email is the quickest way to reach me.</p>
+                        <span className="door-meta">{EMAIL}</span>
+                    </a>
+                </nav>
             </section>
 
             {POSTS.length > 0 && (

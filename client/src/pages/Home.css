@@ -87,40 +87,67 @@
     margin: 0 auto;
     padding: var(--band) 0;
     display: grid;
-    gap: clamp(46px, 6vw, 68px);
+    gap: clamp(38px, 4.6vw, 60px);
 }
 @media (min-width: 900px) {
+    /* the sentence beside the ways in, with those arranged two by two so the band is a
+       block of content rather than one long column against an empty half */
     .entry {
-        grid-template-columns: 1fr 0.9fr;
-        gap: clamp(56px, 7vw, 110px);
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: clamp(48px, 5.6vw, 96px);
         align-items: start;
     }
 }
 .entry-note {
     font-family: var(--font-display);
-    font-size: clamp(21px, 2.3vw, 28px);
-    line-height: 1.36;
-    max-width: 31ch;
+    font-size: clamp(23px, 2.7vw, 33px);
+    line-height: 1.34;
+    max-width: 26ch;
+}
+@media (min-width: 900px) {
+    .entry-note {
+        /* level with the first title rather than with the rule above it */
+        margin-top: 18px;
+    }
 }
 
 .doors {
-    margin-top: clamp(34px, 4.2vw, 52px);
-    border-top: 1px solid var(--mist);
+    display: grid;
 }
+@media (max-width: 559px) {
+    /* stacked, the last row needs the closing rule the two-up grid gets from its neighbour */
+    .doors {
+        border-bottom: 1px solid var(--mist);
+    }
+}
+@media (min-width: 560px) {
+    .doors {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: clamp(26px, 3.4vw, 52px);
+    }
+}
+/* each one ruled at the top, with the count on a line at the foot of its row */
 .door {
-    display: block;
-    padding: 16px 0 18px;
-    border-bottom: 1px solid var(--mist);
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--mist);
+    padding: 15px 0 26px;
 }
 .door h2 {
-    font-size: 21px;
+    font-size: clamp(21px, 2.1vw, 25px);
 }
 .door p {
-    margin-top: 2px;
+    margin-top: 5px;
     font-size: 14.5px;
     line-height: 1.45;
     color: var(--ink-faint);
-    max-width: 36ch;
+}
+.door-meta {
+    margin-top: auto;
+    padding-top: 14px;
+    font-size: 13.5px;
+    color: var(--water);
+    overflow-wrap: anywhere;
 }
 .door:hover h2 {
     color: var(--water);
