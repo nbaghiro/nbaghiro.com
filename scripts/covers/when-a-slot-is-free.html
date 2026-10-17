@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Deciding whether a booking slot is free</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* One member's day with two visits on it. The solid bars are the appointments,
+       the pale bands are the buffers each service carries, and the overlap between the
+       bands is the conflict the plain comparison misses. Over the same fog the rest of
+       the site is photographed in, in the ink language of the post's figures. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 46%;
+                filter: saturate(0.7) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.08) 0%,
+                    rgba(233, 236, 234, 0.42) 28%,
+                    rgba(233, 236, 234, 0.76) 56%,
+                    rgba(233, 236, 234, 0.86) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .mist.dash {
+                stroke-dasharray: 5 4;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .buffer {
+                fill: rgba(78, 120, 114, 0.12);
+                stroke: none;
+            }
+            .visit {
+                fill: rgba(78, 120, 114, 0.62);
+                stroke: none;
+            }
+            .band {
+                fill: rgba(78, 120, 114, 0.2);
+                stroke: none;
+            }
+            .tick {
+                stroke: #46544f;
+                stroke-width: 1.1;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.on {
+                fill: #eef2f0;
+            }
+            text.num {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 13px;
+                fill: #68756f;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="base-lake.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // The day on the left, the conditions on the right. Everything a booking has to
+            // satisfy can be read; the last line is the one that cannot.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, class: cls });
+            const path = (d, cls) => el("path", { d, class: cls });
+
+            // the day on the left, the conditions on the right, and a line drawn between
+            // them to the condition this day trips
+            const D = wide
+                ? { x: 64, y: 78, w: 196, h: 198 }
+                : { x: 64, y: 108, w: 250, h: 268 };
+            el("text", { x: D.x, y: D.y - 26, class: "name" }, "one member");
+            el("text", { x: D.x, y: D.y - 10 }, "one afternoon");
+            rect(D.x, D.y, D.w, D.h, "ink thin");
+            const rows = 8;
+            for (let i = 1; i < rows; i += 1) {
+                const y = D.y + (D.h / rows) * i;
+                path(`M${D.x} ${y} H${D.x + 14}`, "tick");
+            }
+
+            // each visit: the appointment, and the buffers that travel with it
+            const u = D.h / rows;
+            const A = { top: D.y + u * 1.0, body: u * 1.6, pad: u * 0.85 };
+            const B2 = { top: D.y + u * 3.6, body: u * 2.0, pad: u * 0.85 };
+            const inset = 24;
+            const visit = (v, label) => {
+                rect(
+                    D.x + inset,
+                    v.top - v.pad,
+                    D.w - inset - 12,
+                    v.body + v.pad * 2,
+                    "buffer"
+                );
+                rect(D.x + inset, v.top, D.w - inset - 12, v.body, "visit");
+                el(
+                    "text",
+                    { x: D.x + inset + 11, y: v.top + 19, class: "on" },
+                    label
+                );
+            };
+            visit(A, "booked");
+            visit(B2, "being booked");
+
+            // where the two sets of buffers meet
+            const bandTop = B2.top - B2.pad;
+            const bandEnd = A.top + A.body + A.pad;
+            const bandMid = (bandTop + bandEnd) / 2;
+            rect(D.x, bandTop, D.w, bandEnd - bandTop, "band");
+            path(`M${D.x} ${bandTop} H${D.x + D.w}`, "water");
+            path(`M${D.x} ${bandEnd} H${D.x + D.w}`, "water");
+
+            // the conditions, in the order the check asks them
+            const V = wide ? { x: 452, y: 72, pitch: 42 } : { x: 420, y: 126, pitch: 50 };
+            el(
+                "text",
+                { x: V.x, y: V.y - 26, class: "name" },
+                "what has to be true"
+            );
+            el("text", { x: V.x, y: V.y - 10 }, "asked in this order, first failure wins");
+            const CONDITIONS = [
+                "the business is open",
+                "the member is not away",
+                "the time is inside working hours",
+                "no other visit overlaps, buffers counted",
+                "the room is free",
+            ];
+            const TRIPS = 3;
+            const rowY = (i) => V.y + 20 + i * V.pitch;
+            CONDITIONS.forEach((line, i) => {
+                const y = rowY(i);
+                const fired = i === TRIPS;
+                el(
+                    "text",
+                    { x: V.x, y: y + 5, class: "num" },
+                    String(i + 1).padStart(2, "0")
+                );
+                el("text", { x: V.x + 44, y: y + 5 }, line);
+                if (!fired) path(`M${V.x + 24} ${y} l5 6 l10 -13`, "water");
+                if (fired) {
+                    path(`M${V.x + 24} ${y - 5} l12 12 M${V.x + 36} ${y - 5} l-12 12`, "water");
+                }
+            });
+
+            // the line between the two panels: this day trips the overlap
+            const toY = rowY(TRIPS);
+            const mx = wide ? 400 : 368;
+            path(
+                `M${D.x + D.w + 10} ${bandMid} H${mx} V${toY} H${V.x - 16}`,
+                "water"
+            );
+            path(
+                `M${V.x - 16} ${toY} l-7 -4 M${V.x - 16} ${toY} l-7 4`,
+                "water"
+            );
+            // the label sits where the two panels leave room: beside the leg when the plate
+            // is wide, above the run when it is tall and the gap is narrower
+            el(
+                "text",
+                wide
+                    ? {
+                          x: mx - 12,
+                          y: (bandMid + toY) / 2 + 4,
+                          "text-anchor": "end",
+                      }
+                    : { x: D.x + D.w + 6, y: bandMid - 12 },
+                "the buffers meet"
+            );
+
+            // the one condition that cannot be settled by reading
+            const L = wide
+                ? { x: V.x, y: rowY(4) + 30, w: 420, h: 56 }
+                : { x: 64, y: 486, w: 876, h: 84 };
+            rect(L.x, L.y, L.w, L.h, "ink thin");
+            el(
+                "text",
+                { x: L.x + 16, y: L.y + 23 },
+                "and still free at the moment the row is written,"
+            );
+            el(
+                "text",
+                { x: L.x + 16, y: L.y + 41 },
+                "which is the only one a lock and a constraint can answer"
+            );
+
+            // the measured rule, and the corner marks every plate carries
+            const rule = wide
+                ? { x: D.x, w: D.w, y: D.y + D.h + 30 }
+                : { x: 64, w: 876, y: 426 };
+            path(`M${rule.x} ${rule.y} H${rule.x + rule.w}`, "tick");
+            for (let i = 0; i <= 8; i += 1) {
+                const x = rule.x + (rule.w / 8) * i;
+                path(`M${x} ${rule.y - (i % 4 === 0 ? 7 : 4)} V${rule.y}`, "tick");
+            }
+            el(
+                "text",
+                { x: rule.x, y: rule.y + 19 },
+                "buffers travel with the service, not with the clock"
+            );
+
+            const R = 18;
+            const BOT = VB[1] - 26;
+            for (const [x, y, sx, sy] of [
+                [30, 26, 1, 1],
+                [970, 26, -1, 1],
+                [30, BOT, 1, -1],
+                [970, BOT, -1, -1],
+            ]) {
+                path(`M${x} ${y} h${R * sx}`, "ink thin");
+                path(`M${x} ${y} v${R * sy}`, "ink thin");
+            }
+        </script>
+    </body>
+</html>

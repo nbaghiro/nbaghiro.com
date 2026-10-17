@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>One brokerage account, several strategies</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* One account at the broker, partitioned into the sleeves that own its holdings.
+       The same symbol sits in two of them, which is the whole subject of the post. Over the
+       same fog the rest of the site is photographed in, in the ink language of its figures. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 46%;
+                filter: saturate(0.7) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.06) 0%,
+                    rgba(233, 236, 234, 0.42) 30%,
+                    rgba(233, 236, 234, 0.76) 58%,
+                    rgba(233, 236, 234, 0.86) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .tick {
+                stroke: #46544f;
+                stroke-width: 1.1;
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .fillbox {
+                fill: rgba(27, 37, 34, 0.08);
+                stroke: none;
+            }
+            .land {
+                fill: rgba(78, 120, 114, 0.14);
+                stroke: none;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.qty {
+                fill: #4e7872;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="base-lake.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // The broker holds one position per symbol. Underneath it the ledger keeps a sleeve
+            // per strategy, plus the trades made by hand, and the same symbol sits in two.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            // the tall plate puts its first label level with the treeline, so its wash starts
+            // heavier and the dark type still reads
+            if (!wide) {
+                document.querySelector(".wash").style.background =
+                    "linear-gradient(to bottom," +
+                    " rgba(233,236,234,0.34) 0%," +
+                    " rgba(233,236,234,0.62) 26%," +
+                    " rgba(233,236,234,0.8) 56%," +
+                    " rgba(233,236,234,0.88) 100%)";
+            }
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, class: cls });
+            const path = (d, cls) => el("path", { d, class: cls });
+
+            // the account: what the broker reports, and all it can report
+            const A = wide
+                ? { x: 60, y: 92, w: 880, h: 68 }
+                : { x: 56, y: 152, w: 888, h: 84 };
+            rect(A.x, A.y, A.w, A.h, "fillbox");
+            rect(A.x, A.y, A.w, A.h, "ink");
+            el(
+                "text",
+                { x: A.x, y: A.y - 24, class: "name" },
+                "one account at the broker"
+            );
+            el(
+                "text",
+                { x: A.x, y: A.y - 8 },
+                "one position per symbol, one cash balance"
+            );
+            el(
+                "text",
+                {
+                    x: A.x + 24,
+                    y: A.y + A.h / 2 + 5,
+                    class: "name",
+                },
+                "SPY"
+            );
+            el(
+                "text",
+                {
+                    x: A.x + A.w - 24,
+                    y: A.y + A.h / 2 + 5,
+                    "text-anchor": "end",
+                    class: "qty",
+                },
+                "80 shares"
+            );
+            // the sleeves that own it
+            const SLEEVES = [
+                { name: "manual", note: "traded by hand", qty: "10" },
+                { name: "strategy A", note: "allocated capital", qty: "70" },
+                { name: "strategy B", note: "allocated capital", qty: null },
+            ];
+            const boxes = SLEEVES.map((s, i) =>
+                wide
+                    ? { ...s, x: 60 + i * 305, y: 220, w: 270, h: 92 }
+                    : { ...s, x: 84, y: 290 + i * 104, w: 860, h: 92 }
+            );
+
+            // the fan: one bar across the sleeves, a stub into each
+            const joint = wide ? 190 : 272;
+            path(`M${A.x + A.w / 2} ${A.y + A.h} V${joint}`, "water");
+            if (wide) {
+                const first = boxes[0].x + boxes[0].w / 2;
+                const last =
+                    boxes[boxes.length - 1].x + boxes[boxes.length - 1].w / 2;
+                path(`M${first} ${joint} H${last}`, "water");
+                boxes.forEach((b) => {
+                    const m = b.x + b.w / 2;
+                    path(
+                        `M${m} ${joint} V${b.y} M${m} ${b.y} l-4 -7 M${m} ${b.y} l4 -7`,
+                        "water"
+                    );
+                });
+            } else {
+                // the rail runs down the left margin, outside the sleeves it feeds
+                const rail = 44;
+                const last = boxes[boxes.length - 1];
+                path(
+                    `M${A.x + A.w / 2} ${joint} H${rail} V${last.y + 46}`,
+                    "water"
+                );
+                boxes.forEach((b) => {
+                    const m = b.y + 46;
+                    path(
+                        `M${rail} ${m} H${b.x} M${b.x} ${m} l-7 -4 M${b.x} ${m} l-7 4`,
+                        "water"
+                    );
+                });
+            }
+
+            boxes.forEach((b) => {
+                if (b.qty) rect(b.x, b.y, b.w, b.h, "land");
+                rect(b.x, b.y, b.w, b.h, "ink");
+                el("text", { x: b.x + 20, y: b.y + 34, class: "name" }, b.name);
+                el("text", { x: b.x + 20, y: b.y + 56 }, b.note);
+                if (b.qty) {
+                    el(
+                        "text",
+                        {
+                            x: b.x + b.w - 20,
+                            y: b.y + 36,
+                            "text-anchor": "end",
+                            class: "qty",
+                        },
+                        `SPY ${b.qty}`
+                    );
+                } else {
+                    el(
+                        "text",
+                        {
+                            x: b.x + b.w - 20,
+                            y: b.y + 36,
+                            "text-anchor": "end",
+                        },
+                        "cash only"
+                    );
+                }
+            });
+
+            // the measured rule along the foot, ticked every quarter and taller at its ends
+            const left = wide ? 60 : 84;
+            const right = wide ? 940 : 944;
+            const ruleY = wide ? 330 : 610;
+            path(`M${left} ${ruleY} H${right}`, "tick");
+            for (let i = 0; i <= 4; i += 1) {
+                const x = left + ((right - left) / 4) * i;
+                path(
+                    `M${x} ${ruleY - (i % 4 === 0 ? 6 : 4)} V${ruleY}`,
+                    "tick"
+                );
+            }
+            el(
+                "text",
+                { x: left, y: ruleY + 18 },
+                "the broker reports the sum; the ledger remembers whose it is"
+            );
+
+            // the registration ticks every plate and figure carries
+            const R = 18;
+            const B = VB[1] - 26;
+            for (const [x, y, sx, sy] of [
+                [30, 26, 1, 1],
+                [970, 26, -1, 1],
+                [30, B, 1, -1],
+                [970, B, -1, -1],
+            ]) {
+                path(`M${x} ${y} h${R * sx}`, "ink thin");
+                path(`M${x} ${y} v${R * sy}`, "ink thin");
+            }
+        </script>
+    </body>
+</html>
