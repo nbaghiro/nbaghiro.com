@@ -991,6 +991,10 @@
         grid-template-columns: 220px 1fr;
         align-items: start;
     }
+    /* a text-only post has no image column to sit beside */
+    .ads .xitem.bare {
+        grid-template-columns: 1fr;
+    }
     .ads .lb-item {
         padding: 24px 64px;
     }
