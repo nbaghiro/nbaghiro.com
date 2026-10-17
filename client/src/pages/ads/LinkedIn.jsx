@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { DownloadButton, Field, Fields, ShareButton } from "./actions";
+import { ProfileHeader } from "./Header";
 import { Lightbox } from "./Lightbox";
 import { Strip } from "./Strip";
 import { Ring } from "./Studio";
@@ -100,11 +101,13 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
 
     const intro = (
         <p className="lede">
-            {kit ? "Profile & posts" : `${posts.length} document posts`}
+            {kit && posts.length > 0 && "Profile & posts"}
+            {kit && posts.length === 0 && "The profile itself"}
+            {!kit && `${posts.length} document posts`}
         </p>
     );
 
-    const jump = kit && (
+    const jump = kit && posts.length > 0 && (
         <nav className="jump" aria-label="On this page">
             {li.page && (
                 <a
@@ -133,6 +136,46 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
         </nav>
     );
 
+    const pairName = (f) => fileName(f);
+    const headerMock = kit && li.page?.logo && li.page?.banner && (
+        <>
+            <ProfileHeader
+                cover={{ url: url(li.page.banner), label: "Cover" }}
+                avatar={{ url: url(li.page.logo), label: "Profile photo" }}
+                name={li.page.name}
+                headline={
+                    li.page.fields?.find((f) => f.label === "Headline")
+                        ?.options?.[0]
+                }
+                meta={li.page.meta}
+            />
+            <div className="actions" style={{ marginTop: 14 }}>
+                <ShareButton
+                    label="Save both"
+                    items={() => [
+                        {
+                            url: url(li.page.logo),
+                            name: pairName(li.page.logo),
+                        },
+                        {
+                            url: url(li.page.banner),
+                            name: pairName(li.page.banner),
+                        },
+                    ]}
+                />
+                <DownloadButton
+                    url={url(li.page.logo)}
+                    name={pairName(li.page.logo)}
+                    label="Photo"
+                />
+                <DownloadButton
+                    url={url(li.page.banner)}
+                    name={pairName(li.page.banner)}
+                    label="Cover"
+                />
+            </div>
+        </>
+    );
     const art = li.page && (
         <>
             <div className="pics">
@@ -208,7 +251,7 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
             </div>
             {kit ? (
                 <div className="page-grid">
-                    <div>{art}</div>
+                    <div>{headerMock || art}</div>
                     {comparing ? (
                         editions.map((e) => (
                             <div key={e.id}>

@@ -21,7 +21,7 @@ const TABS = [
     ["posts", "Posts", (m) => m.posts?.length],
     ["stories", "Stories", (m) => m.stories?.length],
     ["reels", "Reels", (m) => m.reels?.length],
-    ["linkedin", "LinkedIn", (m) => m.linkedin?.posts?.length],
+    ["linkedin", "LinkedIn", (m) => m.linkedin?.posts?.length || ""],
     ["x", "X", (m) => m.x?.posts?.length],
     [
         "profile",
@@ -115,7 +115,9 @@ export function Studio({ root }) {
     const tabs = [
         ...TABS.filter(
             ([id, , count]) =>
-                count(manifest) && !(id === "linkedin" && sets.length)
+                (count(manifest) ||
+                    (id === "linkedin" && manifest.linkedin?.page)) &&
+                !(id === "linkedin" && sets.length)
         ),
         ...sets.map((s) => [`li:${s.id}`, s.label, () => ""]),
     ];

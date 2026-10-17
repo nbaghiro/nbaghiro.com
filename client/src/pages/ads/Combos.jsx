@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { DownloadButton, ShareButton } from "./actions";
+import { ProfileHeader } from "./Header";
 import { fileName } from "./store";
 
 // Profile combinations: pick a photo and a cover and see them together in a mock of the
@@ -23,30 +24,13 @@ export function Combos({ manifest, url }) {
                 proportions.
             </p>
 
-            <div className="mock">
-                <img
-                    crossOrigin="anonymous"
-                    className="mock-cover"
-                    src={url(cover.file)}
-                    alt={cover.label}
-                />
-                <img
-                    crossOrigin="anonymous"
-                    className="mock-avatar"
-                    src={url(avatar.file)}
-                    alt={avatar.label}
-                />
-                <div className="mock-body">
-                    <h3 className="mock-name">{c.name}</h3>
-                    <p className="mock-headline">{c.headline}</p>
-                    <p className="mock-meta">{c.meta}</p>
-                    <div className="mock-buttons">
-                        <span className="mock-btn solid">Follow</span>
-                        <span className="mock-btn">Message</span>
-                        <span className="mock-btn">More</span>
-                    </div>
-                </div>
-            </div>
+            <ProfileHeader
+                cover={{ url: url(cover.file), label: cover.label }}
+                avatar={{ url: url(avatar.file), label: avatar.label }}
+                name={c.name}
+                headline={c.headline}
+                meta={c.meta}
+            />
 
             <div className="actions" style={{ marginTop: 14 }}>
                 <ShareButton
