@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>
+            One renderer for every game, and two ways to check a level
+        </title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* One game as the engine receives it, and the two ways a level is checked under it:
+       a mechanic's whole position graph walked, and an action game's single run played. Over
+       the same fog the rest of the site is photographed in, in the ink language of the
+       post's figures. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center var(--crop, 42%);
+                filter: saturate(0.7) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.1) 0%,
+                    rgba(233, 236, 234, 0.46) 30%,
+                    rgba(233, 236, 234, 0.78) 58%,
+                    rgba(233, 236, 234, 0.88) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .mist.dash {
+                stroke-dasharray: 5 4;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .water.thin {
+                stroke-width: 1;
+            }
+            .cell {
+                fill: rgba(78, 120, 114, 0.1);
+                stroke: none;
+            }
+            .node {
+                fill: #e9ecea;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .node.on {
+                fill: rgba(78, 120, 114, 0.5);
+                stroke: #4e7872;
+            }
+            .glyph {
+                fill: #46544f;
+                stroke: none;
+            }
+            .tick {
+                stroke: #46544f;
+                stroke-width: 1.1;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.num {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 13px;
+                fill: #68756f;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="ph-engine.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // The strip across the top is what a game hands over. Both panels hang from it,
+            // because both gates read that same description: the left walks all of it, the
+            // right plays one way through.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            if (!wide) sheet.style.setProperty("--crop", "46%");
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, class: cls });
+            const path = (d, cls) => el("path", { d, class: cls });
+            const dot = (cx, cy, r, cls) =>
+                el("circle", { cx, cy, r, class: cls });
+
+            const L = 64;
+            const R = 936;
+            const W = R - L;
+
+            // what a game hands over: keyed cells with a drawing in each and no pixel anywhere
+            const strip = wide ? { y: 70, h: 46 } : { y: 118, h: 62 };
+            el(
+                "text",
+                { x: L, y: strip.y - 26, class: "name" },
+                "one game, as data"
+            );
+            el(
+                "text",
+                { x: L, y: strip.y - 10 },
+                "a frame the renderer draws, a position the prover walks"
+            );
+            rect(L, strip.y, W, strip.h, "cell");
+            rect(L, strip.y, W, strip.h, "ink thin");
+            const CELLS = 10;
+            const cw = W / CELLS;
+            for (let i = 1; i < CELLS; i += 1)
+                path(`M${L + cw * i} ${strip.y} V${strip.y + strip.h}`, "mist");
+            // a different small drawing in each cell, as a sprite names a different one
+            for (let i = 0; i < CELLS; i += 1) {
+                const cx = L + cw * (i + 0.5);
+                const cy = strip.y + strip.h / 2;
+                const k = i % 5;
+                if (k === 0) dot(cx, cy, 6, "glyph");
+                if (k === 1)
+                    path(
+                        `M${cx - 7} ${cy + 6} L${cx} ${cy - 7} L${cx + 7} ${cy + 6} Z`,
+                        "ink thin"
+                    );
+                if (k === 2) rect(cx - 6, cy - 6, 12, 12, "ink thin");
+                if (k === 3)
+                    path(`M${cx - 8} ${cy + 4} q8 -14 16 0`, "ink thin");
+                if (k === 4) {
+                    path(`M${cx - 7} ${cy - 6} V${cy + 6}`, "ink thin");
+                    path(`M${cx - 7} ${cy - 6} L${cx + 7} ${cy}`, "ink thin");
+                }
+            }
+            el(
+                "text",
+                { x: R, y: strip.y - 10, "text-anchor": "end" },
+                "keyed sprites and their places, no pixels"
+            );
+
+            // the two panels, and the legs that hang them from the strip
+            const P = wide
+                ? [
+                      { x: L, y: 146, w: 406, h: 120 },
+                      { x: 530, y: 146, w: 406, h: 120 },
+                  ]
+                : [
+                      { x: L, y: 252, w: W, h: 158 },
+                      { x: L, y: 470, w: W, h: 128 },
+                  ];
+            // in the wide plate a leg drops into each panel; stacked, they hug the edges so
+            // neither crosses the other panel's drawing
+            P.forEach((p, i) => {
+                const mid = wide ? p.x + p.w / 2 : i === 0 ? L - 8 : R + 8;
+                const drop = wide ? 14 : 34;
+                path(
+                    `M${mid} ${strip.y + strip.h} V${p.y - drop}`,
+                    "mist dash"
+                );
+                path(`M${mid - 4} ${p.y - drop - 6} l4 6 l4 -6`, "mist");
+            });
+
+            // left: a mechanic's position graph, walked to the end, with the shortest win inked
+            const NODES = [
+                [0.03, 0.5],
+                [0.17, 0.2],
+                [0.17, 0.8],
+                [0.33, 0.06],
+                [0.33, 0.5],
+                [0.33, 0.94],
+                [0.5, 0.24],
+                [0.5, 0.74],
+                [0.67, 0.08],
+                [0.67, 0.5],
+                [0.67, 0.92],
+                [0.84, 0.3],
+                [0.97, 0.52],
+            ];
+            const EDGES = [
+                [0, 1],
+                [0, 2],
+                [1, 3],
+                [1, 4],
+                [2, 4],
+                [2, 5],
+                [4, 6],
+                [4, 7],
+                [5, 7],
+                [6, 8],
+                [6, 9],
+                [7, 9],
+                [7, 10],
+                [9, 11],
+                [11, 12],
+                [9, 12],
+            ];
+            const WIN_PATH = [0, 2, 4, 7, 9, 12];
+            const DEAD = [3, 10];
+            const G = P[0];
+            const gx = (f) => G.x + 26 + f * (G.w - 52);
+            const gy = (f) => G.y + 14 + f * (G.h - 28);
+            for (const [a, b] of EDGES)
+                path(
+                    `M${gx(NODES[a][0])} ${gy(NODES[a][1])} L${gx(NODES[b][0])} ${gy(NODES[b][1])}`,
+                    "mist"
+                );
+            for (let i = 1; i < WIN_PATH.length; i += 1) {
+                const a = NODES[WIN_PATH[i - 1]];
+                const b = NODES[WIN_PATH[i]];
+                path(
+                    `M${gx(a[0])} ${gy(a[1])} L${gx(b[0])} ${gy(b[1])}`,
+                    "water"
+                );
+            }
+            NODES.forEach((n, i) => {
+                const on = WIN_PATH.includes(i);
+                dot(gx(n[0]), gy(n[1]), 5, on ? "node on" : "node");
+                // a position with no win left is closed off where it stands
+                if (DEAD.includes(i)) {
+                    const x = gx(n[0]);
+                    const y = gy(n[1]);
+                    path(
+                        `M${x - 3.5} ${y - 3.5} l7 7 M${x + 3.5} ${y - 3.5} l-7 7`,
+                        "mist"
+                    );
+                }
+            });
+            dot(gx(NODES[12][0]), gy(NODES[12][1]), 9, "ink thin");
+            el(
+                "text",
+                { x: gx(NODES[0][0]) - 6, y: gy(NODES[0][1]) + 22 },
+                "start"
+            );
+            el(
+                "text",
+                {
+                    x: gx(NODES[12][0]) + 4,
+                    y: gy(NODES[12][1]) + 23,
+                    "text-anchor": "end",
+                },
+                "won"
+            );
+
+            // right: an action game, stepped at a fixed rate, with one run played through it
+            const T = P[1];
+            const base = T.y + T.h - 30;
+            path(`M${T.x + 26} ${base} H${T.x + T.w - 26}`, "tick");
+            const STEPS = 26;
+            const sw = (T.w - 52) / STEPS;
+            for (let i = 0; i <= STEPS; i += 1)
+                path(
+                    `M${T.x + 26 + sw * i} ${base} v${i % 5 === 0 ? 7 : 4}`,
+                    "tick"
+                );
+            const RUN = [
+                [0.02, 0.62],
+                [0.14, 0.38],
+                [0.27, 0.55],
+                [0.4, 0.2],
+                [0.53, 0.46],
+                [0.66, 0.16],
+                [0.79, 0.4],
+                [0.93, 0.24],
+            ];
+            const rx = (f) => T.x + 26 + f * (T.w - 52);
+            const ry = (f) => T.y + 10 + f * (base - T.y - 24);
+            path(
+                RUN.map(
+                    ([f, g], i) => `${i ? "L" : "M"}${rx(f)} ${ry(g)}`
+                ).join(" "),
+                "water"
+            );
+            for (const [f, g] of RUN) dot(rx(f), ry(g), 2.5, "glyph");
+            const fx = rx(0.93);
+            const fy = ry(0.24);
+            path(`M${fx} ${fy - 4} V${base}`, "ink thin");
+            path(`M${fx} ${fy - 4} l16 6 l-16 6 Z`, "water");
+            el("text", { x: T.x + 26, y: base + 24, class: "num" }, "60");
+            el(
+                "text",
+                { x: T.x + 44, y: base + 24 },
+                "steps a second, read from the pad"
+            );
+            // side by side where the panel is wide enough, stacked where it is not
+            el(
+                "text",
+                wide
+                    ? { x: T.x + 26, y: base + 42 }
+                    : { x: T.x + T.w - 26, y: base + 24, "text-anchor": "end" },
+                "won, inside the minutes it claimed"
+            );
+
+            // what each panel is worth
+            const capY = wide ? 304 : null;
+            el(
+                "text",
+                wide
+                    ? { x: G.x, y: capY, class: "name" }
+                    : { x: G.x, y: G.y - 16, class: "name" },
+                "every position walked"
+            );
+            el(
+                "text",
+                wide
+                    ? { x: T.x, y: capY, class: "name" }
+                    : { x: T.x, y: T.y - 16, class: "name" },
+                "one way through, played"
+            );
+            if (wide) {
+                el(
+                    "text",
+                    { x: G.x, y: capY + 17 },
+                    "a level is refused on what the whole graph says"
+                );
+                el(
+                    "text",
+                    { x: T.x, y: capY + 17 },
+                    "no graph to walk, so a test plays the round"
+                );
+            } else {
+                el(
+                    "text",
+                    { x: G.x + 170, y: G.y - 16 },
+                    "a level is refused on what the whole graph says"
+                );
+                el(
+                    "text",
+                    { x: T.x + 182, y: T.y - 16 },
+                    "no graph to walk, so a test plays the round"
+                );
+            }
+
+            // the measured rule, and the corner marks every plate carries
+            const rule = wide ? { y: 342 } : { y: 624 };
+            path(`M${L} ${rule.y} H${R}`, "tick");
+            for (let i = 0; i <= 12; i += 1) {
+                const x = L + (W / 12) * i;
+                path(
+                    `M${x} ${rule.y - (i % 4 === 0 ? 7 : 4)} V${rule.y}`,
+                    "tick"
+                );
+            }
+            el(
+                "text",
+                { x: L, y: rule.y + 19 },
+                "46 games, 344 levels, one renderer and the same description under both gates"
+            );
+
+            const C = 18;
+            const BOT = VB[1] - 26;
+            for (const [x, y, sx, sy] of [
+                [30, 26, 1, 1],
+                [970, 26, -1, 1],
+                [30, BOT, 1, -1],
+                [970, BOT, -1, -1],
+            ]) {
+                path(`M${x} ${y} h${C * sx}`, "ink thin");
+                path(`M${x} ${y} v${C * sy}`, "ink thin");
+            }
+        </script>
+    </body>
+</html>
