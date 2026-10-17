@@ -34,12 +34,18 @@ function hash(key) {
 
 function chosen(key, count) {
     let h = hash(key);
+    // The low bits of an LCG with a power-of-two modulus have a period of two, so the raw
+    // value is mixed before it is used. Taking `% 2` off the bare state made every plate on
+    // a page land on the same side.
     const next = () => {
         h = (Math.imul(h, 1664525) + 1013904223) >>> 0;
-        return h;
+        return (h ^ (h >>> 16)) >>> 0;
     };
     const pool = PLATES.map((p, i) => ({ ...p, i }));
     const out = [];
+    // Sides alternate down the page rather than being drawn each time, so a column is never
+    // all on one side however the draw falls; which side it opens on is the page's own.
+    const opens = next() % 2 ? "right" : "left";
     for (let slot = 0; slot < count && pool.length; slot += 1) {
         // the first plate in a column hangs from above where one is available
         const wants = slot === 0;
@@ -49,7 +55,7 @@ function chosen(key, count) {
         pool.splice(pool.indexOf(pick), 1);
         out.push({
             ...pick,
-            side: (next() + slot) % 2 ? "right" : "left",
+            side: slot % 2 === 0 ? opens : opens === "left" ? "right" : "left",
             top: 170 + slot * 760 + (next() % 220),
         });
     }
@@ -63,7 +69,8 @@ function PageArt({ seed, count = 3 }) {
             {chosen(seed, count).map((plate) => (
                 <div
                     key={plate.src}
-                    className={`page-art ${plate.side}`}
+                    // a specimen leans into the column from whichever margin it stands in
+                    className={`page-art ${plate.side}${plate.side === "right" ? " flip" : ""}`}
                     style={{
                         top: `${plate.top}px`,
                         "--plate-w": `${plate.wide}px`,
