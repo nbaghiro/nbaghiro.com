@@ -1064,6 +1064,12 @@
     border: 1px solid #d9dce0;
     border-radius: 10px;
     overflow: hidden;
+    /* everything inside is a share of the card's width, so the header keeps LinkedIn's
+       proportions in a narrow column instead of the photo landing on the name */
+    container-type: inline-size;
+}
+.ads .mock-band {
+    position: relative;
 }
 .ads .mock-cover {
     width: 100%;
@@ -1073,45 +1079,47 @@
 }
 .ads .mock-avatar {
     position: absolute;
-    left: 24px;
-    top: calc(25% - 56px);
-    width: 152px;
-    height: 152px;
+    left: 2.2cqw;
+    bottom: -27%;
+    width: 13.5cqw;
+    aspect-ratio: 1;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #fff;
+    border: 0.5cqw solid #fff;
     background: #fff;
 }
 .ads .mock-body {
-    padding: 64px 24px 20px;
+    padding: 8cqw 2.4cqw 2.6cqw;
 }
 .ads .mock-name {
-    font: 700 24px/1.2 var(--font-read);
+    font: 700 3.1cqw/1.2 var(--font-read);
     color: #1b1f23;
     margin: 0;
 }
 .ads .mock-headline {
-    font-size: 15px;
-    margin-top: 4px;
+    font-size: 1.95cqw;
+    line-height: 1.4;
+    margin-top: 0.5cqw;
     max-width: 62ch;
 }
 .ads .mock-meta {
-    font-size: 14px;
+    font-size: 1.8cqw;
     color: #5e6670;
-    margin-top: 6px;
+    margin-top: 0.8cqw;
 }
 .ads .mock-buttons {
     display: flex;
-    gap: 8px;
-    margin-top: 14px;
+    gap: 1cqw;
+    margin-top: 1.8cqw;
 }
 .ads .mock-btn {
-    font-size: 14px;
+    font-size: 1.8cqw;
     font-weight: 600;
-    padding: 6px 16px;
-    border-radius: 8px;
-    border: 1px solid #0a66c2;
+    padding: 0.8cqw 2cqw;
+    border-radius: 1cqw;
+    border: 0.13cqw solid #0a66c2;
     color: #0a66c2;
+    white-space: nowrap;
 }
 .ads .mock-btn.solid {
     background: #0a66c2;
@@ -1321,6 +1329,9 @@
     }
     .ads .kit .page-grid {
         grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+    .ads .kit .page-grid:has(.mock) {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
     }
     .ads .kit.comparing .page-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));

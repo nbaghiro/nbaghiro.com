@@ -4,18 +4,20 @@
 export function ProfileHeader({ cover, avatar, name, headline, meta }) {
     return (
         <div className="mock">
-            <img
-                crossOrigin="anonymous"
-                className="mock-cover"
-                src={cover.url}
-                alt={cover.label ?? "Cover"}
-            />
-            <img
-                crossOrigin="anonymous"
-                className="mock-avatar"
-                src={avatar.url}
-                alt={avatar.label ?? "Profile photo"}
-            />
+            <div className="mock-band">
+                <img
+                    crossOrigin="anonymous"
+                    className="mock-cover"
+                    src={cover.url}
+                    alt={cover.label ?? "Cover"}
+                />
+                <img
+                    crossOrigin="anonymous"
+                    className="mock-avatar"
+                    src={avatar.url}
+                    alt={avatar.label ?? "Profile photo"}
+                />
+            </div>
             <div className="mock-body">
                 {name && <h3 className="mock-name">{name}</h3>}
                 {headline && <p className="mock-headline">{headline}</p>}
