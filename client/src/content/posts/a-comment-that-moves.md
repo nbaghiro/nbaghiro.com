@@ -1,4 +1,4 @@
-title: Keeping a comment on the text it was written on
+title: Keeping comments attached as text changes
 date: 2026-10-22
 about: Galleo
 cover: /img/posts/a-comment-that-moves-wide.webp
@@ -13,7 +13,7 @@ Comments sit outside the content. A thread is a row in a `comments` table and ne
 
 The row carries the anchor and the id of the section the anchored element sat in. An anchor names an element. For a text thread the range itself lives on that element, as a `cm` mark whose value is the thread's root id.
 
-The section id is a locator rather than an identity. It groups threads in the rail, it is what a jump scrolls to, and the server uses it to refuse a comment on a section the artifact does not have, which comes back as a 409 rather than a 400 because the request is well formed and the world it describes is not. It is not what the thread points at.
+The section id groups threads in the sidebar and identifies where to scroll when opening one. The server also checks that the section exists. A valid request referring to a missing section receives a 409 conflict response. The element id and text mark identify the anchor itself.
 
 Two things follow from keeping the row out of the tree.
 
@@ -21,7 +21,7 @@ Painting and export are the same with and without comments. A reader with thread
 
 Undo cannot create or destroy a thread. History moves the content tree, and comment rows are not in it. Undo can still remove the mark or the element a thread points at, which changes how much of the thread resolves. The thread and its replies survive that.
 
-## The mark stamps nothing on the rendered text
+## Keeping comment marks out of rendered text
 
 Galleo's rich text is a string plus a list of offset marks. Most mark types set a field on the run the renderer draws: `b` sets bold, `link` carries an href, `hl` sets a background. The comment mark is a declared type that sets nothing.
 
@@ -29,9 +29,9 @@ That is deliberate. The tint a reader sees over commented text is drawn by the e
 
 ## Invisibility is why the mark has to be rebased
 
-The text editor is a contenteditable element. On each input it reads the field back out of the DOM to get the new text and the visible marks. The DOM can only return what it drew, and the comment mark drew nothing, so reading back is where an invisible mark would be lost.
+The text editor is a contenteditable element. On each input it reads the field back out of the DOM to get the new text and the visible marks. Because the comment mark has no visible DOM representation, reading the edited text back does not recover it.
 
-So it is not read back. The editor takes the `cm` marks from the stored data, rebases them across the change the text just took, and merges them with the marks it read from the DOM.
+The editor instead reads the stored `cm` marks, adjusts their ranges for the text change, and merges them with the visible marks recovered from the DOM.
 
 ![An edit inserts words ahead of a commented phrase. The old and new strings are compared, the single changed span is found, and the mark is moved by the same amount so it still covers the phrase.](figure:mark-rebase)
 
@@ -45,28 +45,28 @@ The splice has four outcomes for a comment mark, each of which has a test.
 
 Text inserted before the range shifts it by the length inserted. Text typed inside the range grows it, because a mark covering the replaced span is carried onto what replaced it. Text deleted from the middle of the range leaves the surviving halves marked, and they merge back into one mark when the deletion brings them together. Deleting the whole range removes the mark, because a mark normalises away once its start and end meet.
 
-That last case is the one a reader will notice, and it is not a failure in the splice. A comment written on a phrase that no longer exists has nothing to cover.
+Deleting the whole phrase removes its highlight. The comment thread remains available.
 
 ## When the anchor stops resolving
 
 A thread resolves against the document on screen in one of three states. It is fully live when both the element and the mark are present. It falls back to the element when the element is there and the mark is gone, which is what the deletion above produces. It is an orphan when the element is no longer in the tree at all.
 
-A thread is degraded when that state differs from the kind of anchor it was written with. A degraded thread leaves the canvas and lives in the rail.
+A thread is degraded when that state differs from the kind of anchor it was written with. A degraded thread is shown in the sidebar without a canvas highlight.
 
 ![A text thread resolving fully, the same thread after its phrase is deleted, and the same thread after the element leaves the tree. Each step keeps the row and loses one level of attachment.](figure:anchor-degrade)
 
 This is why the row stores a quote. At write time, the text the anchor covered is captured and stored alongside it, trimmed and capped. For an element anchor with no text of its own, the element's catalog label stands in. When the anchor no longer resolves, the quote is what the reader sees in place of a highlight.
 
-The most common way to orphan a section's worth of threads is an AI turn rewriting that section, because the replacement tree carries fresh element ids. The quote does not recover the attachment. It keeps the discussion legible after the thing it was about has gone, which is the better of the two outcomes available once the content is replaced.
+An AI rewrite can orphan a section’s threads when the replacement tree uses new element ids. The quote does not recover the attachment. It preserves the original context so the discussion remains understandable after the content is replaced.
 
 ## Access decides which anchor you get
 
-Artifact access is ordered: none, view, comment, edit. Writing the `cm` mark is a content write, so a text-range anchor needs edit. At the comment level the chip anchors to the element instead, which is the attachment that level can actually carry rather than a range that would be refused on the way to the document.
+Artifact access is ordered: none, view, comment, edit. Writing the `cm` mark is a content write, so a text-range anchor needs edit. With comment access, the thread anchors to the element instead. A text-range mark requires permission to change the content.
 
-Anchoring also needs the element to have an id, and ids are minted lazily. An element created in the current session may not have one yet, so the id is minted at the moment of anchoring and written out as a structural change. Keeping it local was the wrong answer: the server mints its own id on its next write, and the thread would orphan for every other reader immediately.
+Anchoring also needs the element to have an id, and ids are minted lazily. An element created in the current session may not have one yet, so the id is minted at the moment of anchoring and written out as a structural change. The id must be persisted. A local-only id could differ from the one assigned by the server, leaving other readers unable to resolve the thread.
 
-## Where this leaves it
+## Tradeoffs
 
-The cost of the design is the rebasing, and rebasing is only as good as the diff it is built on. What it buys is that everything downstream of the content tree stays unaware that comments exist: the engine, the PDF writer and the PowerPoint writer need no concept of a thread, and history needs no special case to keep one alive.
+This design requires range rebasing, with the limitations of a single-span diff. In return, comments do not affect layout or exports, and content undo does not remove discussion threads.
 
-It does not preserve an anchor through a rewrite. When the content a thread discussed is replaced, the thread keeps its words and loses its place in the document, and the interface says so rather than dropping it quietly.
+A rewrite that replaces the anchored elements can still break the attachment. The interface retains the discussion and its original quote, and shows that it is no longer attached to the current content.

@@ -1,9 +1,9 @@
-title: Checking every version of an exercise before it ships
+title: Checking generated exercises before publication
 date: 2026-10-20
 about: Lumischool
 cover: /img/posts/every-version-checked-wide.webp
 card: /img/posts/every-version-checked-card.webp
-summary: A Lumischool exercise is a template with parameters, so one authored item is many questions. The verifier builds each version and checks it, including whether a hint for a wrong answer would also fire on the right one.
+summary: Lumischool generates questions from parameterized templates. Its verifier checks the resulting answers, layouts and feedback, using a fixed sample when the number of combinations exceeds its limit.
 
 A Lumischool exercise is written once and asked many times. An item declares parameters, and each combination of their values is a version of the question with its own numbers, its own picture and its own answer. The item below has one parameter, so it is six questions:
 
@@ -20,9 +20,9 @@ item story.apples-to-ten v=1 skills=[bonds-to-10] {
 }
 ```
 
-Authoring like this is worth doing, because a child who repeats a lesson gets different numbers and the drawing follows them. It also means an author cannot read what they have written. They can read the template. The questions are what the parameters produce, and a mistake can live in one of them.
+Parameters let a child repeat a lesson with different numbers and matching drawings. Reviewing the template alone can miss errors that occur for particular values, so the generated questions need checks too.
 
-The verifier in `engine/notation/verify.ts` builds those questions and checks each one. The lesson pack is compiled from the same workspace and throws while any item reports an error, so a question that fails these checks does not reach a child.
+The verifier in `engine/notation/verify.ts` builds those questions and checks each one. The lesson pack is compiled from the same workspace. Reported errors block the build; warnings do not. Combinations outside a sample remain unchecked.
 
 ## Building the versions
 
@@ -32,11 +32,11 @@ The verifier in `engine/notation/verify.ts` builds those questions and checks ea
 
 Running that over the curriculum as it stands on 16 October 2026: 5,622 items, 186,272 versions built and checked, 21 of them sampled rather than walked. One item, `columns.add`, allows around 64 million combinations by the sampler's own estimate, and is checked through 400 of them. The whole pass took 54 seconds in one run on my laptop, which is a figure for that machine and that corpus rather than a general measurement.
 
-Sampling is the honest weak point. For those 21 items the report describes 400 questions out of a much larger space, and a fault in an unvisited combination is not ruled out. The seed is fixed, so the same 400 are checked on every run, which makes the result stable but does not widen it.
+Sampling leaves some combinations unchecked. For those 21 items the report describes 400 questions out of a much larger space, and a fault in an unvisited combination is not ruled out. The seed is fixed, so the same 400 are checked on every run, which makes the result stable but does not widen it.
 
 ## What each version has to satisfy
 
-The answer has to evaluate. Beyond that, most of the checks are about whether the drawing can carry the question that its numbers produced.
+The answer expression must evaluate successfully. Other checks test whether the drawing and layout can represent the generated question.
 
 Some parts have a capacity the item can exceed without the author noticing. A bus draws one passenger per window, so a version asking about more passengers than there are windows would not draw them all. A sweet jar holds 24. A caption strip holds about two and a half characters for each square of its width. Each of those is a rule in the verifier rather than something an author has to remember.
 
@@ -54,7 +54,7 @@ feedback {
 }
 ```
 
-The rule is for a child who answers with the number of apples they can see instead of the number still needed. It is a good hint, and for most of the item's versions it does exactly what it says.
+The rule is for a child who answers with the number of apples they can see instead of the number still needed. The hint is appropriate for that mistake, but it also needs to distinguish it from a correct answer.
 
 The verifier evaluates every feedback rule once per version, in an environment where the answer names are bound to the correct values. If a rule is true there, the hint would fire when the child was right, and it reports that the rule cannot tell the mistake apart.
 
@@ -85,8 +85,8 @@ Running the program is how the coding questions are checked. That catches a clas
 
 ## What this does not establish
 
-A verified item is a well-formed question, not a well-taught one. The checker interface has a separate `warnings` hook for exactly this reason: things an author should read that do not stop the item shipping, including whether a question that is answerable actually teaches what it claims to. Judging that is still a person's job.
+A verified item is a question that passed the implemented checks. That does not establish whether it teaches the intended concept well. The checker interface has a separate `warnings` hook for issues that need author review without blocking publication. Teaching quality still needs human judgment.
 
 The physics games are a different case. `engine/motion/verify.ts` can replay a recorded solution through the simulation and report whether it reaches the win condition, and its comment is careful to say that a successful replay is a witness of reachability rather than an exhaustive proof. That function is currently exercised only by its own tests. No game level ships through it today, so the games do not have the guarantee the exercises have.
 
-The part I would carry into another system is narrow. When content is generated from a template, the template is not the thing to review. Build what it produces, check each one against the limits of whatever has to display it, and treat a hint that cannot distinguish a mistake from a correct answer as a defect in the content rather than a detail of the interface.
+For generated content, reviewing the template and checking its outputs serve different purposes. The verifier catches problems with answers, drawings and feedback that can appear only at particular parameter values. Its report also needs to make clear which combinations were checked and which issues still require author review.
