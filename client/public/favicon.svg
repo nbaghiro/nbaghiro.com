@@ -1,8 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <!-- The ticked rule from the foot of the covers, on the pine the site's footer band uses.
-       One tile in both tab bars: pine is dark enough to sit in a dark one without glare and
-       deep enough to read in a light one. -->
+  <!-- The portrait from the first version of the site, reduced to what survives 16 pixels:
+       a hairline and two eyes, mist on the pine the footer band uses. One tile in both tab
+       bars, since a mark that follows the theme turns into a dark box in a dark one. -->
   <rect width="32" height="32" rx="2" fill="#1e2f2b"/>
-  <path d="M4 21 H28 M6 21 V15 M26 21 V15" fill="none" stroke="#cbd4d1" stroke-width="2.4" stroke-linecap="square"/>
-  <path d="M16 21 V9" fill="none" stroke="#74a79d" stroke-width="2.6" stroke-linecap="square"/>
+  <path d="M7.5 12.5 Q16 5 24.5 12.5" fill="none" stroke="#cbd4d1" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="12.2" cy="19" r="2.7" fill="#cbd4d1"/>
+  <circle cx="19.8" cy="19" r="2.7" fill="#cbd4d1"/>
 </svg>
