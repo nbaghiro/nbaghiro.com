@@ -7,10 +7,16 @@ import { fileName } from "./store";
 const SHAPES = [
     [
         "feed",
-        "Feed 1080 x 1350",
+        "Feed",
+        "1080 x 1350",
         "Instagram feed, and a LinkedIn single image ad",
     ],
-    ["story", "Story 1080 x 1920", "Instagram and Facebook stories and reels"],
+    [
+        "story",
+        "Story",
+        "1080 x 1920",
+        "Instagram and Facebook stories and reels",
+    ],
 ];
 
 // Paid creatives, which is a different thing from a post: one per product, in the two shapes
@@ -22,12 +28,14 @@ export function AdUnits({ manifest, url }) {
     return (
         <>
             <p className="lede">
-                {items.length} {items.length === 1 ? "ad" : "ads"}, each in both
-                shapes. The button drawn into the frame is art. What carries the
-                tap is the call to action you pick in Meta Ads Manager or
-                LinkedIn Campaign Manager, or a link sticker laid over an
-                organic story. A feed post carries no link at all, which is why
-                every caption ends with the address.
+                {items.length === 1
+                    ? "One ad, in both shapes."
+                    : `${items.length} ads, each in both shapes.`}{" "}
+                The button drawn into the frame is art. What carries the tap is
+                the call to action you pick in Meta Ads Manager or LinkedIn
+                Campaign Manager, or a link sticker laid over an organic story.
+                A feed post carries no link at all, which is why every caption
+                ends with the address.
             </p>
             {items.map((ad) => {
                 const frames = SHAPES.filter(([k]) => ad.files?.[k]).map(
@@ -82,15 +90,17 @@ export function AdUnits({ manifest, url }) {
                                     key={f.key}
                                     url={f.url}
                                     name={f.name}
-                                    label={f.key === "feed" ? "Feed" : "Story"}
+                                    label={f.label}
                                 />
                             ))}
                         </div>
                         <ul className="where">
                             {SHAPES.filter(([k]) => ad.files?.[k]).map(
-                                ([k, label, runs]) => (
+                                ([k, label, size, runs]) => (
                                     <li key={k}>
-                                        <b>{label}</b>
+                                        <b>
+                                            {label} {size}
+                                        </b>
                                         <span>{runs}</span>
                                     </li>
                                 )

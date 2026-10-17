@@ -495,11 +495,20 @@
 /* an ad in both its shapes at once: each frame keeps its own aspect rather than being
    cropped to the feed's, because the shape is half of what there is to look at */
 .ads .strip.pair figure {
-    width: min(46vw, 200px);
+    width: auto;
 }
+/* sized by height rather than width, so the two shapes stand on one baseline and their
+   captions line up instead of staggering */
 .ads .strip.pair img {
+    width: auto;
+    height: 260px;
     aspect-ratio: auto;
     object-fit: contain;
+}
+@media (min-width: 760px) {
+    .ads .strip.pair img {
+        height: 360px;
+    }
 }
 .ads .strip.pair + .dots {
     display: none;
