@@ -6,24 +6,36 @@ cover: /img/posts/learning-after-ai-help-wide.webp
 card: /img/posts/learning-after-ai-help-card.webp
 summary: Better assisted practice does not by itself establish better learning. A classroom study shows why independent work belongs in the evaluation.
 
-[A 2025 study in PNAS](https://doi.org/10.1073/pnas.2422633122) tested GPT-4 assistance with nearly a thousand high-school mathematics students in Turkey. It measured practice performance and then what students could do without the tool.
+An AI assistant can help a student finish an exercise. Whether that help leaves the student better able to solve the next exercise is a separate question, and a learning product needs a way to check it.
 
-Students using a general chat interface did better during practice, but scored 17% lower than the control group on the later unassisted exam. A second version, designed with teacher-informed safeguards, largely removed that disadvantage. It did not establish an improvement over the control group on that exam.
+A useful evaluation therefore includes work done with the assistant and work attempted afterward. The difference matters because a correct assisted answer can come from several sources: the student's understanding, a helpful hint or an explanation that has already supplied most of the solution.
 
-## Measuring independent work
+## What one study found
 
-That distinction matters when evaluating a learning tool. More completed exercises during a session can be useful, but it does not by itself show what a student has learned.
+A [2025 study of high-school mathematics](https://doi.org/10.1073/pnas.2422633122) compared a general GPT-4 interface, a tutor configured with learning safeguards and a control group. The general interface improved assisted practice performance, but students later performed worse without it. The reported reduction was 17% relative to the control group's average unassisted performance, rather than 17 percentage points. The guarded tutor's unassisted result was not statistically distinguishable from the control group.
 
-The study covers a particular setting and tool design, so I would not turn it into a claim about all AI tutoring. It does give a concrete reason to include independent work in an evaluation: a fresh problem, with the help removed, after the guided practice.
+That last finding does not establish that the groups were equivalent or that the tutor improved independent learning. The study concerns particular interfaces, students and tasks. It is useful evidence for examining how help is provided, without turning it into a claim that all AI assistance has the same effect.
 
-## Choosing what progress means
+## Deciding what the student should do
 
-Completing an assignment and learning how to solve a similar problem are both meaningful outcomes. They answer different questions. A tool designed to help someone finish work can be useful even when that person does not need to retain every step. A learning tool has to account for what the learner can do afterwards.
+Consider an assistant helping someone solve an equation. It could show the full solution, explain one transformation or ask the student to choose the next step. Each response leaves a different amount of reasoning for the student to perform.
 
-That affects what belongs in the evaluation. Session completion, time spent and the number of correct answers can describe activity during assistance. Independent work gives another view of the skills the learner can use without it.
+There are situations where seeing a worked solution is useful. The question for the product is what happens around it. Does the learner try a step first? Can they ask why it works? Is there another problem where they can apply the explanation without the answer already being visible?
 
-## Designing the follow-up
+I would start with the skill the exercise is supposed to develop, then examine which parts of that skill the assistant is doing on the student's behalf. That gives the design review something more specific than counting correct answers or measuring how quickly the session finishes.
 
-A practical follow-up can use a fresh problem that requires the same concept. Keep the task appropriate to the learner and distinguish between solving it independently and solving it with another hint. That distinction is useful information, not a reason to treat asking for help as failure.
+## Checking a new attempt
 
-The classroom result is specific to its population, subject and tool designs. It is a reason to test the outcome that matters in a new setting, rather than to assume that either the improvement during practice or the later disadvantage will transfer unchanged.
+After help with one equation, a new problem can give the learner an opportunity to use the same method. It should be sufficiently different that copying the earlier answer will not solve it, while remaining comparable in difficulty.
+
+I would record what happens before another hint is given. If the learner needs support, the session can continue with it. The record should simply preserve the distinction between an independent attempt and an answer reached after assistance.
+
+Asking for an explanation can add context, especially when the final answer alone does not reveal the method. But the wording and review of that explanation also need care. A student who understands the mathematics may express it briefly or use different language from the tutor. An evaluation that rewards matching the tutor's phrasing could measure the wrong thing.
+
+## Choosing what to measure over time
+
+An immediate new attempt and a later follow-up answer different questions. The first checks what the student can do just after receiving help. The second checks what they can still use after some time has passed. A product should label those observations accurately rather than presenting either as a complete measure of mastery.
+
+For an evaluation of a new assistant design, I would define those outcomes before looking at the results. The tasks should be comparable across versions, and differences in prior knowledge and access to help should be considered when interpreting the comparison. Otherwise, an apparent improvement may come from easier questions or a different group of learners.
+
+The aim is not to remove every form of support. Accessibility needs and the purpose of the activity still matter. The narrower question is whether the assistance being evaluated helps the learner develop the intended skill. Looking at a subsequent attempt gives the product a way to investigate that question beyond the answer produced during the assisted session.

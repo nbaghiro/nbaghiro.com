@@ -6,26 +6,38 @@ cover: /img/posts/checking-pdf-reading-order-wide.webp
 card: /img/posts/checking-pdf-reading-order-card.webp
 summary: A PDF’s visual layout and reading order can differ. Checking both helps make exported documents usable beyond the screen they were designed on.
 
-A two-column PDF can look perfectly readable and still be read in the wrong order by assistive technology.
+A PDF can look well organized while presenting its content in a confusing order to someone using assistive technology. Columns, sidebars and captions give a sighted reader clues about how the page fits together. Those relationships also need to exist in the document's structure.
 
-[W3C’s guidance](https://www.w3.org/WAI/WCAG22/Techniques/pdf/PDF3) gives this example: instead of finishing the first column and moving to the second, a screen reader may read across both columns as though they were one. The words are present, but their sequence no longer makes sense.
+This makes reading order a separate part of reviewing an export. Seeing every paragraph in the right place does not establish that someone will encounter those paragraphs in a meaningful sequence.
 
-## Reviewing the exported file
+## Following one argument through the page
 
-That is why a visual check of an exported document is only part of the review. Reading order and the order of keyboard navigation need checking too.
+Imagine a two-column report with a sidebar explaining a term. Visually, the main argument continues down the first column and then down the second. The sidebar sits beside it and can be read separately.
 
-W3C recommends structuring the source document before conversion and checking the resulting PDF. Complex layouts can still need correction after export.
+Now imagine hearing the first line of the left column, then the first line of the right column, then part of the sidebar. The words are all present, but the argument has become difficult to follow. The reader has to reconstruct relationships that the page was meant to communicate.
 
-For a report or proposal, I would listen to the exported file with a screen reader and tab through its links and controls. Those checks can reveal problems that a screenshot will not show. They do not cover every accessibility requirement, but they make the review more representative of how people use the document.
+The W3C's [PDF reading-order guidance](https://www.w3.org/WAI/WCAG22/Techniques/pdf/PDF3) describes this kind of problem. In a tagged PDF, tag order primarily determines reading order, with the content within individual tags also affected by the content tree. It recommends checking reading order and the tab order of interactive elements, rather than relying on appearance alone.
 
-## Review the document’s structure
+## Deciding where supporting material belongs
 
-Start with a page whose meaning depends on sequence: two columns, a sidebar or a form. Follow the content using assistive technology and compare the order with the intended reading path. Listen for headings that arrive after their paragraphs or unrelated material inserted into the middle of a sentence.
+For the report example, I would first describe the intended sequence in ordinary terms. Read the section heading, follow the main paragraphs, encounter the supporting explanation at a sensible break and then continue to the next section. That gives the review something concrete to compare against.
 
-Keyboard navigation deserves its own check. A reader moving through links or fields needs a sequence that makes sense without a mouse. The appearance of those elements on the page is not enough to establish that sequence.
+A sidebar's position on the page does not by itself answer where it belongs in that sequence. If it defines a term needed to understand the next paragraph, moving it to the very end could be confusing. If it is optional background, inserting it halfway through a sentence would interrupt the main explanation.
 
-## Keep the check in the export process
+Captions need the same attention. A caption that identifies a chart should be encountered with enough context to understand what it describes. Reviewing the text in sequence helps expose these relationships more clearly than inspecting one object at a time.
 
-Fixing structure in the source is preferable when the authoring tool supports it, because the next export can carry that correction forward. A repair made only to the final PDF may need repeating when the document changes.
+## Checking how someone will use it
 
-The practical goal is to make these checks part of handing over a document, alongside proofreading and reviewing the layout. Reading order is one aspect of accessibility. A successful check here should not be presented as proof that every accessibility requirement has been met.
+I would include a screen-reader review of representative pages, listening for interruptions, repeated material and explanations that arrive without context. A simple page establishes the basic flow. A page with columns, a figure and a sidebar gives the structure a more demanding check.
+
+Keyboard navigation is another part of the review when the document contains links or form controls. The W3C guidance treats tab order as a related check. The person moving through those controls should encounter them in an order that makes sense for the task.
+
+For example, a report might ask a reader to follow a link after explaining a result. I would try finding that explanation and reaching the link through the document, rather than checking only that the URL opens when clicked with a mouse. This keeps the review connected to an actual reading task.
+
+## Keeping corrections through the next export
+
+A repaired PDF can solve the immediate problem, but the source document is likely to be revised again. Where possible, I would correct the source structure and export a fresh copy. Otherwise, the next export may recreate the same work.
+
+Some layouts still need attention after conversion. In that case, the export process should retain a clear note of the affected pages and the checks to repeat. A change that moves a paragraph or adds a figure can alter a sequence that was previously sensible.
+
+Reading order is one part of accessibility. A document may also need work on headings, image descriptions, tables and other details. For this particular check, the goal is concrete: someone should be able to follow the content in a meaningful sequence without having to infer the layout from disconnected pieces of text.

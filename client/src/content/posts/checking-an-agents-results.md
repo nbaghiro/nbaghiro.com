@@ -6,26 +6,38 @@ cover: /img/posts/checking-an-agents-results-wide.webp
 card: /img/posts/checking-an-agents-results-card.webp
 summary: The conversation explains an agent’s actions. Checking the resulting records establishes whether the requested work actually happened.
 
-An agent saying it completed a task is one thing a test can inspect. The resulting state of the system needs checking as well.
+An agent can describe a completed task without the intended result existing. It might say an address was updated after changing the wrong customer, or report a booking after receiving a response that only acknowledged the request.
 
-[Anthropic’s guide to agent evaluations](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) uses a booking example: the conversation can say a flight was booked, while the outcome is whether a reservation actually exists in the database.
+Evaluating the task requires checking the state it was meant to change. The conversation helps explain the attempt, but the application records provide evidence of the result. Anthropic makes this distinction between a transcript and an outcome in its guide to [evaluating agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents).
 
-## Checking the outcome
+## Defining what completion means
 
-For a business workflow, the same idea extends to the details. Was the right record changed? Was the amount correct? Did a retry create a duplicate? Did anything outside the request change?
+Take a request to change a customer's billing address. Before running the agent, the evaluation needs to identify the customer, the original address and the requested replacement. It also needs to decide which nearby information should remain unchanged, such as the shipping address and other customers' records.
 
-I would define those checks before choosing how to score the conversation. The transcript is useful for understanding the steps taken, including mistakes the agent recovered from. The final records establish whether the requested work happened.
+The result check can then ask concrete questions. Does the intended customer now have the new billing address? Did the operation affect any other account? If the application keeps an audit record, does that record describe the same change?
 
-There will still be tasks that need human judgment, such as assessing a research summary. For actions with a concrete result, checking that result should be part of the evaluation from the start.
+These checks are more informative than looking for a sentence saying the update succeeded. They also make it possible to distinguish partial completion from failure. An agent that finds the right account but stops before saving it has made progress, although it has not completed the task.
 
-## Define completion before the run
+## Checking persistence and retries
 
-Suppose an assistant is asked to change a delivery address. A useful check identifies the expected record and the expected new address before the run. It can then inspect the result directly. A pleasant confirmation message is not a substitute for that comparison.
+A successful tool response can be useful evidence without being the final result. Some applications acknowledge a request before processing it. Others return a temporary result that must still be saved. The evaluation should check the state the user will encounter afterward, through an appropriate read or application view.
 
-The same test should inspect relevant side effects. A correct address on the wrong order is a failure. An unrelated order changed at the same time is also a failure. These checks turn a broad instruction into observable conditions without requiring the agent to follow one exact sequence of steps.
+For asynchronous work, that may require waiting for a defined completion condition. Waiting indefinitely would hide a failure. Checking immediately could mark a valid pending operation as unsuccessful. A bounded wait with an explicit pending outcome makes the distinction visible.
 
-## Keep the explanation and the outcome
+Retries need their own cases. Suppose the address was saved but the response never reached the agent. A second attempt should not create an unrelated customer or repeat a downstream action unnecessarily. Starting from that intermediate state tests recovery more directly than running only from a clean, uncomplicated account.
 
-The transcript still matters. It can show whether the agent misunderstood the request, called a tool with the wrong arguments or recovered from an error. Those details help explain a failure and can reveal fragile behavior even when the final result is correct.
+## Allowing different valid approaches
 
-A useful evaluation keeps both views: what happened in the system, and how the agent got there. Where the result involves judgment, such as the quality of a research summary, that judgment also needs an explicit standard rather than being left to the agent’s own assessment.
+There may be several reasonable ways to complete the same task. An agent could locate the customer by email, account number or an exact search result. Requiring one particular sequence of tool calls would reject some valid attempts without improving the result check.
+
+I would keep outcome requirements separate from process restrictions. The address must be correct regardless of the route taken. Accessing an unrelated account or bypassing a required approval could still make the attempt unacceptable, even if the final address is right. Both kinds of checks matter, but they answer different questions.
+
+The transcript becomes especially useful when one of those checks fails. It can show whether the agent misunderstood the request, selected the wrong record, missed an error or continued after the result became uncertain. That gives the failure a more useful explanation than a single score.
+
+## Making the evaluation repeatable
+
+Each run needs a known starting state. If a previous attempt already changed the address, the next agent might appear successful without doing anything. Resetting the relevant records, or giving each run its own fixtures, keeps the comparison meaningful.
+
+A small set of cases can cover substantially different situations: a unique customer match, two similar names, an invalid address, a lost response and an account the agent cannot edit. Repeating cases can then reveal variation between attempts. One successful run establishes less than consistent success across those conditions.
+
+Some tasks need judgment as well as state checks. A research summary may contain accurate facts but omit the point the user needed. In that case, a review rubric should describe the expected coverage, evidence and relevance, with examples of acceptable answers. The aim is still to inspect the work itself closely enough to know whether the user's task was completed.
