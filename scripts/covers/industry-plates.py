@@ -38,7 +38,19 @@ def drawing(i):
   return ''.join(circle(x,80,42)+text(x,88,str(n),26,anchor='middle')+text(x,164,a,24,anchor='middle')+text(x,200,b,18,'quiet','middle') for x,n,a,b in [(160,1,'Study','Meet the idea'),(470,2,'Recall','Try without the text'),(780,3,'Return','Check after a delay')])+arrow(220,80,410,80)+arrow(530,80,720,80)
  if i==9:
   return ''.join(line(80,40+j*33,370,40+j*33,'faint') for j in range(6))+path('M80 139 H370 L510 139','accent')+text(220,265,'alternatives tried',23,anchor='middle')+arrow(520,139,620,139)+rect(650,35,210,200)+text(755,125,'New data',26,anchor='middle')+text(755,160,'evaluation',18,'quiet','middle')+text(470,15,'keep the search history',20,'quiet','middle')
- return card(65,45,230,145,'Build','Implementation')+card(350,45,230,145,'Use','Experience the task')+card(635,45,230,145,'Adjust','More specific direction')+arrow(305,115,335,115)+arrow(590,115,620,115)+path('M750 205 V255 H180 V210','accent')+text(470,292,'understanding develops through use',22,'quiet','middle')
+ # Two sources of direction, weighted against each other, which is the post's actual claim:
+ # a finished list says less about what to change than an hour of use does. The connector
+ # carries that, dashed from the list and accented from the use.
+ return (card(55,18,300,172,'Completed tasks','Each one built as asked')
+  +''.join(check(82,122+26*j)+line(122,124+26*j,325,124+26*j,'faint') for j in range(3))
+  +card(585,18,300,172,'An hour using it','Where the work goes slowly')
+  +''.join(rect(x,108,56,40) for x in (610,700,790))
+  +arrow(672,128,694,128)
+  +path('M756 128 C 766 180, 782 180, 788 134','accent')+circle(771,174,3.5,'dot')
+  +path('M205 190 V236 H470','dash')
+  +path('M735 190 V236 H470','accent')
+  +arrow(470,236,470,264)
+  +text(470,302,'what to change next',25,anchor='middle'))
 style='''*{box-sizing:border-box;margin:0}html,body{background:#e9ecea}.sheet{position:relative;width:var(--w);height:var(--h);overflow:hidden;background:#e2e8e3}.sheet img{position:absolute;width:100%;height:100%;object-fit:cover;filter:saturate(.45)}.wash{position:absolute;inset:0;background:linear-gradient(140deg,rgba(235,239,233,.82),rgba(230,236,232,.93))}svg{position:absolute;inset:0;width:100%;height:100%}text{font-family:Georgia,serif;fill:#293d37}.quiet,.eyebrow{font-family:Arial,sans-serif;fill:#5c746c}.eyebrow{letter-spacing:3px;font-size:13px}.box{fill:#f6f7ef;fill-opacity:.68;stroke:#637b71;stroke-width:1.3}.boundary{fill:none;stroke:#9aafa5;stroke-width:1;stroke-dasharray:4 7}.line{fill:none;stroke:#526d62;stroke-width:1.8}.accent{fill:none;stroke:#437c70;stroke-width:2}.faint{fill:none;stroke:#81978b;stroke-width:1.4;opacity:.65}.dash{fill:none;stroke:#437c70;stroke-width:1.5;stroke-dasharray:5 5}.dot{fill:#437c70}.registration{fill:none;stroke:#8da196;stroke-width:1}'''
 for d in items:
  i=d['index']; art=drawing(i)
