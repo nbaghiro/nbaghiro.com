@@ -21,21 +21,31 @@ def drawing(i):
  if i==0:
   return card(70,25,245,180,'Customer','$100 returned')+card(565,25,300,180,'Business','Original fee remains')+arrow(565,110,335,110)+text(440,88,'refund',19,'quiet','middle')+line(590,152,835,152,'faint')+text(590,185,'sale reversed · fee retained',17,'quiet')
  if i==1:
-  return card(65,30,230,155,'Submitted','One purchase')+card(620,30,250,155,'Processed','Record to confirm')+arrow(310,75,600,75)+path('M615 140 H485 M440 140 H310','faint')+path('M455 127 l16 26 M471 127 l-16 26','accent')+text(455,198,'confirmation interrupted',20,'quiet','middle')+path('M180 200 V235 H745 V200','accent')+text(460,269,'check the same operation',20,'quiet','middle')
+  return card(65,30,230,155,'Submitted','One purchase')+card(620,30,250,155,'Processed','Record to confirm')+arrow(310,75,600,75)+path('M615 140 H485 M440 140 H310','faint')+path('M455 127 l16 26 M471 127 l-16 26','accent')+text(455,198,'confirmation interrupted',20,'quiet','middle')+path('M180 200 V235 H745 V200','accent')+text(460,269,'check the same operation',25,anchor='middle')
  if i==2:
   return clock(195,95,'Before the change')+clock(725,95,'After the change')+arrow(290,95,630,95)+text(460,65,'same local time',24,anchor='middle')+text(460,140,'time-zone rules',19,'quiet','middle')+text(460,251,'09:00 · one recurring appointment',26,anchor='middle')
  if i==3:
-  return ''.join(card(x,25,245,215,a,b)+bars(x+25,135,170,4) for x,a,b in [(55,'Read','A reference copy'),(345,'Revise','Editable content'),(635,'Present','A viewing format')])
+  return (card(55,20,330,185,'One exported file','Sent to the next person')
+   +bars(85,108,220,2)
+   +rect(85,140,165,56)+''.join(line(x,188,x,188-h,'faint') for x,h in ((108,20),(133,36),(158,14),(183,30),(208,24)))
+   +arrow(400,112,470,112)
+   +check(510,58)+text(550,63,'It opens',23)
+   +check(510,112)+text(550,117,'It looks right',23)
+   +path('M512 153 l16 26 M528 153 l-16 26','accent')+text(550,171,'The chart is a picture',23)
+   +text(470,272,'the next task is the test',25,anchor='middle'))
  if i==4:
   return rect(180,0,560,255)+bars(225,45,180,10)+bars(495,45,180,10)+arrow(435,30,435,195)+path('M435 205 V230 H700 V15','accent')+text(460,297,'one column, then the next',25,anchor='middle')
  if i==5:
-  return rect(60,10,815,235,'boundary')+card(85,55,205,130,'Read','Source content')+card(355,55,205,130,'Draft','Proposed action')+card(650,55,200,130,'Send','Authorized action')+arrow(300,115,340,115)+arrow(575,115,630,115)+line(610,15,610,235,'dash')+text(610,277,'review the actual action',22,'quiet','middle')
+  return rect(60,10,815,235,'boundary')+card(85,55,205,130,'Read','Source content')+card(355,55,205,130,'Draft','Proposed action')+card(650,55,200,130,'Send','Authorized action')+arrow(300,115,340,115)+arrow(575,115,630,115)+line(610,15,610,235,'dash')+text(470,277,'review the actual action',25,anchor='middle')
  if i==6:
   return card(80,15,310,225,'Conversation','What the agent said')+bars(105,120,230,4)+arrow(410,125,495,125)+card(515,15,340,225,'System state','What actually changed')+check(545,135)+text(585,140,'correct record',21)+check(545,183)+text(585,188,'expected result',21)
  if i==7:
-  return card(100,35,300,190,'Guided practice','Assistance available')+bars(130,135,160,4)+arrow(420,128,520,128)+card(540,35,300,190,'Independent work','Help removed')+rect(570,130,60,45)+rect(650,130,60,45)+line(720,152,800,152,'faint')+text(470,278,'measure each outcome separately',23,anchor='middle')
+  return card(100,35,300,190,'Guided practice','Assistance available')+bars(130,135,160,4)+arrow(420,128,520,128)+card(540,35,300,190,'Independent work','Help removed')+rect(570,130,60,45)+rect(650,130,60,45)+line(720,152,800,152,'faint')+text(470,278,'measure each outcome separately',25,anchor='middle')
  if i==8:
-  return ''.join(circle(x,80,42)+text(x,88,str(n),26,anchor='middle')+text(x,164,a,24,anchor='middle')+text(x,200,b,18,'quiet','middle') for x,n,a,b in [(160,1,'Study','Meet the idea'),(470,2,'Recall','Try without the text'),(780,3,'Return','Check after a delay')])+arrow(220,80,410,80)+arrow(530,80,720,80)
+  return (''.join(circle(x,80,42)+text(x,88,str(n),26,anchor='middle')+text(x,164,a,24,anchor='middle')+text(x,200,b,18,'quiet','middle') for x,n,a,b in [(150,1,'Study','Meet the idea'),(430,2,'Recall','Try without the text'),(820,3,'Return','Check after a delay')])
+   +arrow(198,80,382,80)+arrow(478,80,772,80)
+   +text(625,62,'two days, then a week',19,'quiet','middle')
+   +text(470,268,'the delay is part of the test',25,anchor='middle'))
  if i==9:
   return ''.join(line(80,40+j*33,370,40+j*33,'faint') for j in range(6))+path('M80 139 H370 L510 139','accent')+text(220,265,'alternatives tried',23,anchor='middle')+arrow(520,139,620,139)+rect(650,35,210,200)+text(755,125,'New data',26,anchor='middle')+text(755,160,'evaluation',18,'quiet','middle')+text(470,15,'keep the search history',20,'quiet','middle')
  # Two sources of direction, weighted against each other, which is the post's actual claim:
