@@ -159,7 +159,7 @@ function StrategyPlan() {
 /* ---- the retained window, and what it costs not to have one ---- */
 
 const WINDOW_LABEL =
-    "Retained history is capped at the largest window the strategy actually reads, plus headroom. The cap keeps per-bar indicator recomputation bounded without changing any result.";
+    "Retained history is capped at the largest window the strategy actually reads, plus headroom. The cap keeps per-bar indicator recomputation bounded by limiting the data processed at each step.";
 
 function Bars({ x, y, w, n, kept }) {
     const pitch = w / n;
@@ -214,7 +214,7 @@ function HistoryWindow() {
                         a test runs both and asserts the outputs match
                     </text>
                     <text className="fig-note" x={0} y={320}>
-                        an unbounded read is capped at 2,000 bars
+                        cumulative reads default to 2,000 bars
                     </text>
                 </Plate>
             </svg>
@@ -247,7 +247,7 @@ function HistoryWindow() {
                 />
                 <text className="fig-sub" x={0} y={226}>
                     a test runs a strategy both ways and asserts the outputs match; a
-                    strategy that reads unbounded history is capped at 2,000 bars
+                    cumulative reads use 2,000 bars, or more if the warm-up requires it
                 </text>
             </Plate>
         </svg>

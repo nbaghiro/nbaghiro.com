@@ -1,7 +1,7 @@
 import { Plate, frame, NARROW, useNarrow, WIDE } from "./plate";
 
 /**
- * The figures for "Submitting an order exactly once". The order id is drawn as what it is,
+ * The figures for "Recovering an order after a restart". The order id is drawn as what it is,
  * a hash over the decision, because the whole recovery story rests on it being derived
  * rather than generated.
  */
@@ -134,8 +134,7 @@ function Derive() {
                     name="the broker rejects a second order carrying this id"
                 />
                 <text className="fig-sub" x={0} y={276}>
-                    the id is a claim registered at the other end of the network, and it
-                    outlives our process
+                    the client order id can be looked up after a restart
                 </text>
             </Plate>
         </svg>
@@ -147,7 +146,7 @@ function Derive() {
 const BRANCHES = [
     {
         q: "carries a broker id",
-        a: "already dispatched",
+        a: "recorded order",
         n: ["return the recorded", "order unchanged"],
     },
     {
@@ -158,11 +157,11 @@ const BRANCHES = [
     {
         q: "pending, broker does not",
         a: "resume the row",
-        n: ["it never arrived, so", "send it on this row"],
+        n: ["lookup returned no match;", "send it on this row"],
     },
 ];
 const RESOLVE_LABEL =
-    "On resubmission a recorded order resolves three ways: already dispatched and returned as is, found at the broker and adopted, or never sent and resumed on the same row rather than duplicated.";
+    "On resubmission a recorded order resolves three ways: recorded order and returned as is, found at the broker and adopted, or resumed on the same row when the lookup returns no match.";
 
 function Resolve() {
     const narrow = useNarrow();
@@ -216,7 +215,7 @@ function Resolve() {
                         </g>
                     ))}
                     <text className="fig-sub" x={0} y={474}>
-                        no branch places a second order
+                        lookup errors remain unresolved
                     </text>
                 </Plate>
             </svg>
@@ -281,7 +280,7 @@ function Resolve() {
                     );
                 })}
                 <text className="fig-sub" x={0} y={272}>
-                    no branch places a second order, and none drops the signal
+                    lookup errors are not treated as a missing order
                 </text>
             </Plate>
         </svg>

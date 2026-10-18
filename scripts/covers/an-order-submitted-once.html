@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Submitting an order exactly once</title>
+        <title>Recovering an order after a restart</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -150,7 +150,7 @@
             el(
                 "text",
                 { x: L, y: wide ? 94 : 160 },
-                "a crash in the submit window leaves no way to tell sent from never sent"
+                "a pending local row needs to be checked against the broker"
             );
 
             // three attempts carrying the same derived id

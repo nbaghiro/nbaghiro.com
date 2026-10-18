@@ -1,25 +1,23 @@
-title: How much history a strategy needs before its first order
+title: How much history a strategy needs
 date: 2026-10-16
 about: LlamaTrade
 cover: /img/posts/before-the-first-order-wide.webp
 card: /img/posts/before-the-first-order-card.webp
-summary: A strategy cannot trade until its indicators are warm. LlamaTrade reads the strategy before fetching a single bar to work out how much past it needs, and the number in an indicator's name is usually not it.
+summary: LlamaTrade calculates a strategy's warm-up and retained history from its indicators and lookbacks. The calculation affects when evaluation can begin and how much work each step requires.
 
-A LlamaTrade strategy is a small S-expression that returns target weights. Before it can return anything, its indicators have to be warm, and whatever decides how much history to load has to know how much warm means.
+Before LlamaTrade evaluates a strategy, it needs enough price history for the indicators and conditions that strategy reads. A moving average with a period of 200 needs a different starting point from an ADX with a period of 14. The compiler calculates those requirements from the strategy.
 
-That number is load-bearing in three places. A backtest has to fetch history from before its own start date, or its first months produce nothing. A live session has to preload bars before its first real one, or it sits idle accumulating them. And the evaluator has to decide how many bars to keep in memory, because it recomputes indicators over its accumulated history on every step.
+The result is used to decide when evaluation can begin and how much history to retain. Those are related decisions, but they answer different questions. Warm-up establishes whether the calculation has enough input. Retained history limits the data available to later calculations.
 
-So the strategy is read before any bar is fetched.
+## Compiling the requirements
 
-## The plan, before the data
+![The compiler collects symbols and indicators and calculates the warm-up and retained-history window.](figure:plan)
 
-![Compiling a strategy produces a plan before any market data is requested: the symbols it reads, the indicators it needs with each one's warm-up, the bars required before the first evaluation, and the cap on retained history.](figure:plan)
+Parsing produces a tree of strategy expressions. The compiler walks that tree to collect the symbols, indicator specifications and lookbacks. Repeated references with the same indicator, symbol, parameters and output share a specification.
 
-Parsing produces an AST. A static pass over that tree produces an execution plan: the set of symbols the strategy reads, one specification per distinct indicator, the number of bars needed before the first evaluation, and a cap on how many bars to retain per symbol.
+The symbol set includes assets the strategy can hold, symbols read by its conditions, and its benchmark. An asset does not have to receive an allocation to be needed by the calculation.
 
-Indicators are collected into a map keyed on type, symbol, source and parameters, so two references to the same 200-day average on the same symbol compile to one computation. Symbols come from three places: the assets the strategy can hold, the symbols its conditions read without holding, and the benchmark. A strategy that holds nothing but SPY while reading a condition on VIX needs both.
-
-Here is a real plan, printed by the compiler on 18 October 2026 for the momentum rotation strategy in the docs:
+For the momentum rotation example in the repository, the plan contains:
 
 ```
 symbols       AAPL AMZN BIL GOOGL MSFT NVDA SPY   (7)
@@ -28,69 +26,59 @@ min_bars      200
 window        210
 ```
 
-Seven symbols for a strategy that holds at most three, because the universe it ranks and the SPY it tests the regime against all have to arrive before it can decide anything.
+The strategy can select three stocks from its universe or fall back to BIL. It also reads SPY's 200-bar average. That explains why the plan includes seven symbols even though the strategy holds fewer at a time.
 
-## The number in the name is not the warm-up
+## Calculating the warm-up
 
-The obvious way to compute the warm-up is to take the largest period any indicator declares. That is correct for a simple moving average and wrong for about half of the catalogue.
-
-An indicator's warm-up is the index at which its slowest output is first defined, which depends on how it is built rather than on what it is called. The plan derives it per indicator type:
+An indicator's period does not always equal the number of bars it needs. Some calculations use a previous value; others apply several stages of smoothing. The compiler has a rule for each indicator type.
 
 ```
-reference              bars before the first value
-(sma SPY 20)                                    20
-(bbands SPY 20 2.0)                             20
-(rsi SPY 14)                                    15
-(atr SPY 14)                                    15
-(stoch SPY 14 3 3)                              18
-(ema SPY 20)                                    22
-(adx SPY 14)                                    28
-(macd SPY 12 26 9)                              34
-(obv SPY)                                        1
+reference              planned warm-up in bars
+(sma SPY 20)                                 20
+(bbands SPY 20 2.0)                          20
+(rsi SPY 14)                                 15
+(atr SPY 14)                                 15
+(stoch SPY 14 3 3)                           18
+(ema SPY 20)                                 22
+(adx SPY 14)                                 28
+(macd SPY 12 26 9)                           34
+(obv SPY)                                     1
 ```
 
-ADX is the clearest case. It is a Wilder average of DX, and DX is itself computed from Wilder-smoothed directional movement, so the published value only exists at twice the period. MACD's signal line is an exponential average of the MACD line, which is itself the difference of two exponential averages, so the signal warms at slow plus signal minus one. The exponential average gets two bars of headroom beyond its period so that chains of them stay warm.
+In this implementation, ADX smooths directional movement, calculates DX, and then applies another Wilder average. Its first defined output requires twice the declared period. MACD's signal line also depends on an earlier calculation: it is an exponential average of the difference between two exponential averages. Its requirement is the slow period plus the signal period minus one.
 
-Getting this wrong fails quietly, which is why it is worth the table. If the plan says a strategy is ready at 14 bars and the ADX it reads is still undefined, the condition reading it evaluates against a NaN, is treated as false, and the strategy holds nothing. No error is raised. The run completes. It just never trades, and the reason is three layers down.
+The EMA entry includes two extra bars of headroom. Its first defined value is available at 20 bars for a period of 20, while the plan requests 22. The table describes the compiler's requirement, including that margin.
 
-## Blocks read history too
+If the plan allows evaluation before an indicator is defined, a condition can read NaN and be treated as false. Depending on the strategy, that can select an alternative allocation or leave no allocation. The calculation needs to be checked even when the run completes without an exception.
 
-Indicators are not the only readers. A momentum weighting ranks by trailing return over a lookback, defaulting to 90 bars. The volatility-based methods, inverse volatility, risk parity and minimum variance, read a covariance window defaulting to 60. A filter ranking a universe defaults to 90. A metric with a period, such as `(return SPY 60)`, reads that many bars plus one, because a return over 60 bars needs the bar before the window as its base.
+## Lookbacks outside indicators
 
-So the warm-up is the largest bounded read anywhere in the tree, across indicators and blocks together, floored at two bars so a crossover always has a previous bar to compare against. The walk visits every child rather than stopping at the first answer it finds, because a short-circuit would drop the lookbacks of later siblings, and the largest one is the only one that matters.
+Weighting and filtering blocks also read history. Momentum weighting defaults to a 90-bar lookback and needs the preceding bar to calculate the return. Volatility-based weighting methods default to 60 bars. A filter defaults to a 90-bar lookback, with a previous bar included in its requirement.
 
-## Why there is a cap at all
+A metric with a period contributes its own requirement. For example, `(return SPY 60)` needs 61 bars to compare the start and end prices.
 
-![Retained history is capped at the largest window the strategy actually reads, plus headroom. The cap keeps per-bar indicator recomputation bounded without changing any result.](figure:window)
+The compiler takes the largest requirement across the tree and applies a minimum of two bars. It visits every child so a shorter lookback in one branch does not hide a longer requirement elsewhere.
 
-The evaluator recomputes indicators over its accumulated bar history on every step. With unbounded history, a run of N bars does work proportional to N on each of N steps, so a long backtest degrades quadratically. Capping retained history at the largest window the strategy actually reads makes it linear in the number of bars times that window.
+## Limiting retained history
 
-The cap has to be exact or it changes answers. It is the largest bounded read plus ten bars of headroom, where the headroom covers off-by-one reads such as the previous bar a crossover needs. For the momentum rotation strategy that is 200 plus 10, which is the 210 in the plan above.
+![The evaluator retains the largest required window plus headroom, limiting the data recomputed at each step.](figure:window)
 
-That the cap does not change results is a test rather than an argument: one case runs a strategy with the window applied and again with history unbounded, and asserts the outputs match.
+The evaluator recomputes indicators over its retained history at each step. If it keeps every previous bar, a calculation that scans that history does increasing work throughout the run. Summing those scans over N steps gives quadratic growth in that part of the work.
 
-## The reads that have no bound
+For bounded reads, the compiler retains the largest required window plus ten bars. In the example above, the 200-bar requirement produces a 210-bar window. Once that window is full, the evaluator removes older bars as new ones arrive.
 
-Some reads genuinely want the whole series. A metric written without a period, such as `(return SPY)` or `(drawdown SPY)`, means the return or drawdown over everything retained. On-balance volume and VWAP are cumulative from the first bar by definition.
+There is a test that compares a momentum strategy's final allocation after 250 bars, with and without the window. The final weights match for the supplied price series. That is useful coverage for this case, but it does not prove that truncating history preserves every intermediate value or every indicator's output. Calculations that depend on earlier state need their own checks.
 
-These cannot be bounded exactly, so they are bounded deliberately. A strategy containing one is capped at 2,000 bars, roughly eight years of daily data, and the cap is logged when it applies. The compiler reports it plainly:
+## Cumulative calculations
 
-```
-strategy "Unbounded read"    min_bars 2    window 2000
-```
+A metric written without a period reads all retained history. The OBV and VWAP implementations are also treated as cumulative calculations.
 
-This is an approximation and worth naming as one. A drawdown computed over 2,000 bars is not a drawdown over all history, and a strategy whose backtest runs longer than that is measuring something slightly different from what its author wrote. The alternative was unbounded memory and quadratic recompute on every such strategy, which seemed like the worse trade. The cap never falls below the warm-up need, so a long-warming strategy that also reads unbounded history keeps enough bars to function.
+For a strategy containing one of these reads, the default window is 2,000 bars. If the warm-up and its headroom require more, the compiler keeps the larger amount. The 2,000-bar setting is therefore a default for these calculations, not an absolute upper limit.
 
-## What this buys downstream
+This changes the meaning of a full-history metric once older bars have been removed. A drawdown over the retained window can differ from the drawdown since the beginning of the backtest. That is a limitation of the calculation and needs to be considered when interpreting the result.
 
-A backtest uses the warm-up to pad its fetch window backwards. To trade from 2 January 2020 with a 200-bar warm-up it asks the market-data service for bars from around March 2019, so the moving average is already defined on the first day the user asked about rather than warming up through the first ten months of the result.
+## What to check when using the plan
 
-A live session uses the same number to preload. Before the first real-time bar arrives it fetches the warm-up from history, so a session started this morning can trade this morning rather than after 200 trading days. That preload is best-effort: if it fails, the session starts cold and warms from the stream instead of refusing to start.
+A warm-up count only makes sense alongside the data interval. Two hundred daily bars and two hundred minute bars cover different periods. The fetch, preload and live aggregation paths need to provide the interval the strategy expects.
 
-## Limits
-
-The warm-up is counted in bars, not in time, and a bar means whatever the feed is producing. A backtest at daily granularity and a live stream at one-minute granularity will both satisfy a 200-bar warm-up, but one covers ten months and the other covers about three hours. Reconciling the daily preload with the raw live stream is an open item rather than a solved one, and it is the largest known gap between what a backtest predicts and what a live session does.
-
-The per-indicator warm-ups are derived from how the library computes each one, so they are only correct as long as the two stay in step. A parity test asserts that every indicator in the language has a default-parameter entry, which catches a new indicator added without one, but it cannot catch a changed implementation whose warm-up moved.
-
-The behaviour described here is pinned by 18 cases over the window analysis, 6 over the retained history, and 5 over the warm-up lookback. All 29 pass as of 18 October 2026.
+The compiler's rules also need to stay aligned with the indicator implementations. A test that checks default parameters can catch a missing entry; it cannot establish that every implementation still produces its first value at the expected point. Tests should check those boundaries directly and compare retained-history results for the calculations that depend on earlier values.

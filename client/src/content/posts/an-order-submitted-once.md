@@ -1,74 +1,68 @@
-title: Submitting an order exactly once
+title: Recovering an order after a restart
 date: 2026-10-18
 about: LlamaTrade
 cover: /img/posts/an-order-submitted-once-wide.webp
 card: /img/posts/an-order-submitted-once-card.webp
-summary: Between deciding to buy and the broker confirming, a process can die. LlamaTrade derives the order id from the signal so the broker itself refuses the duplicate, and reconciles the uncertain cases against the broker on the way back up.
+summary: LlamaTrade uses a stable id to match a strategy signal to a broker order after a restart. Recovery checks the broker, while the ledger handles repeated fill records separately.
 
-There is a window in live trading where a crash is genuinely ambiguous. A strategy decides to buy, a row is written saying so, the order goes over the network, and somewhere in there the process stops. On the way back up, the row says pending. That means one of two things: the order never reached the broker, or it reached the broker and the confirmation died in transit.
+An order can reach the broker before the process sending it records the response. If the process stops in that interval, the local row may still say pending even though the broker has accepted the order.
 
-Local state cannot tell those apart. Both look identical from inside the process, and they call for opposite responses. Submitting again is right in the first case and buys the position twice in the second. Doing nothing is right in the second and silently drops the signal in the first.
+That row alone is not enough to decide what to do next. Sending a new order could repeat the purchase. Abandoning the request could leave a strategy decision unexecuted. Recovery needs a way to identify the original order at the broker.
 
-## The id is derived, not generated
+## Deriving an id from the signal
 
-![A signal becomes an order id by hashing the session, symbol, side and signal timestamp. The same decision always derives the same id, so the broker can recognise a repeat.](figure:derive)
+![The session, symbol, side and signal timestamp produce a stable client order id that can be used to look up the broker order.](figure:derive)
 
-The order id is not random. It is derived from the decision that produced it: the session, the symbol, the side, and the timestamp of the signal, hashed with SHA-256 and truncated to sixteen hex characters behind an `lt-` prefix.
+For strategy orders, LlamaTrade derives the client order id from four inputs: the session, symbol, side and signal timestamp. It hashes their representation with SHA-256 and uses the first sixteen hexadecimal characters after an `lt-` prefix.
 
 ```
 lt-{sha256(session:symbol:side:signal_timestamp)[:16]}
 ```
 
-The same signal always derives the same id, on this run and on any later one. An aware timestamp is converted to UTC before hashing, so the same instant expressed in any offset produces the same id; a naive one is hashed as written and read as UTC wall clock.
+Repeating those inputs produces the same id. Timestamps with a timezone are converted to UTC before hashing, so different offsets representing the same instant match. Timestamps without a timezone are treated as UTC wall-clock values.
 
-The important part is where that id goes. It is sent to the broker as the client order id, and Alpaca enforces uniqueness of that field per account. So the id is not only a local key. It is a claim registered at the other end of the network, in a system that survives our crash, and it means a duplicate submission is refused by the party that would otherwise execute it.
+The executor sends this value as Alpaca's `client_order_id`. Alpaca supports [looking up an order by that id](https://docs.alpaca.markets/us/reference/getorderbyclientorderid), and rejects duplicate client order ids. That gives the application a way to match its local record to a broker record after a restart.
 
-That property is what makes the rest of this tractable. Without it, every recovery decision would be a guess.
+## Resolving an existing record
 
-## Three answers to one question
+![The retry path returns an existing record, adopts a matching broker order, or resumes the local row when the lookup returns no match.](figure:resolve)
 
-![On resubmission the recorded order resolves three ways: already dispatched, found at the broker and adopted, or never sent and resumed on the same row.](figure:resolve)
+When the same strategy signal is submitted again, the executor first looks for its derived id locally.
 
-When a signal is submitted and an order with that derived id already exists locally, the executor resolves it before touching the broker.
+If the row already has a broker id, or its status has moved beyond pending, the executor returns the recorded order. A non-pending status can include rejection, so this branch does not necessarily mean the broker executed anything.
 
-If the existing row carries a broker id, or has advanced past pending, the order was dispatched and the answer came back. The recorded order is returned unchanged and the replay is counted as a metric.
+If the row is pending without a broker id, the executor looks it up at the broker. When a match is returned, the broker id, status and available timestamps are copied into the local record. The application can then continue from the broker's response.
 
-If the row is pending with no broker id, local state is exhausted and the broker is asked directly, by client order id. If the broker has it, our write of the response is what was lost, not the order. The broker id and status are copied onto the row, the submitted timestamp is filled in if it was missing, and the adopted order is returned.
+When that lookup returns no match, the current retry path resumes submission using the existing row and the same client order id. A lookup error propagates instead of being treated as an absent order.
 
-If the broker does not have it, the order genuinely never arrived. The existing row is resumed and dispatched rather than a second row being created, so the signal is neither dropped nor duplicated and the audit trail stays single.
+This is the implemented recovery rule, not proof that every uncertain request is safe to repeat. In particular, a timeout does not establish that an order failed. Alpaca's [timeout guidance](https://docs.alpaca.markets/us/docs/working-with-orders#faq) says to obtain confirmation before resubmitting a timed-out order. The code's no-match branch needs to be assessed against that guidance and the broker's behaviour during an unresolved submission.
 
-## Sweeping on the way up
+## Checking pending orders at startup
 
-The resolution above runs when a signal happens to be submitted again. Most stranded orders never get that, because the condition that produced them has moved on.
+A signal may not be submitted again, so the runner also checks its session's pending orders during startup. It selects rows without a broker id and looks up each client order id.
 
-So a runner starting up sweeps for them. It selects every order for its session that is still pending with no broker id, and asks the broker about each one. Orders the broker has are adopted, and any terminal ledger events the fill stream missed while the process was down are emitted for them. Orders the broker does not have are marked rejected with the reason recorded, and the live runner will emit a fresh signal on the next bar if the condition still holds.
+A matching broker order is adopted. If it has reached a terminal state, recovery can also publish the ledger information that may have been missed while the process was down.
 
-One small thing falls out of the ordering here. An order that never reached the broker never reserved cash against its sleeve, so rejecting it needs no release posting. Only the adopted ones publish anything.
+If the lookup returns no match, startup recovery marks the row rejected and records a reason. Unlike the retry path, it does not resubmit that row. If the lookup fails, the row remains pending and the failure is logged.
 
-If the broker lookup itself fails, that order is skipped with a warning rather than guessed at, and it stays pending for the next sweep. An uncertain order left uncertain is a worse experience than a wrong one, and a safer outcome.
+These branches preserve a distinction between a lookup that returned no match and a lookup that could not complete. They still depend on what the broker can establish about the original request at that point.
 
-## Fills are what happened
+## Recording fills
 
-Nothing in the submission path updates a position. The executor submits, records, and keeps the originating signal in a pending map so the eventual fill can be measured against the price that triggered it. Position state comes from the broker's trade-update stream.
+Submission records an order request. Positions and ledger entries need the quantities and prices the broker actually filled. An order can be rejected, partly filled, cancelled or filled at a different price from the one available when the strategy evaluated it.
 
-This is the same distinction as above, applied continuously rather than only after a crash. What we intended is a local fact and can be wrong in several ways: the order can be rejected, partially filled, filled at a different price, or cancelled before it fills. What the broker executed is the only thing that moved money, so that is what the book is built from.
+For the ledger, the trading service builds a cumulative fill record when the order reaches a terminal state. A filled order includes its total filled quantity and average price. A cancelled or expired order with a nonzero filled quantity includes that filled portion.
 
-## Exactly one event per order
+Partial fills do not produce separate ledger fill records in this design. The ledger derives its fill event id from the client order id. If each partial were published under that same identity, later partials would be treated as duplicates of the first.
 
-The trading service publishes exactly one fill event per order, at terminal state, carrying the cumulative filled quantity and average price. A cancellation or expiry with a nonzero filled quantity publishes its filled portion. Partial fills publish nothing on their own.
+Recovery and status synchronisation can publish a terminal fill record again. The ledger's insert ignores an existing event id, so repeated delivery does not create another copy of that fill record. This is deduplication at the ledger; it does not require a message to be published exactly once.
 
-That last rule is not a stylistic preference; it falls out of the deduplication key. The ledger derives its event id from the client order id, which is the same for every message about that order. A second partial would arrive carrying an id the ledger has already seen and be discarded. Publishing per partial would therefore record the first partial and silently lose every one after it, which is worse than not publishing them at all. So the design publishes once, when the quantity is final.
+## Limits of the current design
 
-The same key makes redelivery safe in the other direction. The ledger's insert is a conflict-do-nothing on that id, so a message delivered twice is recorded once, and the at-least-once stream between the two services needs no coordination beyond the key.
+Manual submissions have no strategy signal timestamp and receive random ids. A repeated manual request can therefore create a new order. It does not have the same retry protection as a repeated strategy signal.
 
-## Limits
+The derived id also groups requests by its four inputs. Two requests with those same inputs resolve to the same identity even if another field, such as quantity, differs. Callers need to use the signal timestamp consistently.
 
-An order submitted outside a strategy, by hand through the API, has no signal timestamp to derive from and gets a random id. It is still unique at the broker and still deduplicated by the ledger, but it is not crash-idempotent: a client that retries a manual submission after losing its response will place a second order. That is the honest state of it rather than a thing I have solved.
+The recovery tests cover the local branches with broker responses supplied by test doubles. They check how the application handles a known order, a no-match response and a lookup failure. They do not establish the outcome of every network failure or broker race. That is why this describes recovery and deduplication rather than an end-to-end exactly-once guarantee.
 
-The derivation also means that two genuinely different decisions for the same session, symbol and side at the same timestamp would collide into one order. In practice the rebalance gate evaluates a strategy once per period and once per calendar day, so there is one decision per symbol per cycle, but the id is only as unique as that gate makes it.
-
-Recovery is scoped to a session. The sweep runs for the session starting up, so an order belonging to a session that is never restarted stays pending until a periodic status sync reaches it.
-
-The deterministic derivation is pinned by 10 cases, covering stability across calls, the format and its length against the broker's field limit, every input changing the id, microsecond differences changing it, and equal instants in different offsets deriving the same id. Recovery is pinned by 9, covering each branch of the resolution and both outcomes of the sweep. All 19 pass as of 18 October 2026.
-
-The attribution side of this, how a fill becomes balanced postings against the sleeve that asked for it, is in [One brokerage account, several strategies](https://nbaghiro.com/blogs/one-account-many-strategies).
+The related article [One brokerage account, several strategies](https://nbaghiro.com/blogs/one-account-many-strategies) explains how fills are attributed to the strategy that requested them.
