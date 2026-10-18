@@ -139,7 +139,7 @@
             // the device, holding the day it already has
             const D = wide
                 ? { x: 60, y: 96, w: 300, h: 190 }
-                : { x: 56, y: 186, w: 362, h: 268 };
+                : { x: 56, y: 156, w: 362, h: 268 };
             rect(D.x, D.y, D.w, D.h, "fillbox");
             rect(D.x, D.y, D.w, D.h, "ink");
             el("text", { x: D.x, y: D.y - 24, class: "name" }, "the device");
@@ -157,7 +157,7 @@
             // the server, and what it alone can settle
             const V = wide
                 ? { x: 620, y: 96, w: 320, h: 190 }
-                : { x: 566, y: 186, w: 378, h: 268 };
+                : { x: 566, y: 156, w: 378, h: 268 };
             rect(V.x, V.y, V.w, V.h, "ink");
             el("text", { x: V.x, y: V.y - 24, class: "name" }, "one command");
             el("text", { x: V.x, y: V.y - 8 }, "locked, checked, written once");

@@ -104,7 +104,7 @@
     // the deck: a title band, a column of text and a row of cells
     const D = wide
         ? { x: 96, y: 108, w: 300, h: 169 }
-        : { x: 72, y: 252, w: 372, h: 209 };
+        : { x: 72, y: 307, w: 372, h: 209 };
     rect(D.x, D.y, D.w, D.h, "ink");
     rect(D.x + 18, D.y + 18, D.w - 36, 26, "fillbox");
     rect(D.x + 18, D.y + 18, D.w - 36, 26, "ink thin");
@@ -120,7 +120,7 @@
     // the document: the same blocks in one column, continuous rather than paged
     const C = wide
         ? { x: 452, y: 60, w: 148, h: 262 }
-        : { x: 496, y: 188, w: 170, h: 268 };
+        : { x: 496, y: 243, w: 170, h: 268 };
     rect(C.x, C.y, C.w, C.h, "ink");
     rect(C.x + 14, C.y + 16, C.w - 28, 18, "fillbox");
     rect(C.x + 14, C.y + 16, C.w - 28, 18, "ink thin");
@@ -132,7 +132,7 @@
     // the site: the same blocks again, in a frame whose width is an argument
     const W = wide
         ? { x: 656, y: 108, w: 268, h: 169 }
-        : { x: 716, y: 252, w: 212, h: 209 };
+        : { x: 716, y: 307, w: 212, h: 209 };
     rect(W.x, W.y, W.w, W.h, "mist dash");
     rect(W.x + 16, W.y + 16, W.w - 32, 24, "fillbox");
     rect(W.x + 16, W.y + 16, W.w - 32, 24, "ink thin");
