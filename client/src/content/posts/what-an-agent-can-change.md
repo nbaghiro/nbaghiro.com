@@ -1,5 +1,5 @@
 title: What an agent is allowed to change
-date: 2026-10-17
+date: 2026-09-15
 about: AI systems
 category: Industry & practice
 cover: /img/posts/what-an-agent-can-change-wide.webp

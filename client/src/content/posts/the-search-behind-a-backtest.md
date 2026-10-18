@@ -1,5 +1,5 @@
 title: How many strategies were tested before this one
-date: 2026-10-17
+date: 2026-09-18
 about: Research methods
 category: Industry & practice
 cover: /img/posts/the-search-behind-a-backtest-wide.webp

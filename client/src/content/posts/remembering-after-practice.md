@@ -1,5 +1,5 @@
 title: Checking what a learner remembers later
-date: 2026-10-17
+date: 2026-09-20
 about: Learning
 category: Industry & practice
 cover: /img/posts/remembering-after-practice-wide.webp

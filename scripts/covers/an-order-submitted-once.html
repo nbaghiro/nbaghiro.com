@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Submitting an order exactly once</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+/* Three submissions of one decision, arriving at a broker that holds the id and
+       lets exactly one through. The duplicates are drawn as dashed, because the point is
+       that they were sent and refused rather than never sent. Over the same fog the rest
+       of the site is photographed in. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 50%;
+                filter: saturate(0.7) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.1) 0%,
+                    rgba(233, 236, 234, 0.46) 32%,
+                    rgba(233, 236, 234, 0.78) 60%,
+                    rgba(233, 236, 234, 0.88) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .tick {
+                stroke: #46544f;
+                stroke-width: 1.1;
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .fillbox {
+                fill: rgba(27, 37, 34, 0.08);
+                stroke: none;
+            }
+            .land {
+                fill: rgba(78, 120, 114, 0.14);
+                stroke: none;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.qty {
+                fill: #4e7872;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="ph-map.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // One decision, submitted more than once across a crash, collapsing onto a single
+            // order because the id is derived from the decision and the broker holds it.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            if (!wide) {
+                document.querySelector(".wash").style.background =
+                    "linear-gradient(to bottom," +
+                    " rgba(233,236,234,0.36) 0%," +
+                    " rgba(233,236,234,0.64) 28%," +
+                    " rgba(233,236,234,0.82) 58%," +
+                    " rgba(233,236,234,0.9) 100%)";
+            }
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, class: cls });
+            const path = (d, cls) => el("path", { d, class: cls });
+
+            const L = wide ? 60 : 72;
+            const R = wide ? 940 : 928;
+            el(
+                "text",
+                { x: L, y: wide ? 76 : 142, class: "name" },
+                "one decision, submitted more than once"
+            );
+            el(
+                "text",
+                { x: L, y: wide ? 94 : 160 },
+                "a crash in the submit window leaves no way to tell sent from never sent"
+            );
+
+            // three attempts carrying the same derived id
+            const ATTEMPTS = [
+                { note: "first attempt", live: true },
+                { note: "retry after a crash", live: false },
+                { note: "retry on restart", live: false },
+            ];
+            const bw = wide ? 250 : 560;
+            const bh = wide ? 50 : 62;
+            const rowTop = wide ? 126 : 200;
+            const gap = wide ? 64 : 86;
+            ATTEMPTS.forEach((a, i) => {
+                const y = rowTop + i * gap;
+                if (a.live) rect(L, y, bw, bh, "land");
+                rect(L, y, bw, bh, a.live ? "ink" : "mist");
+                el(
+                    "text",
+                    { x: L + 18, y: y + (wide ? 23 : 26), class: "name" },
+                    "lt-9f2c4ab1"
+                );
+                el("text", { x: L + 18, y: y + (wide ? 42 : 47) }, a.note);
+            });
+
+            // the id is the same every time, so the broker can recognise it
+            const joint = L + bw + (wide ? 86 : 68);
+            const firstMid = rowTop + bh / 2;
+            const lastMid = rowTop + 2 * gap + bh / 2;
+            const mid = rowTop + gap + bh / 2;
+            ATTEMPTS.forEach((a, i) => {
+                const y = rowTop + i * gap + bh / 2;
+                path(`M${L + bw} ${y} H${joint}`, a.live ? "water" : "mist");
+            });
+            path(`M${joint} ${firstMid} V${lastMid}`, "mist");
+
+            // the broker, holding the id: beside the attempts on the wide plate, under them
+            // on the tall one, where a full-width line has room to be read
+            if (wide) {
+                const kx = joint + 60;
+                const kw = R - kx;
+                const ky = mid - 44;
+                path(
+                    `M${joint} ${mid} H${kx} M${kx} ${mid} l-8 -4 M${kx} ${mid} l-8 4`,
+                    "water"
+                );
+                rect(kx, ky, kw, 88, "fillbox");
+                rect(kx, ky, kw, 88, "ink");
+                el("text", { x: kx + 20, y: ky + 30, class: "name" }, "the broker");
+                el(
+                    "text",
+                    { x: kx + 20, y: ky + 52 },
+                    "holds the id, and refuses a second"
+                );
+                el("text", { x: kx + 20, y: ky + 70 }, "order carrying it");
+                el(
+                    "text",
+                    { x: R - 20, y: ky + 70, "text-anchor": "end", class: "qty" },
+                    "one order placed"
+                );
+            } else {
+                const ky = 470;
+                path(
+                    `M${joint} ${mid} H${joint + 40} V${ky} M${joint + 40} ${ky} l-4 -8 M${joint + 40} ${ky} l4 -8`,
+                    "water"
+                );
+                rect(L, ky, R - L, 96, "fillbox");
+                rect(L, ky, R - L, 96, "ink");
+                el("text", { x: L + 22, y: ky + 34, class: "name" }, "the broker");
+                el(
+                    "text",
+                    { x: L + 22, y: ky + 58 },
+                    "holds the id, and refuses a second order carrying it"
+                );
+                el(
+                    "text",
+                    { x: L + 22, y: ky + 80, class: "qty" },
+                    "one order placed"
+                );
+            }
+
+            // the measured rule along the foot, ticked every quarter and taller at its ends
+            const ruleY = wide ? 330 : 610;
+            path(`M${L} ${ruleY} H${R}`, "tick");
+            for (let i = 0; i <= 4; i += 1) {
+                const x = L + ((R - L) / 4) * i;
+                path(`M${x} ${ruleY - (i % 4 === 0 ? 6 : 4)} V${ruleY}`, "tick");
+            }
+            el(
+                "text",
+                { x: L, y: ruleY + 18 },
+                "the id is hashed from the decision, so the same decision can only be placed once"
+            );
+
+            // the registration ticks every plate and figure carries
+            const RT = 18;
+            const B = VB[1] - 26;
+            for (const [x, y, sx, sy] of [
+                [30, 26, 1, 1],
+                [970, 26, -1, 1],
+                [30, B, 1, -1],
+                [970, B, -1, -1],
+            ]) {
+                path(`M${x} ${y} h${RT * sx}`, "ink thin");
+                path(`M${x} ${y} v${RT * sy}`, "ink thin");
+            }
+        </script>
+    </body>
+</html>

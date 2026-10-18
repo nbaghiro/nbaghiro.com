@@ -1,5 +1,5 @@
 title: Checking how a PDF is read
-date: 2026-10-17
+date: 2026-09-29
 about: Documents
 category: Industry & practice
 cover: /img/posts/checking-pdf-reading-order-wide.webp

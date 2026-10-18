@@ -1,5 +1,5 @@
 title: What a refund costs the business
-date: 2026-10-17
+date: 2026-09-16
 about: Payments
 category: Industry & practice
 cover: /img/posts/what-a-refund-costs-wide.webp

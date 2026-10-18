@@ -1,5 +1,5 @@
 title: Choosing an export for the next person
-date: 2026-10-17
+date: 2026-09-27
 about: Documents
 category: Industry & practice
 cover: /img/posts/choosing-an-export-for-the-next-person-wide.webp

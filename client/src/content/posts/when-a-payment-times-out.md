@@ -1,5 +1,5 @@
 title: When a payment times out
-date: 2026-10-17
+date: 2026-09-13
 about: Payments
 category: Industry & practice
 cover: /img/posts/when-a-payment-times-out-wide.webp

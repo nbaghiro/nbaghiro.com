@@ -1,5 +1,5 @@
 title: Offline reads and a queued working-week edit
-date: 2026-10-18
+date: 2026-10-02
 about: Clientbridge
 cover: /img/posts/one-screen-writes-offline-wide.webp
 card: /img/posts/one-screen-writes-offline-card.webp

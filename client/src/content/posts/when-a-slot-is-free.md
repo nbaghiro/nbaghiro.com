@@ -1,5 +1,5 @@
 title: Deciding whether a booking slot is free
-date: 2026-10-19
+date: 2026-10-04
 about: Clientbridge
 cover: /img/posts/when-a-slot-is-free-wide.webp
 card: /img/posts/when-a-slot-is-free-card.webp

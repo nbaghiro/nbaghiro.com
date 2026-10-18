@@ -16,6 +16,8 @@ import { VARIANT_FIGURES } from "./figures/every-version-checked";
 import { SLEEVE_FIGURES } from "./figures/one-account-many-strategies";
 import { ANCHOR_FIGURES } from "./figures/a-comment-that-moves";
 import { GAME_FIGURES } from "./figures/one-engine-every-game";
+import { PLAN_FIGURES } from "./figures/before-the-first-order";
+import { ORDER_FIGURES } from "./figures/an-order-submitted-once";
 
 /**
  * The diagrams for the written pieces, drawn in one language: a plate with registration
@@ -2557,6 +2559,8 @@ export const FIGURES = {
     ...SLEEVE_FIGURES,
     ...ANCHOR_FIGURES,
     ...GAME_FIGURES,
+    ...PLAN_FIGURES,
+    ...ORDER_FIGURES,
     "three-passes": ThreePasses,
     "three-formats": ThreeFormats,
     "command-list": CommandList,

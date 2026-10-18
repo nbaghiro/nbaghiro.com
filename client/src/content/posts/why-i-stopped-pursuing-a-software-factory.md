@@ -1,5 +1,5 @@
 title: Why I stopped pursuing a software factory
-date: 2026-10-17
+date: 2026-09-11
 about: Building products
 category: Industry & practice
 cover: /img/posts/why-i-stopped-pursuing-a-software-factory-wide.webp

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>How much history a strategy needs before its first order</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* The run the reader asked about, and the longer run the data request actually
+       covers. The warm-up is drawn as the span before the first order rather than as a
+       number, because the whole point is that it sits outside the period in question.
+       Over the same fog the rest of the site is photographed in. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 56%;
+                filter: saturate(0.7) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.1) 0%,
+                    rgba(233, 236, 234, 0.46) 32%,
+                    rgba(233, 236, 234, 0.78) 60%,
+                    rgba(233, 236, 234, 0.88) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .tick {
+                stroke: #46544f;
+                stroke-width: 1.1;
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .fillbox {
+                fill: rgba(27, 37, 34, 0.08);
+                stroke: none;
+            }
+            .land {
+                fill: rgba(78, 120, 114, 0.14);
+                stroke: none;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.qty {
+                fill: #4e7872;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="ph-variants.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // A run of bars with the warm-up span drawn before the first order: the part of the
+            // fetch that exists only so the indicators are defined on day one.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            if (!wide) {
+                document.querySelector(".wash").style.background =
+                    "linear-gradient(to bottom," +
+                    " rgba(233,236,234,0.36) 0%," +
+                    " rgba(233,236,234,0.64) 28%," +
+                    " rgba(233,236,234,0.82) 58%," +
+                    " rgba(233,236,234,0.9) 100%)";
+            }
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, class: cls });
+            const path = (d, cls) => el("path", { d, class: cls });
+
+            const L = wide ? 60 : 72;
+            const R = wide ? 940 : 928;
+            // the boundary: everything left of it is only there to warm the indicators
+            const CUT = L + (R - L) * 0.42;
+            const base = wide ? 216 : 470;
+            const tall = wide ? 58 : 150;
+
+            el(
+                "text",
+                { x: L, y: wide ? 70 : 150, class: "name" },
+                "what the run has to load"
+            );
+            el(
+                "text",
+                { x: L, y: wide ? 88 : 168 },
+                "the period asked about, and the bars before it that make the indicators defined"
+            );
+
+            // the bars: denser and lighter through the warm-up, full height through the run
+            const n = wide ? 72 : 60;
+            const pitch = (R - L) / n;
+            for (let i = 0; i < n; i += 1) {
+                const x = L + i * pitch + pitch / 2;
+                const warm = x < CUT;
+                path(
+                    `M${x} ${base - (warm ? tall * 0.52 : tall)} V${base}`,
+                    warm ? "mist" : "water"
+                );
+            }
+
+            // the warm-up span, bracketed above the bars
+            const br = base - tall - (wide ? 22 : 34);
+            path(`M${L} ${br + 9} V${br} H${CUT} V${br + 9}`, "ink thin");
+            el(
+                "text",
+                { x: (L + CUT) / 2, y: br - 8, "text-anchor": "middle", class: "qty" },
+                "warm-up, 200 bars"
+            );
+            path(`M${CUT} ${br + 9} V${br} H${R} V${br + 9}`, "ink thin");
+            el(
+                "text",
+                { x: (CUT + R) / 2, y: br - 8, "text-anchor": "middle" },
+                "the period the result is about"
+            );
+
+            // the first order: the one moment the whole warm-up exists for
+            path(`M${CUT} ${base - tall - 18} V${base + 34}`, "ink");
+            rect(CUT - 4, base + 30, 8, 8, "land");
+            path(`M${CUT - 4} ${base + 30} h8 v8 h-8 Z`, "ink thin");
+            el(
+                "text",
+                { x: CUT + 12, y: base + 54, class: "name" },
+                "the first order"
+            );
+            el(
+                "text",
+                { x: CUT + 12, y: base + 72 },
+                "nothing before this point can trade"
+            );
+
+            el(
+                "text",
+                { x: L, y: base + 54, "text-anchor": "start", class: "qty" },
+                "fetched"
+            );
+            el(
+                "text",
+                { x: L, y: base + 72 },
+                "never shown in the result"
+            );
+
+            // the measured rule along the foot, ticked every quarter and taller at its ends
+            const ruleY = wide ? 330 : 610;
+            path(`M${L} ${ruleY} H${R}`, "tick");
+            for (let i = 0; i <= 4; i += 1) {
+                const x = L + ((R - L) / 4) * i;
+                path(`M${x} ${ruleY - (i % 4 === 0 ? 6 : 4)} V${ruleY}`, "tick");
+            }
+            el(
+                "text",
+                { x: L, y: ruleY + 18 },
+                "the strategy is read first, and the plan it compiles to says how far back to go"
+            );
+
+            // the registration ticks every plate and figure carries
+            const RT = 18;
+            const B = VB[1] - 26;
+            for (const [x, y, sx, sy] of [
+                [30, 26, 1, 1],
+                [970, 26, -1, 1],
+                [30, B, 1, -1],
+                [970, B, -1, -1],
+            ]) {
+                path(`M${x} ${y} h${RT * sx}`, "ink thin");
+                path(`M${x} ${y} v${RT * sy}`, "ink thin");
+            }
+        </script>
+    </body>
+</html>

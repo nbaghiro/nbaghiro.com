@@ -1,5 +1,5 @@
 title: Rendering and testing Lumischool’s games
-date: 2026-10-23
+date: 2026-10-14
 about: Lumischool
 cover: /img/posts/one-engine-every-game-wide.webp
 card: /img/posts/one-engine-every-game-card.webp

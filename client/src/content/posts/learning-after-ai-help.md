@@ -1,5 +1,5 @@
 title: What students can do after the help is removed
-date: 2026-10-17
+date: 2026-09-25
 about: Learning
 category: Industry & practice
 cover: /img/posts/learning-after-ai-help-wide.webp

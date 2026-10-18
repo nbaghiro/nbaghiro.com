@@ -1,5 +1,5 @@
 title: Keeping comments attached as text changes
-date: 2026-10-22
+date: 2026-10-11
 about: Galleo
 cover: /img/posts/a-comment-that-moves-wide.webp
 card: /img/posts/a-comment-that-moves-card.webp

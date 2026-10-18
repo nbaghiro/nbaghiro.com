@@ -1,5 +1,5 @@
 title: Checking whether an agent completed the task
-date: 2026-10-17
+date: 2026-09-30
 about: AI systems
 category: Industry & practice
 cover: /img/posts/checking-an-agents-results-wide.webp

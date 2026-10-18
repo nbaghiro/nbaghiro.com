@@ -1,5 +1,5 @@
 title: Checking generated exercises before publication
-date: 2026-10-20
+date: 2026-10-07
 about: Lumischool
 cover: /img/posts/every-version-checked-wide.webp
 card: /img/posts/every-version-checked-card.webp

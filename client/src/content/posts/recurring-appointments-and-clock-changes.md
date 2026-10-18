@@ -1,5 +1,5 @@
 title: A weekly appointment across a clock change
-date: 2026-10-17
+date: 2026-09-21
 about: Scheduling
 category: Industry & practice
 cover: /img/posts/recurring-appointments-and-clock-changes-wide.webp
