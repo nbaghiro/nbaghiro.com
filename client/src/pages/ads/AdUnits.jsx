@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CopyButton, DownloadButton, ShareButton } from "./actions";
 import { Lightbox } from "./Lightbox";
 import { Strip } from "./Strip";
-import { fileName } from "./store";
+import { chooseTheme, fileName, themeName } from "./store";
 
 const SHAPES = [
     [
@@ -21,9 +21,17 @@ const SHAPES = [
 
 // Paid creatives, which is a different thing from a post: one per product, in the two shapes
 // that cover the placements it runs in.
-export function AdUnits({ manifest, url }) {
+export function AdUnits({ manifest, url, theme, themes }) {
     const [lb, setLb] = useState(null);
     const items = manifest.ads?.items || [];
+
+    // An ad drawn in more than one of the product's themes answers to the ring at the top, the
+    // way a carousel does; one drawn in a single look is filed under "default" and ignores it.
+    const inTheme = (ad) => {
+        const have = Object.keys(ad.files ?? {});
+        const id = chooseTheme(have, theme, ad.defaultTheme, "default");
+        return { id, files: ad.files?.[id] ?? {} };
+    };
 
     return (
         <>
@@ -38,12 +46,13 @@ export function AdUnits({ manifest, url }) {
                 ends with the address.
             </p>
             {items.map((ad) => {
-                const frames = SHAPES.filter(([k]) => ad.files?.[k]).map(
+                const { id: themeId, files } = inTheme(ad);
+                const drawn = Object.keys(ad.files ?? {});
+                const frames = SHAPES.filter(([k]) => files[k]).map(
                     ([k, label]) => ({
                         key: k,
-                        file: ad.files[k],
-                        url: url(ad.files[k]),
-                        name: fileName(ad.files[k]),
+                        url: url(files[k]),
+                        name: fileName(files[k]),
                         label,
                         alt: ad.alt,
                     })
@@ -53,10 +62,18 @@ export function AdUnits({ manifest, url }) {
                         <div className="post-head">
                             <h2>{ad.title}</h2>
                             <p className="meta">
-                                {[ad.cta, ad.site].filter(Boolean).join(" · ")}
+                                {[
+                                    ad.cta,
+                                    ad.site,
+                                    drawn.length > 1 &&
+                                        themeName(manifest, themeId),
+                                ]
+                                    .filter(Boolean)
+                                    .join(" · ")}
                             </p>
                         </div>
                         <Strip
+                            key={themeId}
                             pair
                             items={frames.map((f) => ({
                                 url: f.url,
@@ -95,7 +112,7 @@ export function AdUnits({ manifest, url }) {
                             ))}
                         </div>
                         <ul className="where">
-                            {SHAPES.filter(([k]) => ad.files?.[k]).map(
+                            {SHAPES.filter(([k]) => files[k]).map(
                                 ([k, label, size, runs]) => (
                                     <li key={k}>
                                         <b>
