@@ -4,26 +4,26 @@ about: Building products
 category: Industry & practice
 cover: /img/posts/why-i-stopped-pursuing-a-software-factory-wide.webp
 card: /img/posts/why-i-stopped-pursuing-a-software-factory-card.webp
-summary: I want coding agents to take on more implementation. Using the product myself is still how I develop the understanding needed to direct that work.
+summary: Coding agents already do much of the implementation in my projects. Using what they build is still how I work out what to ask for next.
 
-I started working on the idea of building my own “software factory”: a system where coding agents could take on more of the work of building a product. I stopped pursuing it because I felt the promise had got ahead of what I actually needed.
+I started working on the idea of building my own “software factory”: a system where coding agents could take on more of the work of building a product. I stopped pursuing it because the promise had got ahead of what I actually needed.
 
-Coding agents already do much of the implementation in my projects. I find that useful. But I still need to spend time using what they build to understand where to take it next.
+Coding agents already do much of the implementation in my projects, and that part works. What I cannot hand over is the time spent using what they build.
 
 ## Using what gets built
 
-A feature can work as requested and still feel awkward in use. Going through a task yourself reveals things that are hard to specify beforehand: a step that interrupts the flow, information you need earlier, or an interaction that takes more effort than it should. Those details change what you ask for next.
+A feature can work exactly as requested and still be awkward in use. Going through a task yourself turns up what is hard to specify beforehand: a step that interrupts the flow, information you need earlier, an interaction that takes more effort than it should.
 
-That familiarity builds through using the product, changing it and trying it again. It gives me a much more concrete sense of what needs attention than reviewing a list of completed tasks.
+That sense of what needs attention builds through the loop of using the product, changing it and trying it again. A list of completed tasks reports none of it.
 
 ## Understanding what to ask for
 
-The closer I am to the product, the more specific the direction can become. “Improve this flow” leaves a lot open. Identifying the moment where a person needs information they have not yet been shown gives the next change a clearer purpose.
+The closer I am to the product, the more specific the direction can be. “Improve this flow” leaves almost everything open. Naming the moment where a person needs information they have not been shown yet gives the next change a purpose.
 
-That understanding does not arrive fully formed in the original specification. Some of it develops through working with a real interface and noticing how the parts fit together. The next useful change may be smaller than a new feature: moving an explanation, removing a step or making an existing action easier to find.
+The useful change is often smaller than a new feature: moving an explanation, removing a step, making an existing action easier to find. Those are hard to specify in advance and plain once you have used the thing.
 
-## Keeping the feedback in the process
+## Learning from people who use it
 
-Using the product myself does not replace learning from other people who use it. It helps me understand the thing we are discussing and make better sense of their experience. I still need to be willing to discover that a decision which feels natural to me is awkward for someone else.
+Using the product myself does not replace hearing from them. It helps me understand what we are discussing when someone describes a problem, and it leaves room to be wrong: a decision that feels natural to me can be awkward for someone else, and I have to stay willing to find that out.
 
-This is why I stopped pursuing the factory idea. I want the implementation help, but I do not want the process to separate me from the experience of using what is being built. The more work agents can carry out, the more useful it becomes to have a concrete understanding of what to ask them to change.
+That is what I stopped pursuing. I want the implementation help. I do not want a process that puts distance between me and the thing being built, because the more work agents carry, the more it matters that someone can say precisely what to change.
