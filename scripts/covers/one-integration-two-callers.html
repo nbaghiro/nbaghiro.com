@@ -208,6 +208,21 @@
             }
             arrow(`M${op.x + op.w / 2} ${mid} V${op.y - 6}`);
 
+            // Every other technical plate closes on a measured rule with the qualification the
+            // post itself makes. This one stopped at the drawing, so it reads as a flat claim
+            // that one function is the whole story, which the post is careful to say it is not.
+            const ruleY = op.y + op.h + 12;
+            line(46, ruleY, 954, ruleY, "ink thin");
+            for (let i = 0; i <= 4; i += 1) {
+                const x = 46 + ((954 - 46) / 4) * i;
+                line(x, ruleY - (i % 4 === 0 ? 6 : 4), x, ruleY, "ink thin");
+            }
+            el(
+                "text",
+                { x: 46, y: ruleY + 18 },
+                "one operation definition behind both; the entry points still differ"
+            );
+
             // registration ticks
             const R = 18;
             const B2 = VB[1] - 26;
