@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigationType } from "react-router-dom";
 import { useFavicon } from "../favicon";
 import Booking from "./Booking";
@@ -62,7 +62,9 @@ function SiteLayout() {
                 </nav>
             </header>
             <main>
-                <Outlet />
+                <Suspense fallback={<div className="page" />}>
+                    <Outlet />
+                </Suspense>
             </main>
             <Booking />
             <Contact />

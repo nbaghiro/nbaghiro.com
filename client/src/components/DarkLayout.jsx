@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { useFavicon } from "../favicon";
 import Mark from "./Mark";
@@ -25,7 +26,9 @@ function DarkLayout() {
                 </nav>
             </header>
             <main>
-                <Outlet />
+                <Suspense fallback={null}>
+                    <Outlet />
+                </Suspense>
             </main>
         </div>
     );

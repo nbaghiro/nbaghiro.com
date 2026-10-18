@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import posts from "./vite-posts";
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [react(), posts()],
     server: {
         port: 5283,
         proxy: {
