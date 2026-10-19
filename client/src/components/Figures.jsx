@@ -18,6 +18,7 @@ import { ANCHOR_FIGURES } from "./figures/a-comment-that-moves";
 import { GAME_FIGURES } from "./figures/one-engine-every-game";
 import { PLAN_FIGURES } from "./figures/before-the-first-order";
 import { DSL_FIGURES } from "./figures/a-language-for-portfolio-allocations";
+import { SANDBOX_FIGURES } from "./figures/code-execution-in-containers";
 import { ORDER_FIGURES } from "./figures/an-order-submitted-once";
 
 /**
@@ -2563,6 +2564,7 @@ export const FIGURES = {
     ...PLAN_FIGURES,
     ...ORDER_FIGURES,
     ...DSL_FIGURES,
+    ...SANDBOX_FIGURES,
     "three-passes": ThreePasses,
     "three-formats": ThreeFormats,
     "command-list": CommandList,
