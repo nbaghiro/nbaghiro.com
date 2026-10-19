@@ -34,6 +34,41 @@ I would decide in advance which data can guide development and when the reserved
 
 This can feel inconvenient when historical data is limited. It is still useful to acknowledge the limit. Reusing the same information while describing each attempt as a fresh test would make the evidence look stronger than it is.
 
+## What the simulation leaves out
+
+A backtest computes what a rule would have decided. Whether those decisions could have been
+carried out is a separate question, and the gap between them is where a good-looking result
+often goes.
+
+Fills are the first assumption. A simulation that executes at the closing price assumes the
+order could be placed at that price, in that size, at that moment. For a liquid instrument in
+modest size that is close enough to be useful. For a thinly traded one, or a position large
+relative to the volume that day, it is a claim about market impact that the backtest is not in a
+position to make.
+
+Survivorship is the second. A universe assembled from the instruments that exist today has
+quietly excluded everything that was delisted, merged or failed. Returns measured over a
+universe selected by having survived are higher than returns that were available at the time,
+and nothing in the chart indicates it.
+
+Corporate actions, borrowing costs for short positions and the timing of data availability each
+add their own version of the same problem. A price series revised after the fact contains
+information the strategy could not have had on the day.
+
+## Writing down the result that did not work
+
+The record described here is most useful for the experiments that were abandoned, and those are
+the ones least likely to get written up.
+
+A configuration tried and rejected is evidence. It documents part of the search, and without it
+the surviving strategy looks like a first idea that happened to work. Six months later, the same
+parameter will look promising again to the same person, and the record is what prevents a second
+run at it.
+
+A short note is usually enough: what was tried, what the result was, and why it was set aside.
+Whether it was rejected on the evidence or on a judgement about the mechanism is worth stating,
+because those age differently. A judgement can be revisited when the reasoning behind it changes.
+
 ## Reporting more than the selected curve
 
 A useful report could show the chosen configuration alongside nearby alternatives. If a small change in a threshold produces a very different result, that sensitivity deserves investigation. Similar results across nearby settings are helpful context, although they do not establish that the strategy will work on new data.

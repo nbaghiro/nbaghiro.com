@@ -34,6 +34,37 @@ Stripe notes that [webhook events can arrive more than once](https://docs.stripe
 
 The order and payment records should make these stages distinguishable. A confirmed payment with fulfillment still pending is different from an unpaid order. Keeping that distinction allows the system to retry the unfinished work without asking the customer to pay again.
 
+## Resolving it without the customer
+
+Not every uncertain payment gets resolved by someone refreshing a page. A customer can close
+the tab and not come back. The system still has a record saying an operation was attempted and
+no confirmation arrived, and something has to finish that story.
+
+A periodic reconciliation pass can query the provider for operations left in an unresolved
+state past some age, using the identifier stored with the attempt. The provider's record is the
+authority on whether money moved. Where it says the charge exists, the local record is updated
+and any fulfillment that was waiting can proceed. Where it has no such charge, the attempt can
+be closed as never completed.
+
+That pass needs a defined age before it acts. Querying immediately races the original request.
+Waiting too long leaves the customer without an answer and the business without the funds
+recognised. The right interval depends on how long the provider's own processing can take,
+which is a documented property worth looking up rather than guessing.
+
+## Deciding how long uncertain is allowed to last
+
+An unresolved payment is a state, not an error, and it needs an expiry. Without one the record
+sits in the database indefinitely and nobody is accountable for it.
+
+I would give the state a deadline and a destination. After the reconciliation pass has tried and
+still cannot determine the result, the operation moves somewhere a person looks: a queue, a
+report, something with a name. The customer gets a message that says what is known and what
+happens next, with the order reference.
+
+The alternative tends to emerge by accident. Unresolved attempts accumulate, nobody reads them,
+and the first time anyone notices is when a customer asks why they were charged for something
+they never received.
+
 ## Giving the customer an accurate status
 
 During recovery, a message such as checking the payment is more accurate than saying it failed. The customer should be able to return to the order and see whether the result has been confirmed. If the system needs support to resolve it, the order reference gives both parties something specific to investigate.

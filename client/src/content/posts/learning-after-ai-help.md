@@ -32,6 +32,38 @@ I would record what happens before another hint is given. If the learner needs s
 
 Asking for an explanation can add context, especially when the final answer alone does not reveal the method. But the wording and review of that explanation also need care. A student who understands the mathematics may express it briefly or use different language from the tutor. An evaluation that rewards matching the tutor's phrasing could measure the wrong thing.
 
+## Recording the two kinds of attempt separately
+
+Most of this depends on the product keeping assisted and unassisted work apart in its own data.
+If both land in one events table as answered correctly, the distinction described here cannot be
+recovered afterwards.
+
+An attempt is worth storing with what surrounded it: whether a hint was shown before the answer,
+whether an explanation had been given for that concept, how long since the relevant lesson, and
+whether this was a first attempt or a retry. None of that is expensive to record, and none of it
+can be reconstructed later from a score.
+
+It also changes what a teacher or parent can be shown. A progress view built on completion says
+a learner finished the unit. A view that separates the two says which ideas they used without
+help, which they needed support for, and which have not been checked since the lesson. The
+second is more useful and more honest about what is not yet known.
+
+## Designing what the help actually gives
+
+If help is going to vary, it is worth deciding what each level hands over. A prompt that asks the
+learner what the question is asking for leaves the reasoning with them. A hint that names the
+method narrows the search. A worked step performs one piece. A full solution performs all of it.
+
+Those are different products, not different amounts of the same product, and a tutor that jumps
+to the last one whenever a learner hesitates has made a design decision whether or not anyone
+intended it.
+
+A reasonable default is to offer the smallest useful step first and let the learner ask for more.
+That depends on the learner being willing to ask, which varies, so the sequence is something to
+try with learners rather than settle from first principles. What the earlier study supports is
+narrower: the shape of the help affected what students could do afterwards, which is a reason to
+treat that shape as a design decision rather than a detail.
+
 ## Choosing what to measure over time
 
 An immediate new attempt and a later follow-up answer different questions. The first checks what the student can do just after receiving help. The second checks what they can still use after some time has passed. A product should label those observations accurately rather than presenting either as a complete measure of mastery.

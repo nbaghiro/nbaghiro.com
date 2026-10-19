@@ -34,6 +34,39 @@ The test should include the content that is easy to overlook during a visual rev
 
 These are specific questions with observable answers. They also help distinguish a cosmetic difference from a problem that blocks the person's task. A slight font substitution may be acceptable in one handoff and disruptive in another if it changes the layout throughout the document.
 
+## What travels with the file
+
+Fonts are the usual surprise. A presentation built with a licensed or locally installed
+typeface can open on another machine with a substitute, and a substitute rarely occupies the
+same width. Headings wrap onto a second line, a table column moves, and the layout the author
+checked is not the layout the recipient sees.
+
+Embedding fonts solves it where the format and the licence allow. Where it does not, choosing
+widely available faces for a file that will be edited elsewhere is less satisfying and more
+reliable.
+
+Linked content has the same shape of problem. A chart connected to a spreadsheet, an image
+referenced from a shared drive or a video held outside the file can all break when the file
+moves without them. Before sending, it is worth opening the file somewhere other than the
+machine that produced it, with the original folder unavailable, which is the condition the
+recipient is actually in.
+
+## When the receiving tool is unknown
+
+Often the author does not know what the recipient will open the file with. A deck might go to
+someone using a different application, an older version, or a browser viewer that supports a
+subset of the format.
+
+The practical response is to decide which parts of the document must survive and check those
+specifically. Text content and reading order usually must. Exact kerning usually need not. An
+animation almost certainly will not, and building an explanation that depends on one is a
+choice to make deliberately.
+
+Where the recipient is unknown and the content matters, sending two files is reasonable: a
+fixed-layout copy that shows the intended result, and an editable copy for whoever needs to
+continue the work. That costs a little preparation and removes a class of problem that is
+tedious to diagnose over email.
+
 ## Providing a clear reference
 
 When someone needs to make changes, supplying an editable file alongside a PDF reference can be useful. The reference shows the intended appearance. The source gives them a place to continue working. The two files should represent the same revision so the recipient does not have to guess which content is current.

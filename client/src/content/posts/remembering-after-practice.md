@@ -32,6 +32,38 @@ I would keep a small amount of context with the result: the question, how long i
 
 The learner should still get help when they need it. A later check can begin with an opportunity to answer, then offer an explanation and another attempt. Its purpose is to find what needs attention and support further learning. Turning every attempt into a high-pressure test would serve a different purpose.
 
+## When to come back
+
+If a later check is the point, something has to decide when later is. Scheduling every review at
+a fixed interval is simple and spends the same effort on an idea the learner has solid as on one
+they are losing.
+
+The usual alternative is to let the interval follow the result: a concept recalled without help
+waits longer before it returns, one that needed an explanation comes back sooner. That is the
+principle behind spaced review systems, and it is a scheduling rule rather than a finding about
+any particular subject.
+
+Two practical constraints push against the theory. A curriculum has its own order, and a review
+that arrives in the middle of a new lesson competes with it. Children also do not use an app on a
+regular schedule, so an interval measured in days can stretch into weeks without anyone choosing
+that. A schedule that assumes daily use will mostly be wrong about when the check actually
+happened, which is another reason to record the elapsed time with the result rather than infer it.
+
+## What a progress view should not claim
+
+Once a product measures delayed recall, it becomes tempting to turn the result into a single
+figure: a percentage mastered, a streak, a level.
+
+The difficulty is that the underlying evidence is thin per concept. One correct answer a week
+after the lesson is one observation. Presenting it as eighty percent mastery states more than
+was measured, and a parent reading that number will reasonably act on it.
+
+A view that shows what was checked, when, and what happened is less tidy and harder to argue
+with. Where there have been too few opportunities to say anything, saying so is better than
+filling the gap with a default. The purpose of the check is to decide what the next lesson should
+spend time on, and that decision is better served by the observations than by a score built on
+top of them.
+
 ## Separating memory from application
 
 Recalling a definition and applying it to a new situation are related but different goals. A learner might remember the words without understanding the example. They might also understand the idea while explaining it in different words.

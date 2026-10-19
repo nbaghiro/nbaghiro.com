@@ -34,6 +34,35 @@ I would keep outcome requirements separate from process restrictions. The addres
 
 The transcript becomes especially useful when one of those checks fails. It can show whether the agent misunderstood the request, selected the wrong record, missed an error or continued after the result became uncertain. That gives the failure a more useful explanation than a single score.
 
+## Reading results across runs, not within one
+
+An agent is not deterministic, so a single pass says less than it appears to. The same case can
+succeed on one attempt and fail on the next for reasons that have nothing to do with a change
+anyone made.
+
+Running each case several times and reporting the proportion that pass gives a more honest
+figure than a single verdict. It also changes what a regression looks like. A pass rate moving
+from nine in ten to six in ten is a real signal; one failed run out of one is not yet evidence
+of anything.
+
+That has a cost, and the cost is worth naming. A suite of thirty cases run five times is a
+hundred and fifty agent runs, each consuming tokens and wall-clock time. Running the full set
+on every change is usually unaffordable, so a smaller set on each change and the full set
+before a release is the common compromise.
+
+## Cost and duration are outcomes too
+
+An agent that completes the task after forty tool calls and an agent that completes it after
+six have both completed the task. Scored on outcome alone they are equivalent, and they are not.
+
+Token spend, tool-call count and elapsed time are worth recording alongside the result. They
+show when a change made the agent correct by making it exhaustive, which tends to surface later
+as a cost problem or a latency complaint rather than a correctness one.
+
+They also help explain a failure. An agent that stopped after the maximum number of steps was
+probably looping rather than reasoning, and the transcript around the repetition usually shows
+which tool response it could not interpret.
+
 ## Making the evaluation repeatable
 
 Each run needs a known starting state. If a previous attempt already changed the address, the next agent might appear successful without doing anything. Resetting the relevant records, or giving each run its own fixtures, keeps the comparison meaningful.

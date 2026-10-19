@@ -34,6 +34,37 @@ Product decisions often need another loop. I want to try the result, describe wh
 
 For work like this, I would rather have a small usable change to assess than a long sequence of dependent changes built on an assumption I have not tried yet. If the assumption is wrong, finding that out early saves revisiting everything that depended on it.
 
+## What I do hand over completely
+
+Stopping short of the factory idea is not an argument for doing the work by hand. Most of the
+work, I would rather not do.
+
+Implementation against a clear description is the obvious case. So is the surrounding
+maintenance: updating dependencies, following a rename through a codebase, writing tests for
+behaviour that is already decided, reproducing a reported failure, and the repetitive editing
+that touching twenty files involves. Investigation suits it too. Finding where a value comes
+from, or which change introduced a regression, is bounded work with a checkable answer.
+
+What those have in common is that the result can be verified without my having formed an opinion
+first. A test passes or it does not. The rename is complete or something still refers to the old
+name. I do not need to use the product to know whether the work is right, which is exactly the
+condition that makes delegation straightforward.
+
+## Keeping the loop short
+
+The decisions that need my judgement are the ones where the answer only appears after trying the
+thing, and that puts a practical limit on batch size.
+
+Work that lands as one usable change can be assessed and redirected. Work that lands as six
+dependent changes carries whatever assumption the first one made, and if that assumption is
+wrong the correction is expensive. I would rather be wrong about one screen than about a
+sequence of screens built on top of it.
+
+This is also why I resist describing a product decision in enough detail to remove the need to
+see it. The description that would be precise enough is usually longer than the change, and it
+is still a guess about something I have not tried. A shorter description and a quicker look at
+the result gets to the same place with less invented certainty.
+
 ## Learning from people who use it
 
 My own familiarity has limits. I know where things are because I helped decide where to put them. Someone arriving for the first time may need an explanation I no longer notice is missing. Watching how other people use the product and hearing where they get stuck gives me information I cannot get by using it alone.

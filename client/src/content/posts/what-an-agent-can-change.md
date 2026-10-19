@@ -34,6 +34,39 @@ The approved content should also be the content that gets sent. If the agent cha
 
 Not every action needs an interruption. Saving a draft is usually easy to inspect and undo. Sending a message to a new recipient has different consequences. Choosing where review belongs requires understanding the task well enough to distinguish them.
 
+## Scoping the credential, not only the tool
+
+Tool definitions are one layer. The credential the agent acts with is another, and it is
+usually the broader of the two.
+
+An integration authorised for full mailbox access can read anything in the account, whatever
+the tool surface exposes today. If a later change adds a tool, or a bug lets a parameter
+through unchecked, the credential is what decides the reach. Requesting the narrowest scope the
+task needs, and a separate credential for the agent rather than a person's own session, keeps
+that ceiling low.
+
+The same reasoning applies to the data the agent can retrieve. An assistant that only needs
+threads from one supplier does not need a query that can return the whole mailbox. Narrowing at
+the query is less convenient than filtering afterwards and considerably more robust, because
+the content never reaches the model in the first place.
+
+## When an action half happens
+
+Actions fail in the middle. A message is accepted by the provider and the response is lost. An
+attachment uploads and the send fails. The agent then has to decide what to do with incomplete
+information, which is the same problem a payment retry has.
+
+The application should carry the identity of the attempted action, so a retry can be recognised
+as the same send rather than a second one. Where the provider supports an idempotency mechanism
+for the operation, that is the place to use it.
+
+Where it does not, the safer design is to check before repeating: query for a sent message
+matching the draft before sending again. That is slower and it avoids the outcome nobody wants,
+which is the same email arriving twice because a network call timed out.
+
+A person also needs to be told. An action whose result is unknown should say so plainly rather
+than reporting success or failure that has not been established.
+
 ## Keeping a useful record
 
 After an action, the application should retain enough information to explain what happened: which account was used, what operation ran, which record or recipient it affected and what the external service reported. Recording the model's explanation alone would leave those questions unanswered.

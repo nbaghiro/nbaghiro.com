@@ -34,6 +34,38 @@ For a business calendar, I would make the resulting occurrence visible before so
 
 The same preview can show the next few dates around a transition. Checking only the first generated occurrence would miss the problem that makes this example interesting: the first week can be correct while the next one has moved.
 
+## What the stored series has to hold
+
+The behaviour described above depends on what the database keeps. A row holding only the first
+instant and an interval cannot produce the right answer later, because the information needed
+to produce it was never stored.
+
+A series needs the local start time, the named zone, the recurrence rule and its exceptions.
+From those, any occurrence can be generated for any date, including dates whose offset rules
+change after the booking was made. Time-zone databases are updated when governments change the
+rules, so a series generated today and the same series generated next year can legitimately
+differ. Storing the rule rather than the results is what allows that correction to apply.
+
+Many systems also keep materialised occurrences, so the calendar view and the reminder queue do
+not have to expand a rule on every read. That is a cache, and it needs the usual discipline: a
+way to rebuild it when the rule changes, and a rule that the stored rows never become the only
+record of what was booked.
+
+## Reminders inherit the problem
+
+A reminder is usually defined as an offset: twenty-four hours before the appointment. If that
+offset is computed from a stale instant, the reminder arrives an hour early or an hour late
+through the week of a transition, and it does so for every customer in the series at once.
+
+Reminders should be derived from the resolved occurrence rather than from the original booking
+instant. The occurrence is the thing the customer sees on their calendar, so it is the thing
+the notification should agree with.
+
+The customer's own device adds a second zone. Someone who books in Toronto and travels to
+Lisbon will see the appointment shifted in their calendar, correctly, while the business still
+expects them at the Toronto hour. A reminder that states the time in both zones removes a
+question the customer would otherwise have to work out.
+
 ## Preserving exceptions when a series changes
 
 Recurring appointments also acquire exceptions. Someone cancels one week, moves another appointment or changes the start time for future weeks. Those decisions need to survive later regeneration of the series.

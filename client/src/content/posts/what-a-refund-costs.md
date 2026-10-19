@@ -36,6 +36,36 @@ The provider's current terms then determine which fees remain, which are returne
 
 For a first comparison, the aim can stay modest: apply each arrangement to the same set of hypothetical payments and refunds. Keeping the transaction mix fixed makes it easier to see which differences come from pricing and which come from assumptions about the business.
 
+## What the records have to hold
+
+The question is only answerable later if the data is kept at the time. A charge that stores
+its amount but not the fee deducted from it cannot be reconciled without going back to the
+provider's statements and matching by hand.
+
+For each payment I would keep the gross amount, the fee as the provider reported it, the net
+received and the identifier the provider used. A refund needs the payment it belongs to, its
+amount and its own fee treatment. That link is what lets a later review follow a refund back
+to the sale it reverses instead of counting the two as unrelated events.
+
+Currency adds another layer. A payment taken in one currency and settled in another can carry
+a conversion spread that does not appear as a line item. If the business sells across borders,
+the settled amount is the one to reconcile against, not the amount shown at checkout.
+
+## Pricing shapes behave differently
+
+Flat-rate pricing quotes one percentage and a fixed amount per transaction. Interchange-plus
+separates the network's cost from the processor's margin. Blended pricing averages across card
+types. The same month of transactions can produce different totals under each, and refunds
+interact with each differently.
+
+A card mix matters here as well. Premium consumer cards and commercial cards often carry higher
+interchange than standard debit. A business whose customers mostly tap a debit card has a
+different cost profile from one taking corporate cards, even at identical volume.
+
+None of that is visible in a headline rate, and none of it is a reason to assume the worst. It
+is a reason to run the comparison on the business's own transaction mix rather than on a round
+number.
+
 ## Reconciling what actually happened
 
 Afterward, the provider's records should be used to check the calculation. I would want to trace each refund to its payment, see the fee treatment and distinguish completed refunds from requests still being processed.
