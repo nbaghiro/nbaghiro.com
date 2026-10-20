@@ -9,7 +9,7 @@ LlamaTrade lets a strategy be represented as visual blocks or as text in a small
 
 Converting between them needs to preserve the strategy's structure and values. A group can still appear in the editor after its allocation has been lost. Exported text can still parse after its grouping has changed. Both changes can affect the weights the evaluator produces.
 
-This article looks at that conversion: where the information lives in each representation, how the serializer carries it across, and what the shared tests can establish. The broader allocation language is covered in [A language for portfolio allocations](/blogs/a-language-for-portfolio-allocations).
+This article looks at that conversion: where the information lives in each representation, how the serializer carries it across, and what the shared tests can establish. The broader allocation language is covered in [A language for portfolio allocations](https://nbaghiro.com/blogs/a-language-for-portfolio-allocations).
 
 ## Two representations of the same strategy
 
