@@ -283,6 +283,8 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
         const pdf = post.pdf?.[t];
         const pages = post.pages?.[t] || post.pages?.default || [];
         const pdfName = `${post.slug}${themes.length > 1 ? `-${t}` : ""}.pdf`;
+        const single = pages.length === 1;
+        const imageName = `${post.slug}${themes.length > 1 ? `-${t}` : ""}.png`;
         const more = open === post.slug;
         const media = (
             <>
@@ -337,20 +339,36 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                     />
                 )}
                 <div className="actions">
-                    {pdf && (
+                    {/* A post with one page is an image post: LinkedIn boosts those and will not
+                        boost a document, so the image is the thing to reach for and the PDF only
+                        gets in the way. More than one page is a carousel, which uploads as a PDF. */}
+                    {single && (
+                        <ShareButton
+                            label="Save image"
+                            items={() => [{ url: url(pages[0]), name: imageName }]}
+                        />
+                    )}
+                    {single && (
+                        <DownloadButton
+                            url={url(pages[0])}
+                            name={imageName}
+                            label="Image"
+                        />
+                    )}
+                    {pdf && !single && (
                         <ShareButton
                             label="Save PDF"
                             items={() => [{ url: url(pdf), name: pdfName }]}
                         />
                     )}
-                    {pdf && (
+                    {pdf && !single && (
                         <DownloadButton
                             url={url(pdf)}
                             name={pdfName}
                             label="PDF"
                         />
                     )}
-                    {pages.length > 0 && (
+                    {pages.length > 1 && (
                         <ShareButton
                             primary={false}
                             label={`Save ${pages.length} pages`}
