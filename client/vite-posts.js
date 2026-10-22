@@ -11,6 +11,10 @@ import { fileURLToPath } from "node:url";
  * titles. This reads the heads at build time instead, and the bodies stay behind the one
  * import that wants them (data/post-body.js). Derived from the directory on every build, so
  * there is nothing to keep in sync.
+ *
+ * The same heads are written to the build as posts.json, because the server needs them too:
+ * it injects a piece's title, summary and cover into the HTML so a link to /blogs/<slug>
+ * previews as that piece rather than as the site shell. Writing them here keeps one parser.
  */
 const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "src/content/posts");
 const ID = "virtual:posts";
@@ -48,6 +52,21 @@ export default function posts() {
                 .map(metaOf);
             return `export const META = ${JSON.stringify(all)};`;
         },
+        // the heads again as a plain file in the build output, for the server's link previews
+        generateBundle() {
+            this.emitFile({
+                type: "asset",
+                fileName: "posts.json",
+                source: JSON.stringify(
+                    fs
+                        .readdirSync(DIR)
+                        .filter((f) => f.endsWith(".md"))
+                        .sort()
+                        .map(metaOf),
+                ),
+            });
+        },
+
         // a virtual module has no file to watch, so an edited piece has to invalidate it
         handleHotUpdate({ file, server }) {
             if (!file.startsWith(DIR) || !file.endsWith(".md")) return undefined;

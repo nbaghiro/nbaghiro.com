@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
+import fs from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import apiRoutes from "./routes/api/index.js";
@@ -70,9 +71,59 @@ if (process.env.NODE_ENV === "production") {
     const clientBuildPath = path.join(__dirname, "../../client/dist");
     app.use(express.static(clientBuildPath));
 
+    // A link preview is built by a crawler that does not run JavaScript, so everything it
+    // needs has to be in the HTML this route returns. Sending index.html unchanged gave every
+    // URL the shell's own title and no image, which is why a shared article previewed as
+    // "Naib Baghirov" with a blank thumbnail. The piece's head is read from the build's
+    // posts.json and written into the markup before the page goes out.
+    const shell = fs.readFileSync(path.join(clientBuildPath, "index.html"), "utf8");
+    const postsFile = path.join(clientBuildPath, "posts.json");
+    const posts = fs.existsSync(postsFile)
+        ? new Map(JSON.parse(fs.readFileSync(postsFile, "utf8")).map((m) => [m.slug, m]))
+        : new Map();
+
+    const ORIGIN = (process.env.SITE_ORIGIN || "https://nbaghiro.com").replace(/\/$/, "");
+    const esc = (v) =>
+        String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+    function cardFor(urlPath) {
+        const m = /^\/blogs\/([a-z0-9-]+)\/?$/.exec(urlPath);
+        const post = m && posts.get(m[1]);
+        if (!post) return null;
+        // the og image is a JPEG built by scripts/og-images.mjs at LinkedIn's 1200x627, because
+        // the covers are WebP and LinkedIn does not document WebP as a format it will fetch
+        return {
+            title: post.title || "Naib Baghirov",
+            description: post.summary || "",
+            image: `${ORIGIN}/img/posts/${m[1]}-og.jpg`,
+            url: `${ORIGIN}/blogs/${m[1]}`,
+        };
+    }
+
     // Handle React routing - return all requests to React app
     app.get("*", (req, res) => {
-        res.sendFile(path.join(clientBuildPath, "index.html"));
+        const card = cardFor(req.path);
+        if (!card) return res.sendFile(path.join(clientBuildPath, "index.html"));
+        const tags = [
+            `<title>${esc(card.title)}</title>`,
+            `<meta name="description" content="${esc(card.description)}" />`,
+            `<meta property="og:type" content="article" />`,
+            `<meta property="og:site_name" content="Naib Baghirov" />`,
+            `<meta property="og:title" content="${esc(card.title)}" />`,
+            `<meta property="og:description" content="${esc(card.description)}" />`,
+            `<meta property="og:url" content="${esc(card.url)}" />`,
+            `<meta property="og:image" content="${esc(card.image)}" />`,
+            `<meta property="og:image:width" content="1200" />`,
+            `<meta property="og:image:height" content="627" />`,
+            `<meta name="twitter:card" content="summary_large_image" />`,
+        ].join("\n        ");
+        // the shell's own title and description describe the site, so they come out rather
+        // than sitting alongside the piece's and leaving the crawler to choose
+        const body = shell
+            .replace(/<title>[\s\S]*?<\/title>\s*/, "")
+            .replace(/<meta\s+name="description"[\s\S]*?\/>\s*/, "")
+            .replace("</head>", `    ${tags}\n    </head>`);
+        res.type("html").send(body);
     });
 }
 
