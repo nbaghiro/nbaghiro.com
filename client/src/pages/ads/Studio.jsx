@@ -17,6 +17,7 @@ import { XPosts } from "./XPosts";
 import { Profile } from "./Profile";
 import { Combos } from "./Combos";
 import { Docs } from "./Docs";
+import { Strategy } from "./Strategy";
 
 const TABS = [
     ["posts", "Posts", (m) => m.posts?.length],
@@ -32,6 +33,7 @@ const TABS = [
     ],
     ["combos", "Combos", (m) => m.combos?.avatars?.length],
     ["docs", "One-pagers", (m) => m.docs?.items?.length],
+    ["notes", "Strategy", (m) => m.notes?.sections?.length],
 ];
 
 // One project's studio over its manifest. The theme applies to every post at once and any
@@ -208,6 +210,7 @@ export function Studio({ root }) {
                 {active === "profile" && <Profile {...ctx} />}
                 {active === "combos" && <Combos {...ctx} />}
                 {active === "docs" && <Docs {...ctx} />}
+                {active === "notes" && <Strategy {...ctx} />}
             </main>
             {tabs.length > 1 && (
                 <nav className="tabbar" aria-label="Sections">

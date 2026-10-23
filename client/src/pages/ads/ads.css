@@ -1699,3 +1699,59 @@
 .ads .xpick + .pics {
     margin-top: 0;
 }
+
+/* The Strategy tab: a read, not a grid of posts, so it is set as prose at a comfortable measure
+   rather than in the post cards the other tabs use. */
+.ads .strategy {
+    max-width: 44rem;
+}
+.ads .strategy section + section {
+    margin-top: 2.5rem;
+}
+.ads .strategy h2 {
+    font-size: 1.05rem;
+    margin: 0 0 0.75rem;
+}
+.ads .strategy p,
+.ads .strategy li {
+    line-height: 1.65;
+    opacity: 0.85;
+}
+.ads .strategy p {
+    margin: 0 0 0.85rem;
+}
+.ads .strategy ul {
+    margin: 0 0 0.85rem;
+    padding-left: 1.1rem;
+}
+.ads .strategy li {
+    margin-bottom: 0.5rem;
+}
+.ads .strategy .scroller {
+    overflow-x: auto;
+    margin: 0 0 1rem;
+}
+.ads .strategy table {
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    min-width: 34rem;
+}
+.ads .strategy th,
+.ads .strategy td {
+    border: 1px solid var(--line, #2a2a2a);
+    padding: 0.5rem 0.65rem;
+    text-align: left;
+    vertical-align: top;
+}
+.ads .strategy thead th {
+    font-weight: 600;
+    opacity: 0.95;
+}
+.ads .strategy tbody th {
+    font-weight: 600;
+    opacity: 0.9;
+    white-space: nowrap;
+}
+.ads .strategy td {
+    opacity: 0.82;
+}
