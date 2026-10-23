@@ -675,6 +675,11 @@
 }
 .ads .field .options div span {
     flex: 1;
+    /* an option is written with its line breaks meaning something: paragraphs in About, one
+       bullet per line in each Experience entry. Without this they collapse into one run-on
+       line on screen, while the Copy button hands over the real text, so what you read and
+       what you paste disagree. */
+    white-space: pre-wrap;
 }
 
 /* pictures: profile marks and page art */

@@ -412,7 +412,10 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                         </div>
                     </div>
                 )}
-                <Field label="Document title" text={post.documentTitle} />
+                {/* LinkedIn asks for a document title only when a PDF is uploaded as a
+                    document post. A single image has no document, so the field is noise on
+                    exactly the posts we now publish. */}
+                {!single && <Field label="Document title" text={post.documentTitle} />}
             </>
         );
         const text = voices ? (
