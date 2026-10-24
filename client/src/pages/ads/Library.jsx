@@ -283,6 +283,12 @@ export function Library({ manifest, url }) {
                                     />
                                 </div>
                                 <Field
+                                    label="Repost comment"
+                                    note="What you add on top when you reshare the company post to your profile."
+                                    text={post.repost}
+                                    count
+                                />
+                                <Field
                                     label="First comment"
                                     text={post.firstComment}
                                 />
