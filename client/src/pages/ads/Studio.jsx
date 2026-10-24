@@ -20,10 +20,13 @@ import { Docs } from "./Docs";
 import { Strategy } from "./Strategy";
 import { Library } from "./Library";
 import { Quotes } from "./Quotes";
+import { Industry } from "./Industry";
 import { Account } from "./Account";
 
-const quoteCount = (m) =>
-    (m.quotes?.groups ?? []).reduce((n, g) => n + g.items.length, 0);
+const countIn = (doc) =>
+    (doc?.groups ?? []).reduce((n, g) => n + g.items.length, 0);
+const quoteCount = (m) => countIn(m.quotes);
+const industryCount = (m) => countIn(m.industry);
 
 const TABS = [
     ["posts", "Posts", (m) => m.posts?.length],
@@ -132,6 +135,9 @@ export function Studio({ root }) {
               ...(quoteCount(manifest)
                   ? [["quotes", "Quotes", quoteCount]]
                   : []),
+              ...(industryCount(manifest)
+                  ? [["industry", "Industry", industryCount]]
+                  : []),
               ["account", "Profile", () => ""],
           ]
         : [
@@ -233,6 +239,7 @@ export function Studio({ root }) {
                 {active === "notes" && <Strategy {...ctx} />}
                 {active === "library" && <Library {...ctx} />}
                 {active === "quotes" && <Quotes {...ctx} />}
+                {active === "industry" && <Industry {...ctx} />}
                 {active === "account" && <Account {...ctx} />}
             </main>
             {tabs.length > 1 && (

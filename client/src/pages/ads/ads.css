@@ -1989,3 +1989,25 @@
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+/* The Industry tab: whole posts, so one column at a reading measure rather than the Quotes
+   grid. The heading sits above each post instead of beside it, because the title is the
+   studio's label for the post and not part of what gets copied. */
+.ads .ind-group + .ind-group {
+    margin-top: 34px;
+}
+.ads .ind-group h2 {
+    font-size: 0.95rem;
+    margin: 0 0 10px;
+    color: var(--soft);
+}
+.ads .ind-post {
+    border-top: 1px solid var(--line);
+    padding: 4px 0 18px;
+}
+.ads .ind-post:first-of-type {
+    border-top: 0;
+}
+.ads .ind-post .field {
+    max-width: 68ch;
+}
