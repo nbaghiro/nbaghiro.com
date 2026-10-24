@@ -18,6 +18,8 @@ import { Profile } from "./Profile";
 import { Combos } from "./Combos";
 import { Docs } from "./Docs";
 import { Strategy } from "./Strategy";
+import { Library } from "./Library";
+import { Account } from "./Account";
 
 const TABS = [
     ["posts", "Posts", (m) => m.posts?.length],
@@ -116,15 +118,24 @@ export function Studio({ root }) {
         manifest.linkedin?.layout === "compare"
             ? []
             : (manifest.linkedin?.sets ?? []);
-    const tabs = [
-        ...TABS.filter(
-            ([id, , count]) =>
-                (count(manifest) ||
-                    (id === "linkedin" && manifest.linkedin?.page)) &&
-                !(id === "linkedin" && sets.length)
-        ),
-        ...sets.map((s) => [`li:${s.id}`, s.label, () => ""]),
-    ];
+    // A library kit is its own shape: one filtered list of posts and the account behind
+    // them. It declares that itself rather than being inferred, so every other kit keeps
+    // the tabs its manifest earns.
+    const library = manifest.linkedin?.layout === "library";
+    const tabs = library
+        ? [
+              ["library", "Posts", (m) => m.linkedin?.posts?.length],
+              ["account", "Profile", () => ""],
+          ]
+        : [
+              ...TABS.filter(
+                  ([id, , count]) =>
+                      (count(manifest) ||
+                          (id === "linkedin" && manifest.linkedin?.page)) &&
+                      !(id === "linkedin" && sets.length)
+              ),
+              ...sets.map((s) => [`li:${s.id}`, s.label, () => ""]),
+          ];
     const active = tabs.some(([id]) => id === tab) ? tab : tabs[0]?.[0];
     const activeSet = sets.find((s) => `li:${s.id}` === active);
     const manyThemes = themes.length > 1;
@@ -171,7 +182,7 @@ export function Studio({ root }) {
                         ))}
                     </nav>
                 )}
-                {manyThemes && active !== "profile" && (
+                {manyThemes && active !== "profile" && active !== "account" && (
                     <div className="rings bare desk" aria-label="Theme">
                         {themes.map((id) => (
                             <Ring
@@ -185,19 +196,21 @@ export function Studio({ root }) {
                     </div>
                 )}
                 {showSize && <div className="desk">{sizeSwitch}</div>}
-                {(manyThemes || showSize) && active !== "profile" && (
-                    <button
-                        type="button"
-                        className="ringbtn"
-                        aria-label="Theme and size"
-                        onClick={() => setSheet(true)}
-                        style={ringStyle(themeOf(manifest, current))}
-                    >
-                        <span className="disc">
-                            <i />
-                        </span>
-                    </button>
-                )}
+                {(manyThemes || showSize) &&
+                    active !== "profile" &&
+                    active !== "account" && (
+                        <button
+                            type="button"
+                            className="ringbtn"
+                            aria-label="Theme and size"
+                            onClick={() => setSheet(true)}
+                            style={ringStyle(themeOf(manifest, current))}
+                        >
+                            <span className="disc">
+                                <i />
+                            </span>
+                        </button>
+                    )}
             </header>
             <main className="body">
                 {active === "posts" && <Posts {...ctx} />}
@@ -211,6 +224,8 @@ export function Studio({ root }) {
                 {active === "combos" && <Combos {...ctx} />}
                 {active === "docs" && <Docs {...ctx} />}
                 {active === "notes" && <Strategy {...ctx} />}
+                {active === "library" && <Library {...ctx} />}
+                {active === "account" && <Account {...ctx} />}
             </main>
             {tabs.length > 1 && (
                 <nav className="tabbar" aria-label="Sections">

@@ -1755,3 +1755,158 @@
 .ads .strategy td {
     opacity: 0.82;
 }
+
+/* The library kit: one filtered list of posts instead of a rail and a long scroll. The bar
+   sticks because the filters are what you come back to between posts, and the two copy
+   directions sit side by side because they are written against each other. */
+.ads .lib-bar {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: var(--ground);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 0 10px;
+    margin: 0 0 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.ads .lib-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.ads .lib-search input {
+    font: inherit;
+    flex: 1;
+    min-width: 180px;
+    min-height: 40px;
+    padding: 0 12px;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+}
+.ads .lib-search input::placeholder {
+    color: var(--faint);
+}
+.ads .lib-search input:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+}
+.ads .lib-count {
+    color: var(--soft);
+    font-size: 13px;
+    white-space: nowrap;
+}
+.ads .lib-facet {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.ads .lib-label {
+    color: var(--faint);
+    font-size: 12px;
+    text-transform: none;
+    min-width: 68px;
+}
+.ads .lib-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.ads .lib-chips button {
+    font: inherit;
+    font-size: 13px;
+    color: var(--soft);
+    background: none;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    min-height: 30px;
+    padding: 0 12px;
+    cursor: pointer;
+}
+.ads .lib-chips button[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #000;
+}
+.ads .linkish {
+    font: inherit;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    padding: 0;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.ads .lib-list {
+    display: flex;
+    flex-direction: column;
+}
+.ads .lib-post {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 22px;
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 90px;
+}
+.ads .lib-post:first-child {
+    border-top: 0;
+}
+.ads .lib-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.ads .lib-thumb {
+    padding: 0;
+    border: 1px solid var(--edge);
+    border-radius: var(--r-frame);
+    background: none;
+    overflow: hidden;
+    cursor: zoom-in;
+}
+.ads .lib-thumb img {
+    width: 100%;
+    height: auto;
+}
+.ads .lib-body .post-head h2 {
+    margin-bottom: 2px;
+}
+.ads .lib-copies {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 0 24px;
+    align-items: start;
+}
+.ads .lib-copies .field {
+    max-width: none;
+}
+.ads .acct-fields {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+}
+@media (max-width: 720px) {
+    .ads .lib-post {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+    .ads .lib-aside {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .ads .lib-thumb {
+        width: 128px;
+        flex: none;
+    }
+    .ads .lib-label {
+        min-width: 0;
+        width: 100%;
+    }
+}
