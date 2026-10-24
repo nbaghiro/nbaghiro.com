@@ -1925,3 +1925,67 @@
         width: 100%;
     }
 }
+
+/* The Quotes tab. The left rule on the quote is not decoration: it marks the words that are
+   somebody else's, so the quote and Naib's own line under it cannot be confused at a glance,
+   which is the one mistake that matters when the next step is pasting one of them into a post. */
+.ads .quote-group + .quote-group {
+    margin-top: 32px;
+}
+.ads .quote-group h2 {
+    font-size: 0.95rem;
+    margin: 0 0 14px;
+    color: var(--soft);
+}
+.ads .quote-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+    gap: 18px;
+}
+.ads .quote {
+    border: 1px solid var(--line);
+    border-radius: var(--r-frame);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ads .quote blockquote {
+    margin: 0;
+    padding-left: 14px;
+    border-left: 2px solid var(--line-strong);
+    font-size: 1.05rem;
+    line-height: 1.5;
+}
+.ads .quote .quote-who {
+    margin: 0 0 0 16px;
+    color: var(--soft);
+    font-size: 0.9rem;
+}
+.ads .quote .note {
+    margin: 0;
+    color: var(--faint);
+    font-size: 12px;
+    line-height: 1.5;
+}
+.ads .quote .quote-take {
+    margin: 4px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    line-height: 1.6;
+    opacity: 0.85;
+}
+.ads .quote .actions {
+    margin-top: auto;
+    padding-top: 6px;
+}
+.ads .quote .actions .btn {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
+}
+@media (max-width: 720px) {
+    .ads .quote-list {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

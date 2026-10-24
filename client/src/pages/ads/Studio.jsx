@@ -19,7 +19,11 @@ import { Combos } from "./Combos";
 import { Docs } from "./Docs";
 import { Strategy } from "./Strategy";
 import { Library } from "./Library";
+import { Quotes } from "./Quotes";
 import { Account } from "./Account";
+
+const quoteCount = (m) =>
+    (m.quotes?.groups ?? []).reduce((n, g) => n + g.items.length, 0);
 
 const TABS = [
     ["posts", "Posts", (m) => m.posts?.length],
@@ -125,6 +129,9 @@ export function Studio({ root }) {
     const tabs = library
         ? [
               ["library", "Posts", (m) => m.linkedin?.posts?.length],
+              ...(quoteCount(manifest)
+                  ? [["quotes", "Quotes", quoteCount]]
+                  : []),
               ["account", "Profile", () => ""],
           ]
         : [
@@ -225,6 +232,7 @@ export function Studio({ root }) {
                 {active === "docs" && <Docs {...ctx} />}
                 {active === "notes" && <Strategy {...ctx} />}
                 {active === "library" && <Library {...ctx} />}
+                {active === "quotes" && <Quotes {...ctx} />}
                 {active === "account" && <Account {...ctx} />}
             </main>
             {tabs.length > 1 && (
