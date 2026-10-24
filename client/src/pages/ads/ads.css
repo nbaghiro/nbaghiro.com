@@ -2171,8 +2171,9 @@
     max-width: 34em;
 }
 
-/* Rearranging a carousel: which slides go out, and the order the rest upload in. The number
-   on a kept slide is its upload position, not its position in the published set. */
+/* Rearranging a carousel. The controls live in the lightbox, where one slide is in view
+   and there is room for words; the strip only reports the state, because three buttons on
+   every thumbnail made a ten-slide post hard to look at. */
 .ads .strip figure {
     position: relative;
 }
@@ -2180,40 +2181,21 @@
     opacity: 0.3;
     filter: grayscale(1);
 }
-.ads .arrange {
+.ads .strip figure .out {
     position: absolute;
-    left: 6px;
-    right: 6px;
-    bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-.ads .arrange button {
-    min-width: 28px;
-    height: 28px;
-    padding: 0 7px;
-    border-radius: 7px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    background: rgba(14, 14, 16, 0.76);
+    left: 8px;
+    bottom: 8px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(140, 38, 32, 0.9);
     color: #fff;
-    font: inherit;
-    font-size: 13px;
-    line-height: 1;
-    cursor: pointer;
-}
-.ads .arrange button:disabled {
-    opacity: 0.3;
-    cursor: default;
-}
-.ads .arrange .pick {
-    flex: 1;
+    font-size: 11px;
     font-weight: 600;
-    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
 }
-.ads .arrange .pick[aria-pressed="false"] {
-    background: rgba(140, 38, 32, 0.85);
-    border-color: rgba(255, 255, 255, 0.3);
+.ads .lb-item.off img {
+    opacity: 0.35;
+    filter: grayscale(1);
 }
 .ads .hint {
     align-self: center;

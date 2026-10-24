@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DownloadButton, Field, Fields, ShareButton } from "./actions";
+import { DownloadButton, Field, Fields, MakePdfButton, ShareButton } from "./actions";
 import { ProfileHeader } from "./Header";
 import { Lightbox } from "./Lightbox";
 import { Strip } from "./Strip";
@@ -273,6 +273,48 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
         </section>
     );
 
+    // Slide order, and which slides go out, kept per device the way the theme choice is.
+    // Derived rather than stored on the post, so the lightbox can read the current state
+    // while it is open instead of the snapshot it was opened with.
+    const arrangementOf = (post, t) => {
+        const pages = post.pages?.[t] || post.pages?.default || [];
+        const key = `pg:${post.slug}`;
+        const stored = sel[key];
+        // the stored order indexes this post's own pages, so it is dropped when the page
+        // count changes under it, which happens when a themed post switches build
+        const fresh = !stored || stored.order?.length !== pages.length;
+        const order = fresh ? pages.map((_, i) => i) : stored.order;
+        const off = new Set(fresh ? [] : (stored.off ?? []));
+        return {
+            key,
+            pages,
+            order,
+            off,
+            kept: order.filter((i) => !off.has(i)),
+            touched: !fresh && (off.size > 0 || order.some((v, i) => v !== i)),
+        };
+    };
+    const moveIn = (a, at, dir) => {
+        const to = at + dir;
+        if (to < 0 || to >= a.order.length) return;
+        const next = a.order.slice();
+        [next[at], next[to]] = [next[to], next[at]];
+        setSel(a.key, { order: next, off: [...a.off] });
+    };
+    const toggleIn = (a, at) => {
+        const idx = a.order[at];
+        const next = new Set(a.off);
+        if (next.has(idx)) next.delete(idx);
+        else next.add(idx);
+        // everything off would leave nothing to save, so the last one stays in
+        if (next.size >= a.order.length) return;
+        setSel(a.key, { order: a.order, off: [...next] });
+    };
+    // numbered by the order they will upload in, because a file picker sorts by name and
+    // that order is the whole point of being able to rearrange them
+    const pageNameFor = (post, t, n) =>
+        `${post.slug}${themes.length > 1 ? `-${t}` : ""}-${String(n).padStart(2, "0")}.png`;
+
     const items = posts.map((post) => {
         // A document post carries one PDF per theme, so its themes are its PDF keys. A
         // single-image post has no PDF at all, so its options are its page keys instead:
@@ -291,38 +333,13 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
         const pdfName = `${post.slug}${themes.length > 1 ? `-${t}` : ""}.pdf`;
         const single = pages.length === 1;
         const imageName = `${post.slug}${themes.length > 1 ? `-${t}` : ""}.png`;
-        // Slide order, and which slides go out, kept per device the way the theme choice is.
-        // The stored order is indexes into this post's own pages, so it is dropped when the
-        // page count changes under it, which happens when a themed post switches build.
-        const arrKey = `pg:${post.slug}`;
-        const stored = sel[arrKey];
-        const fresh = !stored || stored.order?.length !== pages.length;
-        const order = fresh ? pages.map((_, i) => i) : stored.order;
-        const off = new Set(fresh ? [] : (stored.off ?? []));
-        const touched = !fresh && (off.size > 0 || order.some((v, i) => v !== i));
-        const kept = order.filter((i) => !off.has(i));
+        const arr = arrangementOf(post, t);
+        const { order, off, kept, touched } = arr;
         const keptFiles = kept.map((i) => pages[i]);
-        // numbered by the order they will be uploaded in, because a file picker sorts by name
-        // and that order is the whole point of being able to rearrange them
-        const pageName = (n) =>
-            `${post.slug}${themes.length > 1 ? `-${t}` : ""}-${String(n).padStart(2, "0")}.png`;
-        const move = (at, dir) => {
-            const to = at + dir;
-            if (to < 0 || to >= order.length) return;
-            const next = order.slice();
-            [next[at], next[to]] = [next[to], next[at]];
-            setSel(arrKey, { order: next, off: [...off] });
-        };
-        const toggle = (at) => {
-            const idx = order[at];
-            const next = new Set(off);
-            if (next.has(idx)) next.delete(idx);
-            else next.add(idx);
-            // everything off would leave nothing to save, so the last one stays in
-            if (next.size >= order.length) return;
-            setSel(arrKey, { order, off: [...next] });
-        };
+        const pageName = (n) => pageNameFor(post, t, n);
+        const arrKey = arr.key;
         const more = open === post.slug;
+
         const media = (
             <>
                 {post.reel && (
@@ -365,20 +382,20 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                             off: off.has(idx),
                             at: kept.indexOf(idx) + 1,
                         }))}
-                        arrange={
-                            pages.length > 1
-                                ? { onMove: move, onToggle: toggle }
-                                : undefined
-                        }
+                        arrange={pages.length > 1}
                         onOpen={(i) =>
-                            setLb({
-                                title: post.title,
-                                index: Math.max(0, kept.indexOf(order[i])),
-                                items: keptFiles.map((x, n) => ({
-                                    url: url(x),
-                                    name: pageName(n + 1),
-                                })),
-                            })
+                            setLb(
+                                pages.length > 1
+                                    ? { slug: post.slug, theme: t, title: post.title, index: i }
+                                    : {
+                                          title: post.title,
+                                          index: i,
+                                          items: pages.map((x) => ({
+                                              url: url(x),
+                                              name: pageName(1),
+                                          })),
+                                      }
+                            )
                         }
                     />
                 )}
@@ -434,11 +451,11 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                             Reset order
                         </button>
                     )}
-                    {touched && pdf && (
-                        <span className="hint">
-                            The PDF is the published set in its published order, so it is
-                            out while this is rearranged.
-                        </span>
+                    {!single && touched && (
+                        <MakePdfButton
+                            urls={() => keptFiles.map((f) => url(f))}
+                            name={pdfName}
+                        />
                     )}
                     {have.length > 1 && (
                         <button
@@ -554,13 +571,43 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
         );
     });
 
-    const box = lb && (
+    // A post's lightbox is rebuilt from the current arrangement on every render rather than
+    // from the snapshot it was opened with, so moving a slide from inside it shows at once.
+    const lbPost = lb?.slug ? posts.find((p) => p.slug === lb.slug) : null;
+    const lbArr = lbPost ? arrangementOf(lbPost, lb.theme) : null;
+    const lbItems = lbArr
+        ? lbArr.order.map((idx) => {
+              const at = lbArr.kept.indexOf(idx) + 1;
+              return {
+                  url: url(lbArr.pages[idx]),
+                  name: pageNameFor(lbPost, lb.theme, at || idx + 1),
+                  off: lbArr.off.has(idx),
+                  at,
+              };
+          })
+        : lb?.items;
+    const box = lb && lbItems && (
         <Lightbox
             title={lb.title}
-            items={lb.items}
-            index={lb.index}
+            items={lbItems}
+            index={Math.min(lb.index, lbItems.length - 1)}
             onIndex={(i) => setLb({ ...lb, index: i })}
             onClose={() => setLb(null)}
+            arrange={
+                lbArr
+                    ? {
+                          // the index follows the slide it moved, so the same frame stays up
+                          onMove: (i, d) => {
+                              moveIn(lbArr, i, d);
+                              setLb({
+                                  ...lb,
+                                  index: Math.max(0, Math.min(lbItems.length - 1, i + d)),
+                              });
+                          },
+                          onToggle: (i) => toggleIn(lbArr, i),
+                      }
+                    : undefined
+            }
         />
     );
 

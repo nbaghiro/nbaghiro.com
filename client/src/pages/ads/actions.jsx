@@ -214,3 +214,30 @@ export function Fields({ fields }) {
         </div>
     ));
 }
+
+// A PDF of the slides as they are arranged here, built in the browser because the published
+// one is a fixed file that cannot know about an order or an exclusion made on this page.
+// The builder is loaded on demand, so a page that never exports never pays for it.
+export function MakePdfButton({ urls, name, label = "PDF" }) {
+    const [state, setState] = useState("idle");
+    return (
+        <button
+            type="button"
+            className="btn"
+            disabled={state === "busy"}
+            title={state === "failed" ? "That did not build. Try again." : undefined}
+            onClick={async () => {
+                setState("busy");
+                try {
+                    const { pdfFromImages } = await import("./pdf");
+                    saveBlob(await pdfFromImages(urls()), name);
+                    setState("idle");
+                } catch {
+                    setState("failed");
+                }
+            }}
+        >
+            {state === "busy" ? "Building" : state === "failed" ? "Try again" : label}
+        </button>
+    );
+}

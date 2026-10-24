@@ -51,38 +51,8 @@ export function Strip({
                             loading="lazy"
                             onClick={() => onOpen && onOpen(i)}
                         />
-                        {arrange && (
-                            <div className="arrange">
-                                <button
-                                    type="button"
-                                    aria-label={`Move ${i + 1} earlier`}
-                                    disabled={i === 0}
-                                    onClick={() => arrange.onMove(i, -1)}
-                                >
-                                    ‹
-                                </button>
-                                <button
-                                    type="button"
-                                    className="pick"
-                                    aria-pressed={!it.off}
-                                    aria-label={
-                                        it.off
-                                            ? `Include page ${i + 1}`
-                                            : `Leave page ${i + 1} out`
-                                    }
-                                    onClick={() => arrange.onToggle(i)}
-                                >
-                                    {it.off ? "Out" : String(it.at)}
-                                </button>
-                                <button
-                                    type="button"
-                                    aria-label={`Move ${i + 1} later`}
-                                    disabled={i === items.length - 1}
-                                    onClick={() => arrange.onMove(i, 1)}
-                                >
-                                    ›
-                                </button>
-                            </div>
+                        {arrange && it.off && (
+                            <span className="out">Out</span>
                         )}
                         {it.label && <figcaption>{it.label}</figcaption>}
                     </figure>

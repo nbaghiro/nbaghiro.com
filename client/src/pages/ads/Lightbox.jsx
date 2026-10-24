@@ -3,7 +3,7 @@ import { DownloadButton, ShareButton } from "./actions";
 
 // One frame per screen over everything, swiped between on a phone and arrowed on a
 // keyboard; it moves only within the set it was opened from.
-export function Lightbox({ items, index, onIndex, onClose, title }) {
+export function Lightbox({ items, index, onIndex, onClose, title, arrange }) {
     const track = useRef(null);
     const cur = items[index];
 
@@ -47,7 +47,10 @@ export function Lightbox({ items, index, onIndex, onClose, title }) {
         <div className="lb" role="dialog" aria-label={title}>
             <div className="lb-track" ref={track} onScroll={onScroll}>
                 {items.map((it) => (
-                    <div className="lb-item" key={it.url}>
+                    <div
+                        className={`lb-item${it.off ? " off" : ""}`}
+                        key={it.url}
+                    >
                         <img
                             crossOrigin="anonymous"
                             src={it.url}
@@ -60,7 +63,38 @@ export function Lightbox({ items, index, onIndex, onClose, title }) {
             <div className="lb-bar">
                 <span className="title">
                     {title}, {index + 1} of {items.length}
+                    {arrange && cur.off && " · left out"}
+                    {arrange && !cur.off && cur.at ? ` · uploads ${cur.at}` : ""}
                 </span>
+                {arrange && (
+                    <>
+                        <button
+                            type="button"
+                            className="btn"
+                            disabled={index === 0}
+                            aria-label="Move earlier"
+                            onClick={() => arrange.onMove(index, -1)}
+                        >
+                            ‹
+                        </button>
+                        <button
+                            type="button"
+                            className="btn"
+                            disabled={index === items.length - 1}
+                            aria-label="Move later"
+                            onClick={() => arrange.onMove(index, 1)}
+                        >
+                            ›
+                        </button>
+                        <button
+                            type="button"
+                            className="btn"
+                            onClick={() => arrange.onToggle(index)}
+                        >
+                            {cur.off ? "Bring back" : "Leave out"}
+                        </button>
+                    </>
+                )}
                 <ShareButton
                     label="Save to Photos"
                     items={() => [{ url: cur.url, name: cur.name }]}
