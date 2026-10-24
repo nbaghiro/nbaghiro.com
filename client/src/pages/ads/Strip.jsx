@@ -10,6 +10,7 @@ export function Strip({
     small = false,
     pair = false,
     onOpen,
+    arrange,
 }) {
     const ref = useRef(null);
     const [active, setActive] = useState(0);
@@ -39,7 +40,10 @@ export function Strip({
                 ref={ref}
             >
                 {items.map((it, i) => (
-                    <figure key={it.url}>
+                    <figure
+                        key={it.url}
+                        className={arrange && it.off ? "off" : undefined}
+                    >
                         <img
                             crossOrigin="anonymous"
                             src={it.url}
@@ -47,6 +51,39 @@ export function Strip({
                             loading="lazy"
                             onClick={() => onOpen && onOpen(i)}
                         />
+                        {arrange && (
+                            <div className="arrange">
+                                <button
+                                    type="button"
+                                    aria-label={`Move ${i + 1} earlier`}
+                                    disabled={i === 0}
+                                    onClick={() => arrange.onMove(i, -1)}
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    type="button"
+                                    className="pick"
+                                    aria-pressed={!it.off}
+                                    aria-label={
+                                        it.off
+                                            ? `Include page ${i + 1}`
+                                            : `Leave page ${i + 1} out`
+                                    }
+                                    onClick={() => arrange.onToggle(i)}
+                                >
+                                    {it.off ? "Out" : String(it.at)}
+                                </button>
+                                <button
+                                    type="button"
+                                    aria-label={`Move ${i + 1} later`}
+                                    disabled={i === items.length - 1}
+                                    onClick={() => arrange.onMove(i, 1)}
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        )}
                         {it.label && <figcaption>{it.label}</figcaption>}
                     </figure>
                 ))}

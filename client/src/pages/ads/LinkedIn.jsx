@@ -291,6 +291,37 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
         const pdfName = `${post.slug}${themes.length > 1 ? `-${t}` : ""}.pdf`;
         const single = pages.length === 1;
         const imageName = `${post.slug}${themes.length > 1 ? `-${t}` : ""}.png`;
+        // Slide order, and which slides go out, kept per device the way the theme choice is.
+        // The stored order is indexes into this post's own pages, so it is dropped when the
+        // page count changes under it, which happens when a themed post switches build.
+        const arrKey = `pg:${post.slug}`;
+        const stored = sel[arrKey];
+        const fresh = !stored || stored.order?.length !== pages.length;
+        const order = fresh ? pages.map((_, i) => i) : stored.order;
+        const off = new Set(fresh ? [] : (stored.off ?? []));
+        const touched = !fresh && (off.size > 0 || order.some((v, i) => v !== i));
+        const kept = order.filter((i) => !off.has(i));
+        const keptFiles = kept.map((i) => pages[i]);
+        // numbered by the order they will be uploaded in, because a file picker sorts by name
+        // and that order is the whole point of being able to rearrange them
+        const pageName = (n) =>
+            `${post.slug}${themes.length > 1 ? `-${t}` : ""}-${String(n).padStart(2, "0")}.png`;
+        const move = (at, dir) => {
+            const to = at + dir;
+            if (to < 0 || to >= order.length) return;
+            const next = order.slice();
+            [next[at], next[to]] = [next[to], next[at]];
+            setSel(arrKey, { order: next, off: [...off] });
+        };
+        const toggle = (at) => {
+            const idx = order[at];
+            const next = new Set(off);
+            if (next.has(idx)) next.delete(idx);
+            else next.add(idx);
+            // everything off would leave nothing to save, so the last one stays in
+            if (next.size >= order.length) return;
+            setSel(arrKey, { order, off: [...next] });
+        };
         const more = open === post.slug;
         const media = (
             <>
@@ -328,17 +359,24 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                 )}
                 {pages.length > 0 && (
                     <Strip
-                        items={pages.map((f, i) => ({
-                            url: url(f),
-                            alt: `${post.title}, page ${i + 1}`,
+                        items={order.map((idx) => ({
+                            url: url(pages[idx]),
+                            alt: `${post.title}, page ${idx + 1}`,
+                            off: off.has(idx),
+                            at: kept.indexOf(idx) + 1,
                         }))}
+                        arrange={
+                            pages.length > 1
+                                ? { onMove: move, onToggle: toggle }
+                                : undefined
+                        }
                         onOpen={(i) =>
                             setLb({
                                 title: post.title,
-                                index: i,
-                                items: pages.map((x) => ({
+                                index: Math.max(0, kept.indexOf(order[i])),
+                                items: keptFiles.map((x, n) => ({
                                     url: url(x),
-                                    name: fileName(x),
+                                    name: pageName(n + 1),
                                 })),
                             })
                         }
@@ -361,31 +399,46 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                             label="Image"
                         />
                     )}
-                    {pdf && !single && (
+                    {pdf && !single && !touched && (
                         <ShareButton
                             label="Save PDF"
                             items={() => [{ url: url(pdf), name: pdfName }]}
                         />
                     )}
-                    {pdf && !single && (
+                    {pdf && !single && !touched && (
                         <DownloadButton
                             url={url(pdf)}
                             name={pdfName}
                             label="PDF"
                         />
                     )}
-                    {pages.length > 1 && (
+                    {kept.length > 1 && (
                         <ShareButton
                             primary={false}
-                            label={`Save ${pages.length} pages`}
+                            label={`Save ${kept.length} pages`}
                             deskLabel="Share pages"
                             items={() =>
-                                pages.map((f) => ({
+                                keptFiles.map((f, n) => ({
                                     url: url(f),
-                                    name: fileName(f),
+                                    name: pageName(n + 1),
                                 }))
                             }
                         />
+                    )}
+                    {touched && (
+                        <button
+                            type="button"
+                            className="btn"
+                            onClick={() => setSel(arrKey, null)}
+                        >
+                            Reset order
+                        </button>
+                    )}
+                    {touched && pdf && (
+                        <span className="hint">
+                            The PDF is the published set in its published order, so it is
+                            out while this is rearranged.
+                        </span>
                     )}
                     {have.length > 1 && (
                         <button
