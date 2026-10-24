@@ -320,7 +320,7 @@ export function ringStyle(t) {
     return { "--t-bg": t.bg, "--t-ink": t.ink, "--t-accent": t.accent };
 }
 
-export function Ring({ manifest, id, pressed, onClick }) {
+export function Ring({ manifest, id, pressed, onClick, label }) {
     const t = themeOf(manifest, id);
     return (
         <button
@@ -333,7 +333,7 @@ export function Ring({ manifest, id, pressed, onClick }) {
             <span className="disc">
                 <i />
             </span>
-            <span className="name">{themeName(manifest, id)}</span>
+            <span className="name">{label ?? themeName(manifest, id)}</span>
         </button>
     );
 }

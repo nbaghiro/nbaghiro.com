@@ -274,7 +274,13 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
     );
 
     const items = posts.map((post) => {
-        const have = Object.keys(post.pdf || {});
+        // A document post carries one PDF per theme, so its themes are its PDF keys. A
+        // single-image post has no PDF at all, so its options are its page keys instead:
+        // without this, a one-image post could never offer a choice.
+        const pdfKeys = Object.keys(post.pdf || {});
+        const have = pdfKeys.length
+            ? pdfKeys
+            : Object.keys(post.pages || {}).filter((k) => k !== "default");
         const t = chooseTheme(
             have,
             sel[`li:${post.slug}`] || theme,
@@ -381,14 +387,14 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                             }
                         />
                     )}
-                    {themes.length > 1 && have.length > 1 && (
+                    {have.length > 1 && (
                         <button
                             type="button"
                             className="btn quiet"
                             aria-expanded={more}
                             onClick={() => setOpen(more ? "" : post.slug)}
                         >
-                            {more ? "Less" : "Theme"}
+                            {more ? "Less" : post.pageLabels ? "Options" : "Theme"}
                         </button>
                     )}
                 </div>
@@ -396,13 +402,18 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                     <div className="more">
                         <div
                             className="rings"
-                            aria-label="Theme for this document"
+                            aria-label={
+                                post.pageLabels
+                                    ? "Image for this post"
+                                    : "Theme for this document"
+                            }
                         >
                             {have.map((id) => (
                                 <Ring
                                     key={id}
                                     manifest={manifest}
                                     id={id}
+                                    label={post.pageLabels?.[id]}
                                     pressed={id === t}
                                     onClick={() =>
                                         setSel(`li:${post.slug}`, id)
