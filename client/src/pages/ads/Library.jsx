@@ -13,6 +13,8 @@ export function Library({ manifest, url }) {
     const facets = useMemo(() => li.facets || [], [li.facets]);
     const [q, setQ] = useState("");
     const [chosen, setChosen] = useState({});
+    // which image a post is showing: its own, or the same post shot at another business
+    const [shot, setShot] = useState({});
     const [lb, setLb] = useState(null);
     // Three rows of facets push the first post most of a phone screen down, so they start
     // folded where that matters and open where there is room for them.
@@ -42,6 +44,20 @@ export function Library({ manifest, url }) {
     const toggle = (facet, id) =>
         setChosen((c) => ({ ...c, [facet]: c[facet] === id ? "" : id }));
 
+    const biz = (id) =>
+        (facets.find((f) => f.id === "business")?.options || []).find(
+            (o) => o.id === id
+        )?.label || "As posted";
+    // the post's own image first, then the alternates, as one list the thumbnail, the
+    // lightbox and both save buttons all read from
+    const imagesOf = (p) => [
+        ...(p.pages?.default || []).map((file) => ({
+            file,
+            label: biz(p.business),
+        })),
+        ...(p.variants || []),
+    ];
+
     const needle = q.trim().toLowerCase();
     const shown = posts.filter((p) => {
         for (const f of facets) {
@@ -49,7 +65,13 @@ export function Library({ manifest, url }) {
             if (want && p[f.id] !== want) return false;
         }
         if (!needle) return true;
-        const hay = [p.title, p.text, p.founderCaption, p.firstComment]
+        const hay = [
+            p.title,
+            p.text,
+            p.founderCaption,
+            p.firstComment,
+            ...(p.variants || []).map((v) => v.label),
+        ]
             .filter(Boolean)
             .join(" ")
             .toLowerCase();
@@ -146,9 +168,14 @@ export function Library({ manifest, url }) {
 
             <div className="lib-list">
                 {shown.map((post) => {
-                    const pages = post.pages?.default || [];
-                    const img = pages[0];
-                    const name = `${post.slug}.png`;
+                    const images = imagesOf(post);
+                    const at = Math.min(
+                        shot[post.slug] ?? 0,
+                        images.length - 1
+                    );
+                    const pick = images[at];
+                    const fileName = (i) =>
+                        `${post.slug}${i ? `-${images[i].label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}` : ""}.png`;
                     return (
                         <section
                             className="lib-post"
@@ -156,39 +183,68 @@ export function Library({ manifest, url }) {
                             id={`post-${post.slug}`}
                         >
                             <div className="lib-aside">
-                                {img && (
+                                {pick && (
                                     <button
                                         type="button"
                                         className="lib-thumb"
                                         onClick={() =>
                                             setLb({
                                                 title: post.title,
-                                                items: pages.map((f) => ({
-                                                    url: url(f),
+                                                items: images.map((im, i) => ({
+                                                    url: url(im.file),
+                                                    alt: im.label,
+                                                    name: fileName(i),
                                                 })),
-                                                index: 0,
+                                                index: at,
                                             })
                                         }
                                     >
                                         <img
                                             crossOrigin="anonymous"
-                                            src={url(img)}
+                                            src={url(pick.file)}
                                             alt={post.title}
                                             loading="lazy"
                                         />
                                     </button>
                                 )}
-                                {img && (
+                                {images.length > 1 && (
+                                    <div className="lib-shots">
+                                        <span className="lib-label">
+                                            Shot at
+                                        </span>
+                                        <div className="lib-chips">
+                                            {images.map((im, i) => (
+                                                <button
+                                                    key={im.file}
+                                                    type="button"
+                                                    aria-pressed={i === at}
+                                                    onClick={() =>
+                                                        setShot((c) => ({
+                                                            ...c,
+                                                            [post.slug]: i,
+                                                        }))
+                                                    }
+                                                >
+                                                    {im.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                {pick && (
                                     <div className="actions">
                                         <ShareButton
                                             label="Save image"
                                             items={() => [
-                                                { url: url(img), name },
+                                                {
+                                                    url: url(pick.file),
+                                                    name: fileName(at),
+                                                },
                                             ]}
                                         />
                                         <DownloadButton
-                                            url={url(img)}
-                                            name={name}
+                                            url={url(pick.file)}
+                                            name={fileName(at)}
                                             label="Image"
                                         />
                                     </div>
@@ -199,12 +255,14 @@ export function Library({ manifest, url }) {
                                     <h2>{post.title}</h2>
                                     <p className="meta">
                                         {facets
-                                            .map(
-                                                (f) =>
-                                                    (f.options || []).find(
-                                                        (o) =>
-                                                            o.id === post[f.id]
-                                                    )?.label
+                                            .map((f) =>
+                                                f.id === "business"
+                                                    ? pick?.label
+                                                    : (f.options || []).find(
+                                                          (o) =>
+                                                              o.id ===
+                                                              post[f.id]
+                                                      )?.label
                                             )
                                             .filter(Boolean)
                                             .join("  ·  ")}
@@ -214,7 +272,7 @@ export function Library({ manifest, url }) {
                                     <Field
                                         label="Clientbridge page"
                                         note="Posted from the company page."
-                                        text={post.text}
+                                        text={pick?.text ?? post.text}
                                         count
                                     />
                                     <Field

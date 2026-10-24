@@ -1874,6 +1874,16 @@
     width: 100%;
     height: auto;
 }
+.ads .lib-shots {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ads .lib-shots .lib-chips button {
+    font-size: 12px;
+    min-height: 26px;
+    padding: 0 10px;
+}
 .ads .lib-body .post-head h2 {
     margin-bottom: 2px;
 }
@@ -1899,7 +1909,12 @@
     .ads .lib-aside {
         flex-direction: row;
         align-items: flex-start;
+        flex-wrap: wrap;
         gap: 12px;
+    }
+    .ads .lib-shots {
+        flex: 1 1 170px;
+        min-width: 0;
     }
     .ads .lib-thumb {
         width: 128px;
