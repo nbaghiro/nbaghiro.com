@@ -2011,3 +2011,162 @@
 .ads .ind-post .field {
     max-width: 68ch;
 }
+
+/* All shots: a dense grid of every image the kit has, with no post copy near it. */
+.shot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 20px;
+}
+.shot-cell {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.shot-cell > button {
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--card);
+    cursor: zoom-in;
+    display: block;
+}
+.shot-cell img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.shot-cell figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.35;
+}
+.shot-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+.shot-from {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* Record: the voice-clone take, made here and saved straight back to the machine. */
+.rec-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+.rec-go.on {
+    background: #c0392b;
+    border-color: #c0392b;
+}
+.rec-clock {
+    font-variant-numeric: tabular-nums;
+    font-size: 22px;
+    font-weight: 600;
+}
+.rec-clock.good {
+    color: #1d8a3a;
+}
+.rec-target {
+    font-size: 12px;
+    opacity: 0.6;
+}
+.rec-meter {
+    flex: 1 1 140px;
+    height: 8px;
+    min-width: 120px;
+    border-radius: 4px;
+    background: var(--line);
+    overflow: hidden;
+}
+.rec-meter i {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: #1d8a3a;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 80ms linear;
+}
+.rec-size {
+    display: flex;
+    gap: 6px;
+}
+.rec-err,
+.rec-warn {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+.rec-err {
+    background: #fdecea;
+    color: #8c1d12;
+}
+.rec-warn {
+    background: #fff6e0;
+    color: #7a5600;
+}
+.rec-takes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+.rec-take {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.rec-take-name {
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 110px;
+}
+.rec-take audio {
+    flex: 1 1 240px;
+    max-width: 420px;
+}
+.rec-setup {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px 24px;
+    margin-bottom: 26px;
+}
+.rec-setup p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.85;
+}
+.rec-script section {
+    margin-bottom: 26px;
+}
+.rec-script h2 {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.55;
+    margin: 0 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.rec-script h2 small {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-size: 0.95em;
+}
+.rec-script p {
+    margin: 0 0 0.8em;
+    line-height: 1.6;
+    max-width: 34em;
+}

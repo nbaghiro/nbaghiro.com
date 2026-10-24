@@ -22,11 +22,14 @@ import { Library } from "./Library";
 import { Quotes } from "./Quotes";
 import { Industry } from "./Industry";
 import { Account } from "./Account";
+import { Shots } from "./Shots";
+import { Record } from "./Record";
 
 const countIn = (doc) =>
     (doc?.groups ?? []).reduce((n, g) => n + g.items.length, 0);
 const quoteCount = (m) => countIn(m.quotes);
 const industryCount = (m) => countIn(m.industry);
+const shotCount = (m) => m.shots?.items?.length ?? 0;
 
 const TABS = [
     ["posts", "Posts", (m) => m.posts?.length],
@@ -138,6 +141,10 @@ export function Studio({ root }) {
               ...(industryCount(manifest)
                   ? [["industry", "Industry", industryCount]]
                   : []),
+              ...(shotCount(manifest)
+                  ? [["shots", "All shots", shotCount]]
+                  : []),
+              ...(manifest.record ? [["record", "Record", () => ""]] : []),
               ["account", "Profile", () => ""],
           ]
         : [
@@ -240,6 +247,8 @@ export function Studio({ root }) {
                 {active === "library" && <Library {...ctx} />}
                 {active === "quotes" && <Quotes {...ctx} />}
                 {active === "industry" && <Industry {...ctx} />}
+                {active === "shots" && <Shots {...ctx} />}
+                {active === "record" && <Record {...ctx} />}
                 {active === "account" && <Account {...ctx} />}
             </main>
             {tabs.length > 1 && (
