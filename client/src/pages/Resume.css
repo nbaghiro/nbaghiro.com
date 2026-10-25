@@ -1,9 +1,9 @@
 @import "./Projects.css";
 
-.about .page-head > p {
+.resume .page-head > p {
     max-width: 48ch;
 }
-.about-actions {
+.resume-actions {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -23,7 +23,7 @@
 .download:hover {
     background: var(--ink);
 }
-.about-actions a:not(.download) {
+.resume-actions a:not(.download) {
     font-size: 15px;
     color: var(--water);
     border-bottom: 1px solid var(--mist);

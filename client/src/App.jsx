@@ -14,7 +14,7 @@ import Home from "./pages/Home";
 const Projects = lazy(() => import("./pages/Projects"));
 const Writing = lazy(() => import("./pages/Writing"));
 const Post = lazy(() => import("./pages/Post"));
-const About = lazy(() => import("./pages/About"));
+const Resume = lazy(() => import("./pages/Resume"));
 const Overworld = lazy(() => import("./pages/Overworld"));
 const Ads = lazy(() => import("./pages/ads/Ads"));
 
@@ -37,7 +37,12 @@ function App() {
                     element={<Navigate to="/blogs" replace />}
                 />
                 <Route path="writing/:slug" element={<WritingRedirect />} />
-                <Route path="about" element={<About />} />
+                <Route path="resume" element={<Resume />} />
+                {/* the page moved from /about; anything already linked still lands */}
+                <Route
+                    path="about"
+                    element={<Navigate to="/resume" replace />}
+                />
             </Route>
             {/* The first version of the site, kept for anyone who liked it; the ad studios
                 wear the same skin */}

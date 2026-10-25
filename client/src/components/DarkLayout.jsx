@@ -15,7 +15,7 @@ function DarkLayout() {
                     <span>nbaghiro</span>
                 </Link>
                 <nav className="site-nav" aria-label="Primary">
-                    <Link to="/about">Résumé</Link>
+                    <Link to="/resume">Résumé</Link>
                     <a
                         href="https://github.com/nbaghiro"
                         target="_blank"

@@ -65,7 +65,7 @@ function Home() {
                             {PRODUCTS.length + ALSO.length} built
                         </span>
                     </Link>
-                    <Link className="door" to="/about">
+                    <Link className="door" to="/resume">
                         <h2>Résumé</h2>
                         <p>My experience and previous work.</p>
                         <span className="door-meta">Page or PDF</span>
@@ -153,7 +153,7 @@ function Home() {
                             <p className="foot-label">Pages</p>
                             <Link to="/blogs">Writing</Link>
                             <Link to="/projects">Projects</Link>
-                            <Link to="/about">Résumé</Link>
+                            <Link to="/resume">Résumé</Link>
                         </div>
                         <div>
                             <p className="foot-label">Elsewhere</p>

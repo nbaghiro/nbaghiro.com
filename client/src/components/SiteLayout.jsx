@@ -50,7 +50,7 @@ function SiteLayout() {
                 <nav className="site-nav" aria-label="Primary">
                     <Link to="/blogs">Writing</Link>
                     <Link to="/projects">Projects</Link>
-                    <Link to="/about">Résumé</Link>
+                    <Link to="/resume">Résumé</Link>
                     <a
                         className="out"
                         href="https://www.linkedin.com/in/naibbaghirov/"

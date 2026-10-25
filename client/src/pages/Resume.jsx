@@ -1,11 +1,13 @@
 import PageArt from "../components/PageArt";
-import "./About.css";
+import "./Resume.css";
 
 // The résumé as an image of the page rather than an embedded PDF viewer: no viewer redraw
 // after load, and it looks the same in every browser. The PDF is one click away.
-function About() {
+function Resume() {
     return (
-        <article className="page about">
+        <article className="page resume">
+            {/* the plate key, not the route: left alone so the page keeps the pair of
+                margin drawings it has always had */}
             <PageArt seed="about" count={2} />
             <header className="page-head">
                 <h1>Résumé</h1>
@@ -13,7 +15,7 @@ function About() {
                     My experience and the work I’ve done. You can read
                     the résumé below or download the PDF.
                 </p>
-                <p className="about-actions">
+                <p className="resume-actions">
                     <a
                         className="download"
                         href="/resume.pdf"
@@ -43,4 +45,4 @@ function About() {
     );
 }
 
-export default About;
+export default Resume;
