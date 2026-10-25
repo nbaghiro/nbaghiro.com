@@ -195,8 +195,8 @@ export const PROJECTS = [
         y: 618,
         color: "#93D5B3",
         variant: "cap",
-        status: "in development",
-        liveUrl: null,
+        status: "live",
+        liveUrl: "https://clientbridge.ca",
         updated: "Jul 2026",
         summary:
             "Business operating system for solo and small service providers: booking, invoicing, payments, tax and CRM.",
@@ -230,7 +230,7 @@ export const PROJECTS = [
         y: 618,
         color: "#FF8F7A",
         variant: "orbit",
-        status: "in development",
+        status: "waitlist",
         liveUrl: null,
         updated: "Aug 2026",
         summary:

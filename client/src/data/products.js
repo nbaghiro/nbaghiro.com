@@ -8,7 +8,7 @@ export const PRODUCTS = [
         id: "clientbridge",
         name: "Clientbridge",
         url: "https://clientbridge.ca",
-        state: "Waitlist",
+        state: "Live",
         note: "Booking, invoicing, card payments and provincial sales tax for Canadian service businesses.",
         detail: "For independent providers and small teams.",
     },
@@ -58,7 +58,7 @@ export const ALSO = [
     {
         id: "sourcewell",
         name: "Sourcewell",
-        state: "In development",
+        state: "Waitlist",
         note: "An agent platform for recruiting outreach, with contact records, message sequences and reply tracking.",
         detail: "Starting with recruiting workflows.",
     },
