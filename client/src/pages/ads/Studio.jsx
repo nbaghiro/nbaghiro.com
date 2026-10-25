@@ -144,6 +144,9 @@ export function Studio({ root }) {
               ...(shotCount(manifest)
                   ? [["shots", "All shots", shotCount]]
                   : []),
+              ...(manifest.ads?.items?.length
+                  ? [["ads", "Ads", (m) => m.ads.items.length]]
+                  : []),
               ...(manifest.record ? [["record", "Record", () => ""]] : []),
               ["account", "Profile", () => ""],
           ]
