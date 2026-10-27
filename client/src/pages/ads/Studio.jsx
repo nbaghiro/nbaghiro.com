@@ -24,6 +24,7 @@ import { Industry } from "./Industry";
 import { Account } from "./Account";
 import { Shots } from "./Shots";
 import { Record } from "./Record";
+import { AppStores } from "./AppStores";
 
 const countIn = (doc) =>
     (doc?.groups ?? []).reduce((n, g) => n + g.items.length, 0);
@@ -147,6 +148,7 @@ export function Studio({ root }) {
               ...(manifest.ads?.items?.length
                   ? [["ads", "Ads", (m) => m.ads.items.length]]
                   : []),
+              ...(manifest.store ? [["store", "App stores", () => ""]] : []),
               ...(manifest.record ? [["record", "Record", () => ""]] : []),
               ["account", "Profile", () => ""],
           ]
@@ -251,6 +253,7 @@ export function Studio({ root }) {
                 {active === "quotes" && <Quotes {...ctx} />}
                 {active === "industry" && <Industry {...ctx} />}
                 {active === "shots" && <Shots {...ctx} />}
+                {active === "store" && <AppStores {...ctx} />}
                 {active === "record" && <Record {...ctx} />}
                 {active === "account" && <Account {...ctx} />}
             </main>

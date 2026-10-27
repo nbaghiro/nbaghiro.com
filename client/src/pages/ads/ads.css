@@ -2204,3 +2204,52 @@
     opacity: 0.6;
     max-width: 30em;
 }
+
+/* The App stores tab. A field here is checked against a limit the console enforces, so the
+   count turns red rather than staying quiet: being over is the one thing this tab exists to
+   catch before an upload does. */
+.ads .char-count.over {
+    color: var(--bad, #c4544a);
+    font-weight: 600;
+}
+.ads .store-todo {
+    font-style: italic;
+}
+.ads .store-specs {
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    min-width: 40rem;
+    margin: 0 0 24px;
+}
+.ads .store-specs th,
+.ads .store-specs td {
+    border: 1px solid var(--line);
+    padding: 0.5rem 0.65rem;
+    text-align: left;
+    vertical-align: top;
+}
+.ads .store-specs thead th {
+    font-weight: 600;
+}
+.ads .store-specs tbody th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+.ads .store-specs td {
+    color: var(--soft);
+}
+.ads .store-specs .note {
+    display: block;
+    margin: 4px 0 0;
+    font-size: 11px;
+}
+.ads .store-size {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+/* a store screenshot is a whole device frame, so it is shown entire rather than cropped to a
+   tile the way a post shot is */
+.ads .store-shots img {
+    object-fit: contain;
+    background: var(--ground);
+}
