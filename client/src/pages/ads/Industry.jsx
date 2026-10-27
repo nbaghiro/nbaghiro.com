@@ -3,8 +3,9 @@ import { Field } from "./actions";
 
 // Posts with no product shot behind them, filed by theme. One column rather than the Quotes
 // grid, because these are whole posts and a post is read down a column, not across a card.
-export function Industry({ manifest }) {
-    const doc = manifest.industry;
+// The document is a prop: the industry posts and the breakdowns are the same shape, and the
+// tab that holds them is the only difference.
+export function Industry({ manifest, doc = manifest.industry }) {
     const groups = useMemo(() => doc?.groups ?? [], [doc]);
     const [only, setOnly] = useState("");
     const [q, setQ] = useState("");
@@ -71,7 +72,12 @@ export function Industry({ manifest }) {
                     <h2>{group.label}</h2>
                     {group.items.map((p) => (
                         <article className="ind-post" key={p.id}>
-                            <Field label={p.title} text={p.text} count />
+                            <Field
+                                label={p.title}
+                                note={p.note}
+                                text={p.text}
+                                count
+                            />
                         </article>
                     ))}
                 </section>

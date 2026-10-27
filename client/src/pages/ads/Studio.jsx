@@ -30,6 +30,7 @@ const countIn = (doc) =>
     (doc?.groups ?? []).reduce((n, g) => n + g.items.length, 0);
 const quoteCount = (m) => countIn(m.quotes);
 const industryCount = (m) => countIn(m.industry);
+const breakdownCount = (m) => countIn(m.breakdowns);
 const shotCount = (m) => m.shots?.items?.length ?? 0;
 
 const TABS = [
@@ -142,6 +143,9 @@ export function Studio({ root }) {
               ...(industryCount(manifest)
                   ? [["industry", "Industry", industryCount]]
                   : []),
+              ...(breakdownCount(manifest)
+                  ? [["breakdowns", "Breakdowns", breakdownCount]]
+                  : []),
               ...(shotCount(manifest)
                   ? [["shots", "All shots", shotCount]]
                   : []),
@@ -252,6 +256,9 @@ export function Studio({ root }) {
                 {active === "library" && <Library {...ctx} />}
                 {active === "quotes" && <Quotes {...ctx} />}
                 {active === "industry" && <Industry {...ctx} />}
+                {active === "breakdowns" && (
+                    <Industry {...ctx} doc={manifest.breakdowns} />
+                )}
                 {active === "shots" && <Shots {...ctx} />}
                 {active === "store" && <AppStores {...ctx} />}
                 {active === "record" && <Record {...ctx} />}
