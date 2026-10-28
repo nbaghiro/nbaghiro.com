@@ -14,6 +14,12 @@ const POST_COPIES = [
 
 const SHAPES = [
     [
+        "post",
+        "Post",
+        "2400 x 2400",
+        "A LinkedIn post, the shape the rest of this studio's posts are made at",
+    ],
+    [
         "feed",
         "Feed",
         "1080 x 1350",
