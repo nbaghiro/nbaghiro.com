@@ -4,6 +4,14 @@ import { Lightbox } from "./Lightbox";
 import { Strip } from "./Strip";
 import { chooseTheme, fileName, themeName } from "./store";
 
+// The same creative posted rather than run as an ad: the company page's reading, the
+// founder's own, and a line for sharing it on. An ad with no post copy shows none of these.
+const POST_COPIES = [
+    ["company", "Company page", "Posted from the Clientbridge page."],
+    ["founder", "Founder profile", "The same subject, in the first person."],
+    ["repost", "Repost", "One line for sharing the company post on."],
+];
+
 const SHAPES = [
     [
         "feed",
@@ -134,6 +142,27 @@ export function AdUnits({ manifest, url, theme, themes }) {
                                 </div>
                                 <pre className="text">{ad.caption}</pre>
                             </div>
+                        )}
+                        {POST_COPIES.map(([key, label, note]) =>
+                            ad.posts?.[key] ? (
+                                <div className="field" key={key}>
+                                    <div className="row">
+                                        <h3>{label}</h3>
+                                        <span className="char-count">
+                                            {ad.posts[
+                                                key
+                                            ].length.toLocaleString()}{" "}
+                                            characters
+                                        </span>
+                                        <CopyButton
+                                            text={ad.posts[key]}
+                                            label="Copy"
+                                        />
+                                    </div>
+                                    <p className="note">{note}</p>
+                                    <pre className="text">{ad.posts[key]}</pre>
+                                </div>
+                            ) : null
                         )}
                         {ad.alt && (
                             <div className="field">
