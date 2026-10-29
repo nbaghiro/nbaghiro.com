@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Running Clientbridge as a Stripe Connect platform</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* One platform account with an account under it for every business, and the three
+       settings fixed when each of those accounts is created. Over the same fog the rest of
+       the site is photographed in, in the ink language of the post's figures. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 40%;
+                filter: saturate(0.7) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.1) 0%,
+                    rgba(233, 236, 234, 0.46) 28%,
+                    rgba(233, 236, 234, 0.78) 56%,
+                    rgba(233, 236, 234, 0.88) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .paper {
+                fill: rgba(240, 243, 241, 0.72);
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .chip {
+                fill: rgba(78, 120, 114, 0.62);
+                stroke: none;
+            }
+            .chip.pale {
+                fill: rgba(78, 120, 114, 0.2);
+            }
+            .tick {
+                stroke: #46544f;
+                stroke-width: 1.1;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.small {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 14px;
+                fill: #1b2522;
+            }
+            text.key {
+                font-family: "JetBrains Mono", ui-monospace, monospace;
+                font-size: 12.5px;
+                fill: #1b2522;
+            }
+            text.num {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 13px;
+                fill: #68756f;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="ph-callers.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // The platform and its accounts on the left, the settings on the right, and the
+            // money between them drawn in water: payments up into each account, the fee across.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, class: cls });
+            const path = (d, cls) => el("path", { d, class: cls });
+            const head = (x, y) =>
+                path(`M${x} ${y} l-4 7 M${x} ${y} l4 7`, "water");
+
+            // the platform account, with a bus under it to one account per business
+            const T = wide
+                ? { x: 64, y: 78, w: 300, pw: 300, row: 214, aw: 88, gap: 18 }
+                : {
+                      x: 64,
+                      y: 136,
+                      w: 420,
+                      pw: 420,
+                      row: 312,
+                      aw: 126,
+                      gap: 21,
+                  };
+            el("text", { x: T.x, y: T.y - 26, class: "name" }, "one platform");
+            el(
+                "text",
+                { x: T.x, y: T.y - 10 },
+                "an account under it for every business"
+            );
+            rect(T.x, T.y, T.pw, 52, "paper");
+            rect(T.x, T.y, T.pw, 52, "ink");
+            el(
+                "text",
+                { x: T.x + 16, y: T.y + 22, class: "small" },
+                "Clientbridge"
+            );
+            el("text", { x: T.x + 16, y: T.y + 39 }, "the platform account");
+            const bus = T.y + 52 + (T.row - T.y - 52) / 2;
+            const names = ["a groomer", "a salon", "a studio"];
+            const ax = (i) => T.x + i * (T.aw + T.gap);
+            path(`M${T.x + T.pw / 2} ${T.y + 52} V${bus}`, "mist");
+            path(`M${ax(0) + T.aw / 2} ${bus} H${ax(2) + T.aw / 2}`, "mist");
+            names.forEach((n, i) => {
+                const x = ax(i);
+                path(`M${x + T.aw / 2} ${bus} V${T.row}`, "mist");
+                rect(x, T.row, T.aw, 58, "paper");
+                rect(x, T.row, T.aw, 58, "ink thin");
+                el("text", { x: x + 10, y: T.row + 20, class: "small" }, n);
+                // its two configurations: merchant solid, customer pale
+                rect(x + 10, T.row + 32, (T.aw - 26) / 2, 14, "chip");
+                rect(
+                    x + 16 + (T.aw - 26) / 2,
+                    T.row + 32,
+                    (T.aw - 26) / 2,
+                    14,
+                    "chip pale"
+                );
+                // the client's payment arriving from below
+                const px = x + T.aw / 2;
+                path(`M${px} ${T.row + 92} V${T.row + 60}`, "water");
+                head(px, T.row + 60);
+            });
+            // the fourth account, drawn only as an edge: there is one for every business
+            const fx = ax(3);
+            if (fx + 30 < T.x + T.pw + 40) {
+                path(`M${ax(2) + T.aw / 2} ${bus} H${fx + 8}`, "mist");
+                path(`M${fx + 8} ${bus} V${T.row}`, "mist");
+                path(
+                    `M${fx} ${T.row} H${fx + 22} M${fx} ${T.row} V${T.row + 58}`,
+                    "mist"
+                );
+            }
+            el(
+                "text",
+                { x: T.x, y: T.row + 112 },
+                "client payments arrive in each business's own account"
+            );
+
+            // the settings, in the order they appear on the create call
+            const V = wide
+                ? { x: 500, y: 72, pitch: 58 }
+                : { x: 560, y: 136, pitch: 76 };
+            el(
+                "text",
+                { x: V.x, y: V.y - 26, class: "name" },
+                "fixed at creation"
+            );
+            el(
+                "text",
+                { x: V.x, y: V.y - 10 },
+                "who does the work, on every account"
+            );
+            const SETTINGS = [
+                [
+                    "fees_collector: stripe",
+                    "Stripe takes its fee from the business",
+                ],
+                [
+                    "losses_collector: stripe",
+                    "Stripe carries negative balances",
+                ],
+                ['dashboard: "none"', "every screen lives inside Clientbridge"],
+            ];
+            SETTINGS.forEach(([key, note], i) => {
+                const y = V.y + 22 + i * V.pitch;
+                el(
+                    "text",
+                    { x: V.x, y, class: "num" },
+                    String(i + 1).padStart(2, "0")
+                );
+                el("text", { x: V.x + 40, y, class: "key" }, key);
+                el("text", { x: V.x + 40, y: y + 19 }, note);
+                path(`M${V.x} ${y + 32} H${V.x + (wide ? 420 : 380)}`, "mist");
+            });
+
+            // the payment itself, as one line across: a direct charge with the fee split off
+            const L = wide
+                ? { x: V.x, y: V.y + 22 + 3 * V.pitch - 6, w: 420, h: 50 }
+                : { x: 64, y: 478, w: 876, h: 64 };
+            rect(L.x, L.y, L.w, L.h, "ink thin");
+            el(
+                "text",
+                { x: L.x + 16, y: L.y + (wide ? 21 : 27) },
+                "a direct charge on the business's account,"
+            );
+            el(
+                "text",
+                { x: L.x + 16, y: L.y + (wide ? 38 : 45) },
+                "with an application fee for the platform"
+            );
+
+            // the measured rule, and the corner marks every plate carries
+            // the corner marks every plate carries
+            const R = 18;
+            const BOT = VB[1] - 26;
+            for (const [x, y, sx, sy] of [
+                [30, 26, 1, 1],
+                [970, 26, -1, 1],
+                [30, BOT, 1, -1],
+                [970, BOT, -1, -1],
+            ]) {
+                path(`M${x} ${y} h${R * sx}`, "ink thin");
+                path(`M${x} ${y} v${R * sy}`, "ink thin");
+            }
+        </script>
+    </body>
+</html>

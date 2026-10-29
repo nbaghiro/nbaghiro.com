@@ -22,6 +22,7 @@ import { LEDGER_CHECK_FIGURES } from "./figures/checking-ledger-balances-after-a
 import { EDITOR_DSL_FIGURES } from "./figures/preserving-a-strategy-through-the-editor";
 import { SANDBOX_FIGURES } from "./figures/code-execution-in-containers";
 import { ORDER_FIGURES } from "./figures/an-order-submitted-once";
+import { CONNECT_FIGURES } from "./figures/running-clientbridge-on-stripe-connect";
 
 /**
  * The diagrams for the written pieces, drawn in one language: a plate with registration
@@ -2569,6 +2570,7 @@ export const FIGURES = {
     ...SANDBOX_FIGURES,
     ...EDITOR_DSL_FIGURES,
     ...LEDGER_CHECK_FIGURES,
+    ...CONNECT_FIGURES,
     "three-passes": ThreePasses,
     "three-formats": ThreeFormats,
     "command-list": CommandList,
