@@ -2253,3 +2253,157 @@
     object-fit: contain;
     background: var(--ground);
 }
+
+/* ── companies ──────────────────────────────────────────────────────────────────────────
+   A company studio has no renders to light: the content is a role, the document written for
+   it, the description as it was read off the board and where the application stands. It
+   borrows the company's own accent through --co-accent, set on .body by Studio, so Netflix
+   reads red the way the document sent to Netflix does. */
+.ads .body {
+    --co: var(--co-accent, var(--ink));
+}
+.ads .co-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin-top: 10px;
+}
+.ads .co-line a {
+    color: var(--co);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+.ads .co-state {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 3px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+.ads .co-state small {
+    color: var(--faint);
+    font-size: 12px;
+}
+.ads .co-state.is-submitted {
+    border-color: var(--co);
+    color: var(--co);
+}
+.ads .co-state.is-drafted,
+.ads .co-state.is-open {
+    color: var(--ink);
+}
+.ads .co-state.is-closed {
+    color: var(--faint);
+}
+
+/* ✓ or a dash, and the dash is the point: a gap is listed, not left out */
+.ads .co-fit {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 7px;
+}
+.ads .co-fit li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: 8px;
+    align-items: baseline;
+}
+.ads .co-fit i {
+    font-style: normal;
+    color: var(--co);
+}
+.ads .co-fit .gap {
+    color: var(--soft);
+}
+.ads .co-fit .gap i {
+    color: var(--faint);
+}
+.ads .co-notes {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--soft);
+    display: grid;
+    gap: 6px;
+}
+.ads .co-asks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+.ads .co-asks li {
+    display: grid;
+    gap: 1px;
+}
+.ads .co-asks b {
+    font-weight: 700;
+}
+.ads .co-asks span {
+    color: var(--soft);
+}
+
+/* the document's pages, as a strip on a phone and a row that fits on a desk */
+.ads .co-pages {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-top: 12px;
+    padding-bottom: 4px;
+}
+.ads .co-pages button {
+    flex: none;
+    scroll-snap-align: start;
+    padding: 0;
+    border: 1px solid var(--edge);
+    border-radius: var(--r-frame);
+    background: none;
+    overflow: hidden;
+    cursor: pointer;
+}
+.ads .co-pages img {
+    width: 164px;
+    height: auto;
+}
+@media (min-width: 760px) {
+    .ads .co-pages img {
+        width: 208px;
+    }
+}
+
+/* the snapshot: a document to read, so it gets a reading measure and nothing else */
+.ads .co-jd {
+    margin-top: 14px;
+    max-width: 68ch;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+}
+.ads .co-jd h3 {
+    margin: 20px 0 6px;
+    color: var(--co);
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.ads .co-jd h3:first-child {
+    margin-top: 0;
+}
+.ads .co-jd p {
+    color: var(--soft);
+    margin: 0 0 10px;
+}
+.ads .co-jd ul {
+    margin: 0 0 12px;
+    padding-left: 18px;
+    color: var(--soft);
+    display: grid;
+    gap: 6px;
+}

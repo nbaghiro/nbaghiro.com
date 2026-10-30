@@ -17,6 +17,7 @@ import { XPosts } from "./XPosts";
 import { Profile } from "./Profile";
 import { Combos } from "./Combos";
 import { Docs } from "./Docs";
+import { Applications, CompanyDocs, JobDescriptions, Roles } from "./Company";
 import { Strategy } from "./Strategy";
 import { Library } from "./Library";
 import { Quotes } from "./Quotes";
@@ -48,6 +49,15 @@ const TABS = [
     ["combos", "Combos", (m) => m.combos?.avatars?.length],
     ["docs", "One-pagers", (m) => m.docs?.items?.length],
     ["notes", "Strategy", (m) => m.notes?.sections?.length],
+    // a company studio, which has roles instead of renders
+    ["roles", "Roles", (m) => m.roles?.length],
+    [
+        "co-docs",
+        "Documents",
+        (m) => m.roles?.reduce((n, r) => n + (r.docs?.length ?? 0), 0),
+    ],
+    ["co-jds", "Job descriptions", (m) => m.roles?.filter((r) => r.jd).length],
+    ["co-apps", "Applications", (m) => m.roles?.length],
 ];
 
 // One project's studio over its manifest. The theme applies to every post at once and any
@@ -170,6 +180,10 @@ export function Studio({ root }) {
     const manyThemes = themes.length > 1;
     const showSize = hasStory && active === "posts";
     const ctx = { manifest, url, theme: current, sel, setSel, format, themes };
+    // a company carries its own accent, so its studio reads like the document written for it
+    const accent = manifest.company?.accent
+        ? { "--co-accent": manifest.company.accent }
+        : undefined;
 
     const sizeSwitch = (
         <div className="seg" role="group" aria-label="Size">
@@ -241,7 +255,7 @@ export function Studio({ root }) {
                         </button>
                     )}
             </header>
-            <main className="body">
+            <main className="body" style={accent}>
                 {active === "posts" && <Posts {...ctx} />}
                 {active === "ads" && <AdUnits {...ctx} />}
                 {active === "stories" && <Stories {...ctx} />}
@@ -252,6 +266,10 @@ export function Studio({ root }) {
                 {active === "profile" && <Profile {...ctx} />}
                 {active === "combos" && <Combos {...ctx} />}
                 {active === "docs" && <Docs {...ctx} />}
+                {active === "roles" && <Roles {...ctx} />}
+                {active === "co-docs" && <CompanyDocs {...ctx} />}
+                {active === "co-jds" && <JobDescriptions {...ctx} />}
+                {active === "co-apps" && <Applications {...ctx} />}
                 {active === "notes" && <Strategy {...ctx} />}
                 {active === "library" && <Library {...ctx} />}
                 {active === "quotes" && <Quotes {...ctx} />}

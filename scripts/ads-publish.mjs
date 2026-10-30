@@ -301,10 +301,12 @@ function covers(m) {
     );
     const fromReels = (m.reels ?? []).map((r) => r.poster?.default);
     const fromAds = (m.ads?.items ?? []).map((a) => a.files?.feed);
+    // a company studio has no renders of its own: its cover is the document written for the role
+    const fromRoles = (m.roles ?? []).flatMap((r) => (r.docs ?? []).map((d) => d.pages?.[0]));
     const extraPages = (m.linkedin?.posts ?? []).flatMap(
         (p) => p.pages?.[p.defaultTheme] ?? p.pages?.default ?? []
     );
-    return [...new Set([...fromPosts, ...fromDocs, ...fromReels, ...fromAds, ...extraPages].filter(Boolean))].slice(0, 3);
+    return [...new Set([...fromPosts, ...fromDocs, ...fromReels, ...fromAds, ...fromRoles, ...extraPages].filter(Boolean))].slice(0, 3);
 }
 
 function preview(m) {
@@ -325,6 +327,13 @@ function counts(m) {
         x: m.x?.posts?.length ?? 0,
         ads: m.ads?.items?.length ?? 0,
         ...(m.combos ? { photos: m.combos.avatars?.length ?? 0, covers: m.combos.covers?.length ?? 0 } : {}),
+        ...(m.roles
+            ? {
+                  roles: m.roles.length,
+                  documents: m.roles.reduce((n, r) => n + (r.docs?.length ?? 0), 0),
+                  sent: m.roles.filter((r) => r.sentOn).length,
+              }
+            : {}),
     };
 }
 

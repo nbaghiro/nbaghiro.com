@@ -67,13 +67,26 @@ function Gate({ onOpen }) {
     );
 }
 
-// Two kinds of kit share the bucket: a product's ads, and a personal profile's posts (the
-// publisher marks those with kind "profile"). They sit under separate tabs here.
+// Three kinds of kit share the bucket: a product's ads, a personal profile's posts, and a
+// company being applied to. The publisher marks the last two with kind "profile" and kind
+// "company"; they sit under separate tabs here.
 const SHELVES = [
-    ["products", "Products", (p) => p.kind !== "profile"],
+    [
+        "products",
+        "Products",
+        (p) => p.kind !== "profile" && p.kind !== "company",
+    ],
     ["linkedin", "LinkedIn", (p) => p.kind === "profile"],
+    ["companies", "Companies", (p) => p.kind === "company"],
 ];
 const SHELF_KEY = "ads:shelf";
+
+const EMPTY = {
+    linkedin:
+        "No profile kit is published yet. Run the founder publish script and reload.",
+    companies:
+        "No company is published yet. Run .local/founder/companies/publish.mjs and reload.",
+};
 
 function readShelf() {
     try {
@@ -139,9 +152,8 @@ function Projects({ root, onLock }) {
                 {error && <p className="error">{error}</p>}
                 {index && shown.length === 0 && (
                     <p className="lede">
-                        {shelf === "linkedin"
-                            ? "No profile kit is published yet. Run the founder publish script and reload."
-                            : "Nothing is published yet. Run a project's publish script and reload."}
+                        {EMPTY[shelf] ??
+                            "Nothing is published yet. Run a project's publish script and reload."}
                     </p>
                 )}
                 {index && (
