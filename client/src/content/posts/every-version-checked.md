@@ -1,5 +1,6 @@
 title: Checking generated exercises before publication
 date: 2026-10-07
+updated: 2026-11-03
 about: Lumischool
 cover: /img/posts/every-version-checked-wide.webp
 card: /img/posts/every-version-checked-card.webp
@@ -22,7 +23,7 @@ item story.apples-to-ten v=1 skills=[bonds-to-10] {
 
 Parameters let a child repeat a lesson with different numbers and matching drawings. Reviewing the template alone can miss errors that occur for particular values, so the generated questions need checks too.
 
-The verifier in `engine/notation/verify.ts` builds those questions and checks each one. The lesson pack is compiled from the same workspace. Reported errors block the build; warnings do not. Combinations outside a sample remain unchecked.
+The verifier in `engine/notation/verify.ts` builds those questions and checks each one. The lesson pack is compiled from the same workspace. Reported errors block the build; warnings do not.
 
 ## Building the versions
 
@@ -32,7 +33,7 @@ The verifier in `engine/notation/verify.ts` builds those questions and checks ea
 
 Running that over the curriculum as it stands on 16 October 2026: 5,622 items, 186,272 versions built and checked, 21 of them sampled rather than walked. One item, `columns.add`, allows around 64 million combinations by the sampler's own estimate, and is checked through 400 of them. The whole pass took 54 seconds in one run on my laptop, which is a figure for that machine and that corpus rather than a general measurement.
 
-Sampling leaves some combinations unchecked. For those 21 items the report describes 400 questions out of a much larger space, and a fault in an unvisited combination is not ruled out. The seed is fixed, so the same 400 are checked on every run, which makes the result stable but does not widen it.
+The seed is fixed, so rerunning the verifier checks the same sample. A stable result does not widen coverage; faults in unvisited combinations remain possible.
 
 ## What each version has to satisfy
 
@@ -67,13 +68,27 @@ warning: this rule is also true for the correct answer,
 so it cannot tell the mistake apart (n = 5)
 ```
 
-Across the whole curriculum today there are two issues of any kind, and both are this one: `story.apples-to-ten` and `bonds.make-ten`, each at `n = 5`. They are warnings rather than errors, so the pack still builds and the author decides whether to narrow the range or rewrite the rule.
+In the 16 October 2026 curriculum report there were two issues of any kind, and both were this one: `story.apples-to-ten` and `bonds.make-ten`, each at `n = 5`. They are warnings rather than errors, so the pack still builds and the author decides whether to narrow the range or rewrite the rule.
+
+A corrected apples rule can exclude the correct answer explicitly:
+
+```
+feedback {
+  when (answer == n and answer != (10 - n)) point=row {
+    say "That is how many she has now. Count on from {n} to 10."
+  }
+}
+```
+
+The intended condition is that the answer matches the visible count and is not the required difference. At `n = 5`, the hint stays silent.
 
 ## Answers a child arranges
 
 Some questions are answered by placing parts rather than typing a value, and those are checked differently. `prove` in `engine/arrange.ts` walks every arrangement the part allows, evaluates the answer condition over each one, and reports three things.
 
-At least one arrangement has to be right, or the question cannot be answered at all. No more than one in four may be right, or putting pieces anywhere answers it too often. And no feedback rule may be true of a right arrangement, which here is an error rather than a warning, because the child can see that they solved it. The prover also keeps the simplest right arrangement it found, which becomes the worked answer on the grown-ups' sheet.
+At least one arrangement has to be right. The prover also rejects a board where more than one in four arrangements is right, and rejects feedback that fires on a correct arrangement. It keeps the simplest right arrangement as the worked answer on the grown-ups' sheet.
+
+Feedback collisions are currently warnings for ordinary parameterized items and errors for arranged answers. That is a publication policy in the implementation, not a difference in whether incorrect feedback matters. It deserves an explicit authoring rule; allowing publication leaves the ordinary-item warning for an author to resolve.
 
 The walk is bounded at 20,000 arrangements. Above that, a board whose pieces are placed independently can be solved piece by piece, where the answer and every rule read at most one piece's measurements; that path is exact rather than sampled. Anything larger is refused with a message asking the author for fewer pieces or places.
 
@@ -89,4 +104,4 @@ A verified item is a question that passed the implemented checks. That does not 
 
 The physics games are a different case. `engine/motion/verify.ts` can replay a recorded solution through the simulation and report whether it reaches the win condition, and its comment is careful to say that a successful replay is a witness of reachability rather than an exhaustive proof. That function is currently exercised only by its own tests. No game level ships through it today, so the games do not have the guarantee the exercises have.
 
-For generated content, reviewing the template and checking its outputs serve different purposes. The verifier catches problems with answers, drawings and feedback that can appear only at particular parameter values. Its report also needs to make clear which combinations were checked and which issues still require author review.
+A publication report should retain the failing parameter values, sample status and unresolved warnings so an author can reproduce and fix the specific question.

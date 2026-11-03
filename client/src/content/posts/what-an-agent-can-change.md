@@ -1,5 +1,6 @@
 title: What an agent is allowed to change
 date: 2026-09-15
+updated: 2026-11-03
 about: AI systems
 category: Industry & practice
 cover: /img/posts/what-an-agent-can-change-wide.webp
@@ -46,9 +47,7 @@ task needs, and a separate credential for the agent rather than a person's own s
 that ceiling low.
 
 The same reasoning applies to the data the agent can retrieve. An assistant that only needs
-threads from one supplier does not need a query that can return the whole mailbox. Narrowing at
-the query is less convenient than filtering afterwards and considerably more robust, because
-the content never reaches the model in the first place.
+threads from one supplier does not need a query that can return the whole mailbox. Enforce the restriction before results reach the model; filtering afterward cannot remove information the model has already received.
 
 ## When an action half happens
 
@@ -60,9 +59,7 @@ The application should carry the identity of the attempted action, so a retry ca
 as the same send rather than a second one. Where the provider supports an idempotency mechanism
 for the operation, that is the place to use it.
 
-Where it does not, the safer design is to check before repeating: query for a sent message
-matching the draft before sending again. That is slower and it avoids the outcome nobody wants,
-which is the same email arriving twice because a network call timed out.
+Where the provider offers no suitable idempotency mechanism, querying for the sent message can help resolve the attempt. A missing search result is not conclusive: the send may still be processing or the message may not yet be visible. Keep the action unresolved when its outcome cannot be established, rather than automatically issuing a second send.
 
 A person also needs to be told. An action whose result is unknown should say so plainly rather
 than reporting success or failure that has not been established.
@@ -73,4 +70,14 @@ After an action, the application should retain enough information to explain wha
 
 That record also helps when an action fails partway through. A person needs to know whether a draft was saved, a message was sent or the result is still uncertain before deciding what to do next.
 
-These boundaries do not make an agent immune to misleading content. They make its authority more specific and its actions easier to review. For the email task, that means a request to prepare a reply can stay a request to prepare a reply until the user chooses to send it.
+For the supplier-email task, the permission plan could be:
+
+```
+Operation      Scope                         Authorization
+Find/read      Selected account and supplier  Granted for the research task
+Save draft     Selected thread               Granted for preparing the reply
+Send           Exact recipients and payload  Separate authorization if not granted
+Other export   No additional destination     Unavailable for this task
+```
+
+The application enforces those limits even if the model misreads an instruction or an external message attempts to redirect it. Prompt injection and ordinary mistakes can reach the same tool boundary.

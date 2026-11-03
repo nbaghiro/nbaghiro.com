@@ -198,151 +198,67 @@ function OneAccount() {
 
 /* ---- a fill, attributed back ---- */
 
-const FILL_GROUND = {
-    wide: [{ y: 312, amp: 9 }],
-    narrow: [{ y: 420, amp: 8 }],
-};
-const FILL_LABEL =
-    "Two sleeves trading the same symbol are bunched into one net broker order. The fill returns as a single event, is attributed to the sleeves that asked for it, and expands into balanced postings whose signed amounts sum to zero.";
-const FILL_ROWS = [
-    { name: "strategy A", note: "buy 70 SPY", wash: false },
-    { name: "manual", note: "sell 10 SPY", wash: false },
-    { name: "one net order", note: "buy 60 at the broker", wash: true },
-    {
-        name: "one fill event",
-        note: "cumulative qty, average price",
-        wash: false,
-    },
-    {
-        name: "balanced postings",
-        note: "signed amounts sum to zero",
-        wash: true,
-    },
-];
-
 function FillToLots() {
     const narrow = useNarrow();
-    if (narrow) {
-        const w = NARROW - 40;
-        return (
-            <svg
-                className="fig"
-                viewBox={frame(NARROW, 460)}
-                role="img"
-                aria-label={FILL_LABEL}
-            >
-                <Plate w={NARROW} h={460} ground={FILL_GROUND.narrow}>
-                    <Cell
-                        x={0}
-                        y={20}
-                        w={141}
-                        h={56}
-                        name="strategy A"
-                        note="buy 70 SPY"
-                    />
-                    <Cell
-                        x={155}
-                        y={20}
-                        w={141}
-                        h={56}
-                        name="manual"
-                        note="sell 10 SPY"
-                    />
-                    <path
-                        className="fig-water"
-                        d={`M70 76 V96 M226 76 V96 M70 96 H226 M${w / 2} 96 V112 M${w / 2} 112 l-4 -7 M${w / 2} 112 l4 -7`}
-                    />
-                    {FILL_ROWS.slice(2).map((r, i) => (
-                        <g key={r.name}>
-                            <Cell
-                                x={0}
-                                y={112 + i * 86}
-                                w={w}
-                                h={56}
-                                name={r.name}
-                                note={r.note}
-                                wash={r.wash}
-                            />
-                            {i < FILL_ROWS.length - 3 && (
-                                <Flow
-                                    from={[w / 2, 168 + i * 86]}
-                                    to={[w / 2, 198 + i * 86]}
-                                />
-                            )}
-                        </g>
-                    ))}
-                    <text className="fig-sub" x="0" y="400">
-                        a sell takes the sleeve&rsquo;s own lots first
-                    </text>
-                </Plate>
-            </svg>
-        );
-    }
+    const w = narrow ? NARROW : WIDE;
+    const h = narrow ? 420 : 280;
+    const cellW = narrow ? NARROW - 16 : 370;
+    const secondX = narrow ? 0 : 430;
+    const secondY = narrow ? 218 : 54;
     return (
         <svg
             className="fig"
-            viewBox={frame(WIDE, 330)}
+            viewBox={frame(w, h)}
             role="img"
-            aria-label={FILL_LABEL}
+            aria-label="Two separate contracts: the netting plan combines a buy of seventy shares and a sell of ten into a net buy of sixty. Fill accounting deduplicates a cumulative terminal-fill record before projecting ledger balances. The netting function does not set an internal settlement price."
         >
-            <Plate w={WIDE} h={330} ground={FILL_GROUND.wide}>
-                <text className="fig-title" x="0" y="22">
-                    one fill, attributed
+            <Plate w={w} h={h} ground={[{ y: h - 12, amp: 8 }]}>
+                <text className="fig-title" x="0" y="20">
+                    plan and accounting
                 </text>
                 <Cell
                     x={0}
-                    y={44}
-                    w={186}
-                    h={54}
-                    name="strategy A"
-                    note="buy 70 SPY"
-                />
-                <Cell
-                    x={0}
-                    y={116}
-                    w={186}
-                    h={54}
-                    name="manual"
-                    note="sell 10 SPY"
-                />
-                <path
-                    className="fig-water"
-                    d="M186 71 H230 M186 143 H230 M230 71 V143 M230 107 H262 M262 107 l-7 -4 M262 107 l-7 4"
-                />
-                <text className="fig-dim" x="196" y="100">
-                    bunched
-                </text>
-                <Cell
-                    x={262}
-                    y={80}
-                    w={196}
-                    h={54}
-                    name="one net order"
-                    note="buy 60"
-                    wash
-                />
-                <Flow from={[458, 107]} to={[534, 107]} label="the broker" />
-                <Cell
-                    x={534}
-                    y={80}
-                    w={286}
-                    h={54}
-                    name="one fill event"
-                    note="cumulative quantity, average price"
-                />
-                <Flow from={[677, 134]} to={[677, 196]} />
-                <Cell
-                    x={0}
-                    y={196}
-                    w={WIDE}
+                    y={54}
+                    w={cellW}
                     h={62}
-                    name="balanced postings"
-                    note="cash, position at cost, realized profit and loss; signed amounts sum to zero"
+                    name="netting plan"
+                    note="buy 70 SPY + sell 10 SPY"
                     wash
                 />
-                <text className="fig-sub" x="0" y="294">
-                    lots are projected from the log, and a sell takes the
-                    sleeve&rsquo;s own lots first in, first out
+                <Flow from={[cellW / 2, 116]} to={[cellW / 2, 140]} />
+                <Cell
+                    x={0}
+                    y={140}
+                    w={cellW}
+                    h={54}
+                    name="net broker quantity"
+                    note="buy 60; keep both sleeve allocations"
+                />
+                <Cell
+                    x={secondX}
+                    y={secondY}
+                    w={cellW}
+                    h={62}
+                    name="terminal-fill record"
+                    note="cumulative quantity and average price"
+                />
+                <Flow
+                    from={[secondX + cellW / 2, secondY + 62]}
+                    to={[secondX + cellW / 2, secondY + 86]}
+                />
+                <Cell
+                    x={secondX}
+                    y={secondY + 86}
+                    w={cellW}
+                    h={54}
+                    name="ledger projection"
+                    note="deduplicate the event; derive balances"
+                    wash
+                />
+                <text className="fig-sub" x="0" y={narrow ? 390 : 240}>
+                    {narrow
+                        ? "Internal settlement still needs a price."
+                        : "The netting function chooses quantities, not an internal settlement price."}
                 </text>
             </Plate>
         </svg>

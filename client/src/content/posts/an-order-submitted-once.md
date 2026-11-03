@@ -1,5 +1,6 @@
 title: Recovering an order after a restart
 date: 2026-10-18
+updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/an-order-submitted-once-wide.webp
 card: /img/posts/an-order-submitted-once-card.webp
@@ -35,7 +36,7 @@ If the row is pending without a broker id, the executor looks it up at the broke
 
 When that lookup returns no match, the current retry path resumes submission using the existing row and the same client order id. A lookup error propagates instead of being treated as an absent order.
 
-This is the implemented recovery rule, not proof that every uncertain request is safe to repeat. In particular, a timeout does not establish that an order failed. Alpaca's [timeout guidance](https://docs.alpaca.markets/us/docs/working-with-orders#faq) says to obtain confirmation before resubmitting a timed-out order. The code's no-match branch needs to be assessed against that guidance and the broker's behaviour during an unresolved submission.
+A no-match response still needs to be interpreted according to the broker's processing and lookup behavior. Alpaca's [timeout guidance](https://docs.alpaca.markets/us/docs/working-with-orders#faq) says to obtain confirmation before resubmitting a timed-out order. The retry branch should not be read as permission to treat a timeout alone as failure.
 
 ## Checking pending orders at startup
 
@@ -45,7 +46,16 @@ A matching broker order is adopted. If it has reached a terminal state, recovery
 
 If the lookup returns no match, startup recovery marks the row rejected and records a reason. Unlike the retry path, it does not resubmit that row. If the lookup fails, the row remains pending and the failure is logged.
 
-These branches preserve a distinction between a lookup that returned no match and a lookup that could not complete. They still depend on what the broker can establish about the original request at that point.
+The two recovery paths intentionally have different consequences:
+
+```
+Broker lookup       Repeated strategy submission     Startup scan
+Match               Adopt broker record              Adopt broker record
+No match            Resume with the same id          Mark local row rejected
+Lookup failed       Propagate the error              Leave pending and log
+```
+
+Startup recovery observes an earlier attempt; it does not create a fresh trading instruction. A repeated submission asks to execute the signal again. This difference is part of the current policy, and both paths still depend on the broker being able to resolve the original request.
 
 ## Recording fills
 
@@ -61,7 +71,7 @@ Recovery and status synchronisation can publish a terminal fill record again. Th
 
 Manual submissions have no strategy signal timestamp and receive random ids. A repeated manual request can therefore create a new order. It does not have the same retry protection as a repeated strategy signal.
 
-The derived id also groups requests by its four inputs. Two requests with those same inputs resolve to the same identity even if another field, such as quantity, differs. Callers need to use the signal timestamp consistently.
+The identity does not include quantity. If a signal first requests ten shares and a later caller supplies twenty with the same four identity inputs, it still resolves to the original order. Callers must retain the original payload for recovery and use an explicit amendment or new decision for a changed quantity. The stable id does not validate that intent on their behalf.
 
 The recovery tests cover the local branches with broker responses supplied by test doubles. They check how the application handles a known order, a no-match response and a lookup failure. They do not establish the outcome of every network failure or broker race. That is why this describes recovery and deduplication rather than an end-to-end exactly-once guarantee.
 

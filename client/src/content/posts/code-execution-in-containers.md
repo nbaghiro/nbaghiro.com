@@ -1,15 +1,12 @@
 title: Code execution in containers
 date: 2026-10-19
+updated: 2026-11-03
 about: FlowMaestro
 cover: /img/posts/code-execution-in-containers-wide.webp
 card: /img/posts/code-execution-in-containers-card.webp
 summary: How FlowMaestro runs workflow and agent code through shared Docker primitives, including input wrappers, result parsing, resource limits, session reuse and the cleanup behavior that still needs closer testing.
 
 FlowMaestro supports code steps in workflows and a code tool for agents. Both can run Python, JavaScript or shell code. They share the container implementation, but they reach it through different handlers with different validation, defaults and lifecycle behavior.
-
-That distinction is useful when explaining the design. Sharing execution code keeps the Docker configuration in one place. It does not make every caller behave identically, and the configuration alone does not establish that arbitrary code is safe to run.
-
-This article follows the current implementation from a request to a result, then looks at resource limits and container reuse. The examples are small enough to show the data passing through each stage.
 
 ## Two entry points into the sandbox
 
@@ -76,7 +73,9 @@ The `noexec` flag needs a precise description. It restricts direct execution fro
 
 The two public paths expose different choices. The workflow node has an `allowNetworkAccess` setting. The agent tool's current input schema does not expose that option or pass a network override to the activity, so it uses the activity's default of disabled networking.
 
-The blocked-pattern check is another separate control. It recognizes selected operations and can return a useful error before execution. Passing that check is not a proof about every behavior of a program. Both paths still depend on the container configuration and the environment in which Docker runs.
+The blocked-pattern check can reject selected operations before execution; the container is the execution boundary. Review that boundary in terms of what reaches the process: input data, copied workspace files, writable paths, network settings and any credentials in those inputs. A workflow that passes its whole context can expose more data than its program needs.
+
+The container creation arguments do not mount the host's Docker socket or an arbitrary host workspace. The worker running Docker still has authority to create containers, so isolating submitted code is a different responsibility from securing that worker and its host. Configuration review does not replace integration tests of those boundaries.
 
 ## Following limits through the callers
 
@@ -100,7 +99,7 @@ Each call still writes a script and starts a new interpreter with `docker exec`.
 
 Session records live in an in-memory map. The default inactivity threshold is ten minutes, and cleanup scans run every two minutes. Expiry is therefore handled by a periodic check, rather than an exact ten-minute deadline. Reuse updates the activity time at the start of the call, and a worker restart loses the in-memory session registry.
 
-Reusing a container also reuses the configuration applied when it was created. The reuse branch does not reapply memory or network settings to the existing container. That is relevant if a future caller exposes more per-call configuration: changing the request would not automatically change the container already associated with the session.
+Reusing a container also reuses its original memory and network configuration; per-call changes do not reconfigure it. Calls in one session also share the fixed script path. The execution-slot limiter is process-wide, not a per-session mutex. Simultaneous calls could interfere while writing or reading that path, so callers should serialize session work until the lifecycle provides and tests stronger isolation.
 
 ## Timeouts, cleanup and what the tests establish
 
@@ -112,4 +111,4 @@ The repository has unit tests for language wrappers, output parsing, resource co
 
 A fuller integration check would run a program that exceeds memory, one that keeps producing output and one that times out inside a retained session. It would inspect the container and processes afterward, then try another session call. That would test the behavior the user depends on beyond the values passed to the Docker command.
 
-Sharing the execution primitives makes it possible to review these behaviors in one place. The callers still need to define their own input contract, error handling and lifetime rules. Those details determine what a code step can reliably offer to a workflow or an agent.
+The next integration checks should establish process termination, cleanup and session isolation under failure. Those are observable behaviors beyond the wrapper and configuration tests.

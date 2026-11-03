@@ -1,5 +1,6 @@
 title: Why I stopped pursuing a software factory
 date: 2026-09-11
+updated: 2026-11-03
 about: Building products
 category: Industry & practice
 cover: /img/posts/why-i-stopped-pursuing-a-software-factory-wide.webp
@@ -32,12 +33,9 @@ There is plenty of work I want agents to carry: implementation, tests, investiga
 
 Product decisions often need another loop. I want to try the result, describe what feels difficult, make a change and try it again. A completed task or a passing test suite is useful evidence within that loop. It does not answer every question about the experience.
 
-For work like this, I would rather have a small usable change to assess than a long sequence of dependent changes built on an assumption I have not tried yet. If the assumption is wrong, finding that out early saves revisiting everything that depended on it.
-
 ## What I do hand over completely
 
-Stopping short of the factory idea is not an argument for doing the work by hand. Most of the
-work, I would rather not do.
+I still want to delegate implementation and maintenance when the task has clear acceptance criteria.
 
 Implementation against a clear description is the obvious case. So is the surrounding
 maintenance: updating dependencies, following a rename through a codebase, writing tests for
@@ -45,25 +43,13 @@ behaviour that is already decided, reproducing a reported failure, and the repet
 that touching twenty files involves. Investigation suits it too. Finding where a value comes
 from, or which change introduced a regression, is bounded work with a checkable answer.
 
-What those have in common is that the result can be verified without my having formed an opinion
-first. A test passes or it does not. The rename is complete or something still refers to the old
-name. I do not need to use the product to know whether the work is right, which is exactly the
-condition that makes delegation straightforward.
+Those tasks usually have more explicit acceptance criteria than a new product interaction. Tests, reference searches and a focused review can provide evidence that the change is complete. They still require judgment about whether the checks cover the intended behavior.
 
 ## Keeping the loop short
 
-The decisions that need my judgement are the ones where the answer only appears after trying the
-thing, and that puts a practical limit on batch size.
+The practical limit is how much unreviewed product behavior I want to build on. For a new flow, I want one usable change to try before commissioning several changes that depend on it. That keeps the next instruction connected to an observed problem.
 
-Work that lands as one usable change can be assessed and redirected. Work that lands as six
-dependent changes carries whatever assumption the first one made, and if that assumption is
-wrong the correction is expensive. I would rather be wrong about one screen than about a
-sequence of screens built on top of it.
-
-This is also why I resist describing a product decision in enough detail to remove the need to
-see it. The description that would be precise enough is usually longer than the change, and it
-is still a guess about something I have not tried. A shorter description and a quicker look at
-the result gets to the same place with less invented certainty.
+This article describes the direction I chose, not a benchmark showing that autonomous development cannot work. The booking flow above is an illustrative example of the feedback I want to preserve. The implementation help remains useful; the question is where I stay involved in deciding what should happen next.
 
 ## Learning from people who use it
 

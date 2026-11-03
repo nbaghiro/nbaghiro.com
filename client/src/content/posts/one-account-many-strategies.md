@@ -1,5 +1,6 @@
 title: One brokerage account, several strategies
 date: 2026-10-09
+updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/one-account-many-strategies-wide.webp
 card: /img/posts/one-account-many-strategies-card.webp
@@ -9,7 +10,7 @@ LlamaTrade runs trading strategies against a brokerage account. I use it for my 
 
 A broker account holds one position per symbol and one cash balance. If two strategies and I all buy the same symbol, the broker reports a single holding. It has no way to say that part of it was opened by one strategy, part by another, and part by hand.
 
-Three things still have to be true. Every holding has to carry where it came from. One strategy must never sell shares that belong to another strategy or to me. And each strategy has to size against the capital it was given rather than against everything in the account.
+Each holding needs an owner, each sell must use that owner's shares, and each strategy must size against its own capital.
 
 The straightforward approach is to let each strategy read the broker's aggregate position and reconcile against it. That double counts capital, because every strategy sees the same cash as available, and it lets two strategies fight over a symbol they both hold.
 
@@ -33,17 +34,19 @@ Appends are idempotent. An event id is the first sixteen bytes of a SHA-256 over
 
 ## A fill arriving
 
-![A fill from the broker is attributed to the sleeves that asked for it, and becomes balanced postings in the event log. Per-sleeve lots are projected from the log rather than stored.](figure:fill-to-lots)
+![Netting computes quantities and sleeve allocations. Fill accounting separately deduplicates cumulative records and projects balances; the netting function does not establish an internal settlement price.](figure:fill-to-lots)
 
-When several sleeves trade the same symbol in one cycle, their intents are bunched into one net broker order. Offsetting intents cross internally, so a symbol one sleeve is buying and another is selling in equal size produces no broker order at all, and both sleeves still receive their allocation.
+The netting module computes a plan for combining same-symbol intents. If sleeve A wants to buy ten shares and sleeve B wants to sell six, it returns a net broker buy of four shares while preserving both sleeve allocations. Equal buys and sells produce no broker order.
+
+This is a quantity plan, not a completed internal settlement. The function does not choose a transfer price or write the sleeve movements. A fully offset trade has no broker fill price to reuse; applying it needs an explicit pricing and ledger policy. The pure netting tests establish the plan's arithmetic, not that an end-to-end internal crossing path is operating.
 
 Orders carry a deterministic id. For a live signal it is `lt-` followed by a SHA-256 prefix over the session, symbol, side and signal timestamp, so the same signal always produces the same id. The broker enforces uniqueness of that id per account, which means a retry after a crash resolves to the order already placed instead of placing a second one. Orders not keyed off a signal use a random id and do not get that property.
 
-The trading service emits exactly one fill event per order, at its terminal state, and the ledger derives the event id from the order id. One consequence follows directly: partial fills are never published on their own, because the second partial would carry the same event id as the first and be discarded as a duplicate. The cumulative filled quantity and average price are what arrive.
+The trading service builds a cumulative fill record when an order reaches a terminal state. Recovery can publish that record again; the ledger derives its identity from the client order id and deduplicates it. Partial fills are not recorded as separate economic events under that identity, because later partials would otherwise be discarded as duplicates. A cancelled or expired order can still contribute its filled portion.
 
 A holding is the sum of lots across sleeves, where a lot is a quantity of one symbol opened by one order in one sleeve with its own cost basis. A lots table exists in the schema but is intentionally neither written nor read at the moment: lots are projected from the log and materialized into per-sleeve snapshots for the read side. When a sell needs a cost basis, the ledger selects lots first in, first out against that projection, so a sleeve only ever closes its own lots.
 
-Sizing uses sleeve equity, meaning that sleeve's cash plus the market value of its own positions, and scales a buy down to its free cash rather than overdrawing. That is the part that fixes the double counting.
+Sizing uses sleeve equity: its cash plus the market value of its positions. Open-order reservations reduce the cash available for another buy. Reservations and terminal fill accounting have different lifetimes; while an order is open, the system must retain its commitment even though the cumulative economic fill has not yet been recorded. That timing is a reason to inspect open orders during reconciliation.
 
 ## Checking balances after an event
 

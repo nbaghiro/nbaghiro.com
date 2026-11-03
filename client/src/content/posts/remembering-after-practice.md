@@ -1,5 +1,6 @@
 title: Checking what a learner remembers later
 date: 2026-09-20
+updated: 2026-11-03
 about: Learning
 category: Industry & practice
 cover: /img/posts/remembering-after-practice-wide.webp
@@ -14,7 +15,7 @@ For a learning product, that difference affects what progress means. Finishing a
 
 In a [2006 study by Henry Roediger and Jeffrey Karpicke](https://profiles.wustl.edu/en/publications/test-enhanced-learning-taking-memory-tests-improves-long-term-ret/), students studied prose passages and either restudied them or practiced recalling them. Repeated study produced better recall on a test five minutes later. On tests two days or a week later, prior retrieval practice produced better retention. Repeated study also increased confidence in remembering the material.
 
-The study gives a specific reason to look beyond immediate performance. It does not prescribe one review schedule for every subject or learner. Its tasks involved recalling prose, so applying the findings to another activity requires attention to what that activity is meant to teach.
+Retrieval practice is also an intervention: attempting to recall the material helped later retention in these experiments. A delayed question can both reveal what remains and provide another opportunity to learn. The study used prose passages; it does not prescribe one interval or assessment for every subject.
 
 ## Making a later check useful
 
@@ -46,8 +47,7 @@ any particular subject.
 Two practical constraints push against the theory. A curriculum has its own order, and a review
 that arrives in the middle of a new lesson competes with it. Children also do not use an app on a
 regular schedule, so an interval measured in days can stretch into weeks without anyone choosing
-that. A schedule that assumes daily use will mostly be wrong about when the check actually
-happened, which is another reason to record the elapsed time with the result rather than infer it.
+that. Record when a review actually happens, rather than assuming the scheduled interval was observed.
 
 ## What a progress view should not claim
 
@@ -58,11 +58,7 @@ The difficulty is that the underlying evidence is thin per concept. One correct 
 after the lesson is one observation. Presenting it as eighty percent mastery states more than
 was measured, and a parent reading that number will reasonably act on it.
 
-A view that shows what was checked, when, and what happened is less tidy and harder to argue
-with. Where there have been too few opportunities to say anything, saying so is better than
-filling the gap with a default. The purpose of the check is to decide what the next lesson should
-spend time on, and that decision is better served by the observations than by a score built on
-top of them.
+Show the concept, when it was checked and the response, including help used. When evidence is sparse, label that uncertainty instead of displaying an unsupported mastery estimate.
 
 ## Separating memory from application
 
@@ -70,4 +66,4 @@ Recalling a definition and applying it to a new situation are related but differ
 
 The questions and their review should reflect the intended goal. If the goal is remembering a term, an accurate definition may be appropriate. If it is explaining a process, a response should be assessed for the explanation it gives. Requiring the exact wording from the lesson could reject an answer that shows the intended understanding.
 
-Over time, a useful progress view would show which ideas the learner can use independently and which still need support or another explanation. It would also leave room for uncertainty when there have been few opportunities to check. That gives the next lesson a clearer purpose than treating every completed activity as something permanently learned.
+The next review can then focus on ideas that needed help or have not been checked after a delay. [What students can do after the help is removed](https://nbaghiro.com/blogs/learning-after-ai-help) considers the separate question of how assistance affects an independent attempt.

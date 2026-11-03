@@ -1,5 +1,6 @@
 title: A weekly appointment across a clock change
 date: 2026-09-21
+updated: 2026-11-03
 about: Scheduling
 category: Industry & practice
 cover: /img/posts/recurring-appointments-and-clock-changes-wide.webp
@@ -8,7 +9,7 @@ summary: A recurring appointment carries a local-time intention. Keeping that in
 
 A weekly appointment usually expresses an intention about local time. Someone booking Monday at nine expects Monday at nine on their calendar, including after a clock change.
 
-Storing the first appointment as an instant is useful, but repeating that instant every seven days does not always preserve the local-time intention. The series needs enough information to generate each occurrence in the time zone where the appointment is meant to stay fixed.
+The recurrence needs a local time and named zone as well as the resulting instants.
 
 ## A concrete week on the calendar
 
@@ -28,7 +29,7 @@ A fixed offset such as UTC minus five does not fully describe a region's calenda
 
 ## Handling times near a transition
 
-Some local times do not occur when clocks move forward. Others occur twice when clocks move back. A scheduling product needs a defined policy for a recurrence that lands in one of those periods.
+Some local times do not occur when clocks move forward; others occur twice when clocks move back. RFC 5545 distinguishes explicit date-time interpretation from recurrence expansion: a recurrence-generated nonexistent local time is ignored rather than counted as an occurrence. A product that instead moves that booking to another time needs to state its override and ensure its exported invitations agree.
 
 For a business calendar, I would make the resulting occurrence visible before someone confirms the series. If the system skips an occurrence or resolves an ambiguous time in a particular way, the preview should reveal that choice. A person should not need to understand time-zone internals to know when the appointment will happen.
 
@@ -46,20 +47,13 @@ change after the booking was made. Time-zone databases are updated when governme
 rules, so a series generated today and the same series generated next year can legitimately
 differ. Storing the rule rather than the results is what allows that correction to apply.
 
-Many systems also keep materialised occurrences, so the calendar view and the reminder queue do
-not have to expand a rule on every read. That is a cache, and it needs the usual discipline: a
-way to rebuild it when the rule changes, and a rule that the stored rows never become the only
-record of what was booked.
+Many systems also materialise occurrences for calendars, reminders and booking operations. Generated dates can be rebuilt, but confirmed bookings and their exceptions are business records, not disposable cache entries. Regeneration must preserve identities, cancellations and explicit moves, and follow a stated policy before changing already-confirmed future appointments after a time-zone update.
 
 ## Reminders inherit the problem
 
-A reminder is usually defined as an offset: twenty-four hours before the appointment. If that
-offset is computed from a stale instant, the reminder arrives an hour early or an hour late
-through the week of a transition, and it does so for every customer in the series at once.
+A reminder rule must distinguish elapsed time from local calendar time. “24 hours before” subtracts 24 elapsed hours from the resolved instant. “The previous day at 9 a.m.” resolves a new local date and time. Across a clock change, those instructions can produce different instants even when they usually coincide.
 
-Reminders should be derived from the resolved occurrence rather than from the original booking
-instant. The occurrence is the thing the customer sees on their calendar, so it is the thing
-the notification should agree with.
+Compute the chosen reminder rule from the resolved occurrence and its controlling zone, then regenerate pending notifications when that occurrence changes.
 
 The customer's own device adds a second zone. Someone who books in Toronto and travels to
 Lisbon will see the appointment shifted in their calendar, correctly, while the business still
@@ -72,4 +66,4 @@ Recurring appointments also acquire exceptions. Someone cancels one week, moves 
 
 An edit to one occurrence should not silently rewrite the rule for every week. An edit to future occurrences should make clear where the change begins. Previously canceled appointments should not reappear simply because the application rebuilt its list of dates.
 
-I would test a short series on both sides of a clock change, then move one occurrence and cancel another. After changing the future schedule, I would check the displayed local times, the underlying instants and the preserved exceptions. Reminders should be derived from those resolved occurrences as well. That keeps the notification tied to the appointment the person actually sees on the calendar.
+I would test a short series on both sides of a clock change, then move one occurrence and cancel another. After changing the future schedule, I would check the displayed local times, the underlying instants and the preserved exceptions. Check the reminder rule separately on the transition dates.

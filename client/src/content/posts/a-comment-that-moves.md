@@ -1,11 +1,12 @@
 title: Keeping comments attached as text changes
 date: 2026-10-11
+updated: 2026-11-03
 about: Galleo
 cover: /img/posts/a-comment-that-moves-wide.webp
 card: /img/posts/a-comment-that-moves-card.webp
 summary: Galleo keeps comment threads outside the content tree and joins a text thread to its range with an invisible mark. How that mark survives editing, and what the thread falls back to when it does not.
 
-Galleo lets someone leave a note on part of an artifact: a whole element, or a range of text inside one. The content keeps changing under those notes, and the same content is exported to PDF and PowerPoint. The way a note is attached has to survive both.
+Galleo lets someone leave a note on part of an artifact: a whole element, or a range of text inside one. The content keeps changing under those notes, and the same content is exported to PDF and PowerPoint. The attachment needs to survive editing without changing the layout or appearing in exports.
 
 Comments sit outside the content. A thread is a row in a `comments` table and never a node in the artifact tree. The only thing commenting writes into content is an invisible mark carrying a thread id over a text range.
 
@@ -15,8 +16,6 @@ The row carries the anchor and the id of the section the anchored element sat in
 
 The section id groups threads in the sidebar and identifies where to scroll when opening one. The server also checks that the section exists. A valid request referring to a missing section receives a 409 conflict response. The element id and text mark identify the anchor itself.
 
-Two things follow from keeping the row out of the tree.
-
 Painting and export are the same with and without comments. A reader with threads open and a reader without see identical geometry, and an exported file carries no trace of a discussion.
 
 Undo cannot create or destroy a thread. History moves the content tree, and comment rows are not in it. Undo can still remove the mark or the element a thread points at, which changes how much of the thread resolves. The thread and its replies survive that.
@@ -25,7 +24,7 @@ Undo cannot create or destroy a thread. History moves the content tree, and comm
 
 Galleo's rich text is a string plus a list of offset marks. Most mark types set a field on the run the renderer draws: `b` sets bold, `link` carries an href, `hl` sets a background. The comment mark is a declared type that sets nothing.
 
-That is deliberate. The tint a reader sees over commented text is drawn by the editor as an overlay, from the thread's live mark ranges and the layout the engine already produced, rather than as a style on the text. A test pins the property directly: the runs produced for a string with a `cm` mark over it are equal to the runs for the same string without one.
+The tint a reader sees over commented text is drawn by the editor as an overlay, from the thread's live mark ranges and the layout the engine already produced, rather than as a style on the text. A test pins the property directly: the runs produced for a string with a `cm` mark over it are equal to the runs for the same string without one.
 
 ## Invisibility is why the mark has to be rebased
 
@@ -45,8 +44,6 @@ The splice has four outcomes for a comment mark, each of which has a test.
 
 Text inserted before the range shifts it by the length inserted. Text typed inside the range grows it, because a mark covering the replaced span is carried onto what replaced it. Text deleted from the middle of the range leaves the surviving halves marked, and they merge back into one mark when the deletion brings them together. Deleting the whole range removes the mark, because a mark normalises away once its start and end meet.
 
-Deleting the whole phrase removes its highlight. The comment thread remains available.
-
 ## When the anchor stops resolving
 
 A thread resolves against the document on screen in one of three states. It is fully live when both the element and the mark are present. It falls back to the element when the element is there and the mark is gone, which is what the deletion above produces. It is an orphan when the element is no longer in the tree at all.
@@ -61,12 +58,14 @@ An AI rewrite can orphan a section’s threads when the replacement tree uses ne
 
 ## Access decides which anchor you get
 
-Artifact access is ordered: none, view, comment, edit. Writing the `cm` mark is a content write, so a text-range anchor needs edit. With comment access, the thread anchors to the element instead. A text-range mark requires permission to change the content.
+Artifact access is ordered: none, view, comment, edit. Writing the `cm` mark is a content write, so a text-range anchor needs edit. With comment access, the thread anchors to the element instead.
 
 Anchoring also needs the element to have an id, and ids are minted lazily. An element created in the current session may not have one yet, so the id is minted at the moment of anchoring and written out as a structural change. The id must be persisted. A local-only id could differ from the one assigned by the server, leaving other readers unable to resolve the thread.
 
-## Tradeoffs
+## A range at its boundaries
 
-This design requires range rebasing, with the limitations of a single-span diff. In return, comments do not affect layout or exports, and content undo does not remove discussion threads.
+For `red blue`, the mark `[4, 8)` covers `blue`: the start is included and the end is excluded. Inserting `dark ` at offset zero moves the range to `[9, 13)`. Inserting inside `blue` extends the marked phrase.
 
-A rewrite that replaces the anchored elements can still break the attachment. The interface retains the discussion and its original quote, and shows that it is no longer attached to the current content.
+The current splice also carries an insertion at either boundary into the mark. Typing immediately before or after the marked word can therefore extend the highlighted text. That is a product choice worth testing alongside ordinary typing, paste and composed input. Offsets use JavaScript string positions, so a visible character can occupy more than one offset.
+
+The remaining limitation is attachment after replacement. A rewrite that removes the element or replaces several separated spans can lose the original range. The thread retains its captured quote, but the quote is context for the reader, not an automatic reattachment mechanism.

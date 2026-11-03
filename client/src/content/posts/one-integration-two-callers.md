@@ -1,5 +1,6 @@
 title: Sharing integrations between workflows and agents
 date: 2026-09-23
+updated: 2026-11-03
 about: FlowMaestro
 cover: /img/posts/one-integration-two-callers-wide.webp
 card: /img/posts/one-integration-two-callers-card.webp
@@ -23,7 +24,7 @@ getMCPTools()
 executeMCPTool(toolName, params, connection)
 ```
 
-That interface makes both entry points part of the provider contract. It does not prove that every registered operation is correctly routed, validated or equally capable through both paths. Those properties still depend on the implementation and tests.
+The interface requires both entry points. The provider still implements their routing and checks.
 
 ## A schema used in several places
 
@@ -37,15 +38,23 @@ The provider's validation helper parses parameters against the Zod schema. The S
 
 The Slack tool adapter also reads the registered operations. It prefixes each identifier with `slack_`, uses the operation description, and converts the input schema into the tool's `inputSchema`. The model therefore receives a description derived from the same operation definition used by the builder.
 
-Sharing a schema reduces drift between those descriptions. It is not a substitute for validating input at execution time.
-
 ## Following a Slack call
 
 For a workflow step, `SlackProvider.executeOperation` validates the input, gets a client for the connection, and dispatches to an executor such as `executeSendMessage`.
 
 For an agent call, `executeMCPTool` gets the client and passes the request to `SlackMCPAdapter`. The adapter removes the tool-name prefix and dispatches to the same executor. The provider then converts the result into the value or error expected by the tool caller.
 
-The two entry points also have different validation and error-handling code. A tool schema describes accepted input to the model; it does not enforce that input at runtime. Each execution path still needs validation before it relies on the parameters. Sharing the executor alone is not evidence that the entry points enforce identical checks.
+At this boundary the validation differs. `SlackProvider.executeOperation` calls `validateParams`, which parses the registered Zod schema. The inspected `SlackMCPAdapter` switch passes parameters to executors through TypeScript casts; those casts do not validate runtime values. The router's MCP dispatch does not add the same parse. Any protection in an upstream caller needs to be traced separately, rather than inferred from the advertised tool schema.
+
+```
+Concern       Workflow entry                 Agent adapter
+Schema        Registered Zod operation       JSON Schema from the operation
+Validation    validateParams before dispatch No matching parse in this adapter
+Routing       Explicit operation dispatch    Prefix removal and explicit switch
+Result        Structured operation result    Tool value or propagated error
+```
+
+Connection authorization is another boundary. These methods receive an already selected connection; their signatures do not establish that the current user may use it. The caller must resolve the connection within the authorized account or workspace before handing its credentials to the provider.
 
 The routing is explicit too. The adapter builds tool descriptions from the registered operations, but dispatches calls through a switch. Adding an operation to the registry does not automatically add its execution branch. Keeping those two lists aligned is part of maintaining the provider.
 
@@ -63,6 +72,4 @@ Descriptions serve different readers. A form label needs to be easy to scan; a m
 
 Error handling also differs. A person can correct a field in the builder. An agent needs enough information to decide whether to change its arguments, retry later or stop. Sharing the service executor does not determine that policy.
 
-Finally, provider counts are not a measure of complete integration coverage. A provider can expose both interfaces while individual operations, schema handling or routing still need work. Reviewing a real call end to end is more informative than counting directories.
-
-The shared operation is the part of this design I would retain. It keeps service-specific work together while leaving the callers free to use it differently. The follow-up is to make their validation and routing guarantees equally explicit.
+The next improvement is to enforce the same runtime input contract at both entry points and test that every advertised tool has a dispatch branch.

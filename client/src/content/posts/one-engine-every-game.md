@@ -1,5 +1,6 @@
 title: Rendering and testing Lumischool’s games
 date: 2026-10-14
+updated: 2026-11-03
 about: Lumischool
 cover: /img/posts/one-engine-every-game-wide.webp
 card: /img/posts/one-engine-every-game-card.webp
@@ -15,7 +16,9 @@ The contracts in `engine/motion/scene.ts` describe two kinds of output. A turn-b
 
 An action game provides functions to start a level, advance its state from input and describe the next frame. It also declares its simulation rate. A turn-based game defines positions, legal moves and an `apply` function that returns a new position. Keeping previous positions makes undo possible without reversing each operation.
 
-Tests can call these functions directly and inspect the results. The game’s behavior can therefore be checked independently of its browser rendering.
+The action-game loop advances in fixed simulation steps and renders on browser frames. Several simulation steps can occur before one frame is drawn; the remaining fraction can support interpolation. Catch-up work is capped, so returning from a long-hidden tab does not replay every missed moment. Excess elapsed time is dropped rather than allowing an unbounded catch-up loop.
+
+Tests call the state functions directly with controlled inputs and time, independently of browser rendering.
 
 ![Input advances the game at its simulation rate. The game returns its updated state and a description of the frame for the renderer.](figure:game-loop)
 
@@ -45,7 +48,7 @@ For a completed search, the verifier checks that a win is reachable within the m
 
 Another check models uniformly random legal play. For irreversible games, the chance of winning must stay below a declared threshold. For reversible games, the median number of random moves needed to win is compared with the shortest solution. These are properties of the model, not measurements of how children play or learn.
 
-The recorded run covered 29 activity variants and five levels of the turn-based game, searching 34 graphs and 7,332 positions in 132 ms on the authoring machine. None reached the position limit. Those counts and timing describe that run, not a performance guarantee.
+The recorded graph run covered 29 activity variants plus five levels of the single turn-based game: 34 graphs and 7,332 positions in 132 ms on the authoring machine. None reached the position limit. These graphs are not a count of all 46 catalogue games.
 
 The browser also uses the search to suggest a move that gets closer to a win after a period without progress.
 
@@ -55,7 +58,7 @@ The reviewed catalogue had 45 action games and one turn-based game. Action games
 
 Twenty games declared a round for use inside a lesson. The card tests run each declared round in Node using a game-specific input driver. They check that the round can be won using the available field controls, reports the win once, settles afterwards and finishes within its declared duration.
 
-The other 26 games explicitly declare that they do not provide a lesson card. The card tests therefore do not establish a playable round for those games.
+The other 26 games declare no lesson card. The 20 card providers, 46 catalogue games and 34 verified graphs therefore describe different coverage sets.
 
 A successful scripted run shows that one tested input sequence works. It does not establish that every level is covered or account for all the ways a child might interact with it.
 
@@ -65,4 +68,4 @@ Some action games use mechanics that also have graph-based verification. The gra
 
 There are also two replay paths. `engine/motion/tape.ts` records inputs for playback and is used by the player and several tests. A separate `verifyReplay` in `engine/motion/verify.ts` checks whether a recorded solution reaches a win, but the reviewed publication path does not use it; it is exercised by its own test.
 
-Some architecture comments describe broader verification than the implementation provides. The implemented checks are the useful boundary: a completed graph search establishes properties of the modeled positions, while scripted play checks a particular round and input sequence. Keeping that distinction explicit makes it easier to see where more testing is needed.
+A completed graph search checks the modeled positions; scripted play checks a particular round and input sequence. Publication reporting should name which of those checks each game actually receives.

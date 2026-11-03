@@ -10,6 +10,7 @@ export const POSTS = META.map((meta) => ({
     slug: meta.slug,
     title: meta.title ?? "Untitled",
     date: meta.date ?? "",
+    updated: meta.updated ?? "",
     summary: meta.summary ?? "",
     about: meta.about ?? "",
     category: meta.category ?? "Product notes",

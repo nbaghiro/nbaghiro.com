@@ -1,5 +1,6 @@
 title: What students can do after the help is removed
 date: 2026-09-25
+updated: 2026-11-03
 about: Learning
 category: Industry & practice
 cover: /img/posts/learning-after-ai-help-wide.webp
@@ -14,7 +15,7 @@ A useful evaluation therefore includes work done with the assistant and work att
 
 A [2025 study of high-school mathematics](https://doi.org/10.1073/pnas.2422633122) compared a general GPT-4 interface, a tutor configured with learning safeguards and a control group. The general interface improved assisted practice performance, but students later performed worse without it. The reported reduction was 17% relative to the control group's average unassisted performance, rather than 17 percentage points. The guarded tutor's unassisted result was not statistically distinguishable from the control group.
 
-That last finding does not establish that the groups were equivalent or that the tutor improved independent learning. The study concerns particular interfaces, students and tasks. It is useful evidence for examining how help is provided, without turning it into a claim that all AI assistance has the same effect.
+The unassisted assessment followed the practice in the study session. It measured subsequent independent performance, not retention weeks later. The guarded tutor's result does not establish equivalence with the control or an improvement in independent learning; those are different statistical claims.
 
 ## Deciding what the student should do
 
@@ -26,9 +27,11 @@ I would start with the skill the exercise is supposed to develop, then examine w
 
 ## Checking a new attempt
 
-After help with one equation, a new problem can give the learner an opportunity to use the same method. It should be sufficiently different that copying the earlier answer will not solve it, while remaining comparable in difficulty.
+For example, guided practice could use `3x + 5 = 20`, with help identifying the subtraction and division steps. An independent follow-up could use `4x + 7 = 23`: the same two transformations with different numbers. Record the first attempt before showing another hint. This is a proposed pair to try with learners, not a validated assessment from the study.
 
-I would record what happens before another hint is given. If the learner needs support, the session can continue with it. The record should simply preserve the distinction between an independent attempt and an answer reached after assistance.
+The second problem should remain comparable in difficulty. Introducing fractions, unfamiliar wording or an extra operation would make it harder to tell whether the learner transferred the method.
+
+If the learner needs support, continue with it and preserve the distinction between the independent attempt and the later assisted answer.
 
 Asking for an explanation can add context, especially when the final answer alone does not reveal the method. But the wording and review of that explanation also need care. A student who understands the mathematics may express it briefly or use different language from the tutor. An evaluation that rewards matching the tutor's phrasing could measure the wrong thing.
 
@@ -40,13 +43,11 @@ recovered afterwards.
 
 An attempt is worth storing with what surrounded it: whether a hint was shown before the answer,
 whether an explanation had been given for that concept, how long since the relevant lesson, and
-whether this was a first attempt or a retry. None of that is expensive to record, and none of it
-can be reconstructed later from a score.
+whether this was a first attempt or a retry. Those fields need an explicit event schema; a correct-answer score alone does not retain them.
 
 It also changes what a teacher or parent can be shown. A progress view built on completion says
 a learner finished the unit. A view that separates the two says which ideas they used without
-help, which they needed support for, and which have not been checked since the lesson. The
-second is more useful and more honest about what is not yet known.
+help, which they needed support for, and which have not been checked since the lesson. The second separates observed independent performance from skills that still need checking.
 
 ## Designing what the help actually gives
 
@@ -54,9 +55,7 @@ If help is going to vary, it is worth deciding what each level hands over. A pro
 learner what the question is asking for leaves the reasoning with them. A hint that names the
 method narrows the search. A worked step performs one piece. A full solution performs all of it.
 
-Those are different products, not different amounts of the same product, and a tutor that jumps
-to the last one whenever a learner hesitates has made a design decision whether or not anyone
-intended it.
+Each level leaves a different amount of reasoning to the learner. A tutor that supplies a full solution whenever someone hesitates may remove the step the exercise was intended to practice.
 
 A reasonable default is to offer the smallest useful step first and let the learner ask for more.
 That depends on the learner being willing to ask, which varies, so the sequence is something to

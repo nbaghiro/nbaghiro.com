@@ -22,6 +22,7 @@ import { LEDGER_CHECK_FIGURES } from "./figures/checking-ledger-balances-after-a
 import { EDITOR_DSL_FIGURES } from "./figures/preserving-a-strategy-through-the-editor";
 import { SANDBOX_FIGURES } from "./figures/code-execution-in-containers";
 import { ORDER_FIGURES } from "./figures/an-order-submitted-once";
+import { PLAN_FIGURES as WORKFLOW_PLAN_FIGURES } from "./figures/deciding-what-runs-next";
 import { CONNECT_FIGURES } from "./figures/running-clientbridge-on-stripe-connect";
 
 /**
@@ -2571,6 +2572,7 @@ export const FIGURES = {
     ...EDITOR_DSL_FIGURES,
     ...LEDGER_CHECK_FIGURES,
     ...CONNECT_FIGURES,
+    ...WORKFLOW_PLAN_FIGURES,
     "three-passes": ThreePasses,
     "three-formats": ThreeFormats,
     "command-list": CommandList,

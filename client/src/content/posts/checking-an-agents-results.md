@@ -1,5 +1,6 @@
 title: Checking whether an agent completed the task
 date: 2026-09-30
+updated: 2026-11-03
 about: AI systems
 category: Industry & practice
 cover: /img/posts/checking-an-agents-results-wide.webp
@@ -40,28 +41,19 @@ An agent is not deterministic, so a single pass says less than it appears to. Th
 succeed on one attempt and fail on the next for reasons that have nothing to do with a change
 anyone made.
 
-Running each case several times and reporting the proportion that pass gives a more honest
-figure than a single verdict. It also changes what a regression looks like. A pass rate moving
-from nine in ten to six in ten is a real signal; one failed run out of one is not yet evidence
-of anything.
+Running each case several times gives a pass rate rather than a single verdict. A change from nine successes in ten runs to six in ten deserves investigation, but ten runs may still be too few to separate a regression from ordinary variation. A single failure identifies a case to investigate; repeated runs help estimate how often it occurs.
 
-That has a cost, and the cost is worth naming. A suite of thirty cases run five times is a
-hundred and fifty agent runs, each consuming tokens and wall-clock time. Running the full set
-on every change is usually unaffordable, so a smaller set on each change and the full set
-before a release is the common compromise.
+Thirty cases repeated five times require 150 agent runs. The appropriate schedule depends on their cost and duration: a small set can run on each change, with broader repeated evaluations before release. Record the sample size with every reported pass rate.
 
 ## Cost and duration are outcomes too
 
-An agent that completes the task after forty tool calls and an agent that completes it after
-six have both completed the task. Scored on outcome alone they are equivalent, and they are not.
+Two successful agents can differ substantially in cost and duration. Those differences matter when the task runs repeatedly or someone is waiting for the result.
 
 Token spend, tool-call count and elapsed time are worth recording alongside the result. They
 show when a change made the agent correct by making it exhaustive, which tends to surface later
 as a cost problem or a latency complaint rather than a correctness one.
 
-They also help explain a failure. An agent that stopped after the maximum number of steps was
-probably looping rather than reasoning, and the transcript around the repetition usually shows
-which tool response it could not interpret.
+Reaching a step limit can indicate a loop, an unusually demanding task or an insufficient budget. Inspect the calls and intermediate results before assigning the cause.
 
 ## Making the evaluation repeatable
 
@@ -69,4 +61,15 @@ Each run needs a known starting state. If a previous attempt already changed the
 
 A small set of cases can cover substantially different situations: a unique customer match, two similar names, an invalid address, a lost response and an account the agent cannot edit. Repeating cases can then reveal variation between attempts. One successful run establishes less than consistent success across those conditions.
 
-Some tasks need judgment as well as state checks. A research summary may contain accurate facts but omit the point the user needed. In that case, a review rubric should describe the expected coverage, evidence and relevance, with examples of acceptable answers. The aim is still to inspect the work itself closely enough to know whether the user's task was completed.
+A compact case record makes these decisions reviewable:
+
+```
+Fixture          Customer A has the old billing address
+Expected change  Customer A has the requested billing address
+Must not change  Shipping address; every other customer
+Completion       Persisted result visible within the case's deadline
+Result           Pass, fail, or unresolved at the deadline
+Run metadata     Model/configuration, tool calls, tokens, elapsed time
+```
+
+Tasks such as research summaries also need a rubric for coverage, evidence and relevance. Keep that judgment separate from checks that can inspect records directly.

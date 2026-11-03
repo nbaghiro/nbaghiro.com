@@ -1,5 +1,6 @@
 title: How much history a strategy needs
 date: 2026-10-16
+updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/before-the-first-order-wide.webp
 card: /img/posts/before-the-first-order-card.webp
@@ -47,7 +48,7 @@ reference              planned warm-up in bars
 
 In this implementation, ADX smooths directional movement, calculates DX, and then applies another Wilder average. Its first defined output requires twice the declared period. MACD's signal line also depends on an earlier calculation: it is an exponential average of the difference between two exponential averages. Its requirement is the slow period plus the signal period minus one.
 
-The EMA entry includes two extra bars of headroom. Its first defined value is available at 20 bars for a period of 20, while the plan requests 22. The table describes the compiler's requirement, including that margin.
+The EMA entry includes two extra bars of headroom. Its first defined value is available at 20 bars for a period of 20, while the plan requests 22. This is a readiness rule, not a convergence threshold: a recursive average can remain sensitive to how it was initialized after it first produces a number.
 
 If the plan allows evaluation before an indicator is defined, a condition can read NaN and be treated as false. Depending on the strategy, that can select an alternative allocation or leave no allocation. The calculation needs to be checked even when the run completes without an exception.
 
@@ -67,7 +68,7 @@ The evaluator recomputes indicators over its retained history at each step. If i
 
 For bounded reads, the compiler retains the largest required window plus ten bars. In the example above, the 200-bar requirement produces a 210-bar window. Once that window is full, the evaluator removes older bars as new ones arrive.
 
-There is a test that compares a momentum strategy's final allocation after 250 bars, with and without the window. The final weights match for the supplied price series. That is useful coverage for this case, but it does not prove that truncating history preserves every intermediate value or every indicator's output. Calculations that depend on earlier state need their own checks.
+A test compares a momentum strategy's final allocation after 250 bars, with and without the window, and the final weights match for that price series. Recursive indicators need a closer comparison: recomputing an EMA from the start of each retained window changes its initialization. Tests should compare intermediate values and resulting decisions, including cases close to a condition's threshold, rather than only the final allocation.
 
 ## Cumulative calculations
 
@@ -81,4 +82,4 @@ This changes the meaning of a full-history metric once older bars have been remo
 
 A warm-up count only makes sense alongside the data interval. Two hundred daily bars and two hundred minute bars cover different periods. The fetch, preload and live aggregation paths need to provide the interval the strategy expects.
 
-The compiler's rules also need to stay aligned with the indicator implementations. A test that checks default parameters can catch a missing entry; it cannot establish that every implementation still produces its first value at the expected point. Tests should check those boundaries directly and compare retained-history results for the calculations that depend on earlier values.
+Counts alone also do not establish alignment. Two symbols can each have 200 bars while missing different trading sessions. A useful data check records the expected interval, timestamps and missing-bar policy before evaluating a cross-symbol condition. This belongs alongside the warm-up calculation, not inside a larger bar-count allowance.

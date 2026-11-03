@@ -1,5 +1,6 @@
 title: Checking ledger balances after a fill
 date: 2026-10-20
+updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/checking-ledger-balances-after-a-fill-wide.webp
 card: /img/posts/checking-ledger-balances-after-a-fill-card.webp
@@ -38,7 +39,7 @@ Cash movement            -1,200
 Resulting cash             -200
 ```
 
-That resulting cash balance violates the ledger's current rules for a sleeve. The event check and the balance check are both useful, but neither replaces the other.
+The event is balanced, but the resulting cash violates the sleeve's rules.
 
 ![The same buy has balanced postings totaling zero and leaves the sleeve with negative 200 dollars of cash.](figure:ledger-two-checks)
 
@@ -76,7 +77,7 @@ A request to allocate or transfer cash has not yet changed anything at the broke
 
 If an invariant fails, the assertion raises `LedgerInvariantError`. The operation does not reach the successful commit in its request handler, and the transaction is rolled back. This second check is useful even when a planner already checked the starting balance: it examines the state produced by the write.
 
-It is still a local transactional check. It should not be read as proof that every concurrent operation across the system is serialized correctly. Transaction isolation and the locking around each operation are separate parts of that responsibility.
+Concurrent writes also require appropriate transaction isolation and locking; these assertions inspect the state visible to their transaction.
 
 ## Recording a fill and freezing its sleeve
 
@@ -131,6 +132,10 @@ The fill-to-freeze tests run the actual translator, writer, fold and freeze guar
 
 Those tests exercise application control flow without a real PostgreSQL server, broker or message transport. They do not establish database isolation under concurrent writes, broker cancellation behavior or successful incident delivery during a network failure.
 
-For this review, the four selected portfolio suites passed 92 tests. All 50 cases in the separate trading sleeve-execution suite also passed. That focused run did not meet the trading service’s whole-service coverage threshold, so it is not a full service validation. The smaller $1,200 worked example above was also checked directly against the posting builder and projection.
+The original article review passed 92 cases across four selected portfolio suites and 50 cases in the trading sleeve-execution suite. The focused trading run did not meet its whole-service coverage threshold. These are historical results from that review, not a new test run for this editorial update.
 
-The resulting design has several responsibilities that can be checked separately: represent the event accurately, derive the balances, detect a state the sleeve cannot use, and block subsequent activity while it is reviewed. Keeping those responsibilities explicit makes it easier to explain both what the ledger records and what still needs operational attention.
+## Reviewing a frozen sleeve
+
+A recovery procedure should start by comparing the fill, open orders and broker balance with the ledger. The reviewer needs to identify the cause, record any correction as an explicit event, and rerun the balance checks before authorizing more trading. A broker order already in flight needs its own decision; freezing a sleeve does not cancel it.
+
+That is the operational procedure I would require around the current guard. The guard itself records the fill and freeze. It does not implement an automatic repair or establish that every discrepancy is safe to clear.

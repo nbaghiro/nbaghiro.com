@@ -1,5 +1,6 @@
 title: Preserving a strategy through the editor
 date: 2026-10-20
+updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/preserving-a-strategy-through-the-editor-wide.webp
 card: /img/posts/preserving-a-strategy-through-the-editor-card.webp
@@ -9,7 +10,7 @@ LlamaTrade lets a strategy be represented as visual blocks or as text in a small
 
 Converting between them needs to preserve the strategy's structure and values. A group can still appear in the editor after its allocation has been lost. Exported text can still parse after its grouping has changed. Both changes can affect the weights the evaluator produces.
 
-This article looks at that conversion: where the information lives in each representation, how the serializer carries it across, and what the shared tests can establish. The broader allocation language is covered in [A language for portfolio allocations](https://nbaghiro.com/blogs/a-language-for-portfolio-allocations).
+One current limitation is important before using the visual editor: compound `and`, `or` and `not` conditions accepted by Python fall back to a default comparison during import. The editor can therefore emit valid text with changed meaning. The supported allocation examples below round-trip correctly; they do not cover the whole backend grammar. [A language for portfolio allocations](https://nbaghiro.com/blogs/a-language-for-portfolio-allocations) explains the wider language.
 
 ## Two representations of the same strategy
 
@@ -49,8 +50,6 @@ The text representation puts the share on the child:
 ```
 
 When the editor imports a child under a weight block, it reads the child's `:weight` parameter and records it against the new child ID. When it exports a specified-weight block, it looks up that ID in the parent's allocation map and writes the parameter back onto the group or asset.
-
-This is a translation between data models. It requires knowledge of the parent relationship as well as the child being written.
 
 ## Why preserving the nesting matters
 
@@ -122,7 +121,7 @@ The TypeScript suite checks three related properties:
 
 The third check is about stable serialization. The first export can change whitespace or formatting from the original source. Subsequent exports should settle on the same output, so repeated conversion does not keep rewriting the text.
 
-Structural comparison and stable text serve different purposes. Two exports can be identical after the same field has been lost during the first import. Comparing the imported tree with a separately committed reference helps catch that loss in the covered examples.
+Stable text alone can conceal a field lost on the first import. The canonical reference checks the original structure as well.
 
 Escaping deserves examples of its own. Strategy names and descriptions are strings inside a parenthesised language. Quotes and backslashes need to survive parsing and serialization as content, without changing the surrounding syntax. The corpus includes cases for those strings alongside the allocation examples.
 
@@ -130,7 +129,7 @@ Escaping deserves examples of its own. Strategy names and descriptions are strin
 
 Preserving a tree does not establish that it is valid for evaluation. Validation checks relationships within the strategy, including whether specified shares sum to 100 and whether parameters are supported by their weighting method.
 
-A round-trip check could preserve an invalid strategy perfectly. Conversely, a valid strategy could be converted into a different valid strategy. The two checks answer different questions: whether the current structure is supported, and whether conversion preserved the expected structure.
+Validation checks whether a tree is supported; round-trip comparison checks whether conversion changed it. Both are needed because a different tree can still be valid.
 
 Evaluation adds another check. A test can run a nested allocation and assert its resulting weights, making the effect of the hierarchy explicit. That is useful when changing allocation composition, even if no parser or serializer code changes.
 
@@ -150,9 +149,15 @@ For example, a condition can require both a minimum price and an upper price thr
 
 The editor's `parseConditionExpr` returns no parsed condition for `and`. The surrounding import code then supplies its default comparison, equivalent to `(> (price SPY) 0)`. Exporting that tree can therefore produce valid DSL with a different condition.
 
-This is a known limitation of the current importer. Passing the shared corpus does not establish support for expressions absent from that corpus. In particular, a backend strategy using compound conditions should not be assumed to survive visual editing unchanged.
+The condition support boundary is:
 
-One possible improvement would be to reject unsupported conditions during import and explain which expression could not be represented. Another would be to extend the editor's condition model and conversion code. Either change would need a regression case that checks the original compound structure after export. These are possible follow-up changes, not behavior implemented by the current importer.
+- Comparisons: represented by operands and a comparator in the visual model.
+- Crossovers: represented by the supported crossover comparators.
+- Compound `and`, `or`, `not`: accepted by Python but not represented by this importer.
+
+The desired import policy is to preserve an expression losslessly or reject it with a specific explanation. Substituting a default condition should not count as a successful import.
+
+Implementing that policy requires either an explicit unsupported-expression error or an expanded visual condition model, followed by a regression test of the original expression after export. Neither improvement is claimed here as current behavior.
 
 ## What was checked for this article
 
@@ -162,4 +167,4 @@ The complete example above was also imported and exported through the editor ser
 
 The source review followed the group's weight through import and export, the test projection into canonical JSON, and the unsupported-condition fallback. Those checks support the implementation described here. They do not establish full editor coverage or equivalence for every backend expression.
 
-For this conversion, the useful unit of comparison is the strategy's structure and values. The group must retain its share, the weighting block must retain its method, and the condition must retain its operands. Keeping those details explicit makes a conversion failure easier to identify and gives each supported form a concrete test.
+The regression target is the strategy's meaning: the group retains its share, the weight block its method, and the condition its operands and operators.

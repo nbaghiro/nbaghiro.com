@@ -48,6 +48,9 @@ function Post() {
                     <h1>{post.title}</h1>
                     <p className="post-meta">
                         {post.about} · {readableDate(post.date)}
+                        {post.updated && post.updated !== post.date && (
+                            <> · Updated {readableDate(post.updated)}</>
+                        )}
                     </p>
                 </header>
                 <Prose text={bodyFor(post.slug)} />

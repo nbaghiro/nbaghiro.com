@@ -1,5 +1,6 @@
 title: Deciding whether a booking slot is free
 date: 2026-10-04
+updated: 2026-11-03
 about: Clientbridge
 cover: /img/posts/when-a-slot-is-free-wide.webp
 card: /img/posts/when-a-slot-is-free-card.webp
@@ -39,22 +40,20 @@ Two implementations of one rule have to be kept in agreement, and they already d
 
 Every path that creates a visit goes through `create_booking_core`: the staff calendar, the recurrence expander and the public booking page. It takes a Postgres advisory lock on the member for the transaction. That prevents another booking using the same lock from changing availability between the check and insert.
 
-The lock key is the business and the member, so writes for one person serialise and writes for different people do not block each other. Where an operation touches more than one member, as rescheduling onto another stylist does, the keys are taken in sorted order. The documented lock order is hours, members by id, bookings by id, then slots. Taking locks in a consistent order avoids transactions waiting on each other in opposite orders.
+The member lock is keyed by business and member. Multi-member operations take those keys in sorted order. Resource selection has its own sorted resource locks, taken after the staff locks, so two different staff members cannot both claim the same room based on an earlier availability read. Other operations also lock hours or booking rows as needed; the new-slot path illustrated here is not a universal list for every scheduling operation.
 
-![The locks a booking takes, always in the same order: the hours lock, then members by id, then bookings by id, then slots.](figure:lock-order)
+![The new-slot path holds the member lock, checks availability, locks candidate resources in id order, rechecks resource availability and inserts the slot. Locks remain held through commit.](figure:lock-order)
 
 ## Preventing overlapping slots in the database
 
-The lock covers one member. Two members booking the same room at the same time take different keys, so nothing in the application serialises them.
+The current implementation adds resource locks before selecting a room or piece of equipment. Consider two staff members attempting overlapping visits in the same room. Each can acquire its own member lock, but only one holds the room's lock. The second waits; after the first transaction commits, it rechecks the room with buffers included and refuses the request or selects another eligible resource.
 
-The `slots` table carries two GiST exclusion constraints for that. One refuses a second live slot for the same business and member over an overlapping time range, the other does the same for a resource, and both ignore cancelled slots. The insert is wrapped in a try, and when it fails, `clash` reads the constraint's name out of the error to tell a double-booked person from a double-booked room, so the client still gets the right sentence.
+The `slots` table also carries two GiST exclusion constraints as a database backstop. One refuses a second live slot for the same business and member over an overlapping time range, the other does the same for a resource, and both ignore cancelled slots. The insert catches an integrity error and translates a recognized constraint violation into the corresponding booking conflict.
 
-The constraints cover fewer conditions than the application checks. They compare the stored start and end of a slot, which means they know nothing about buffers, hours, time off or class capacity. A fifteen minute cleanup overlapping the next visit is caught by the application and not by the database.
+The constraints cover fewer conditions than the application checks. They compare the stored start and end of a slot, which means they know nothing about buffers, hours, time off or class capacity. A fifteen minute cleanup overlapping the next visit is caught by the buffer-aware application check under the resource lock, not by the stored-range constraint.
 
 So the two layers do different jobs. The checks decide whether a booking should be allowed and produce the message a person reads. The constraints make the overlap itself impossible to store, whatever path tried to write it, including a future one that forgets to take the lock.
 
 ## Protecting the write
 
-Written out, a free slot means this service, for this member, in this room, inside hours that are open, clear of closures and time off, clear of other visits once everyone's buffers are counted, and still unclaimed when the row is written.
-
-Reading availability does not reserve it. The advisory locks coordinate application writes, and the exclusion constraints prevent stored time ranges from overlapping for the same member or resource. A new kind of bookable resource needs both its availability rules and a plan for concurrent requests.
+Reading availability does not reserve it. Staff and resource locks coordinate the current application writes; exclusion constraints independently reject overlapping stored ranges. Adding a bookable resource requires both a rule for availability and a write path that rechecks it while holding the appropriate lock.

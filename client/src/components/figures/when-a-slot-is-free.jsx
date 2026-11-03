@@ -125,19 +125,19 @@ function BufferedWindow() {
 /* ---- the order the locks are taken in ---- */
 
 const LOCKS = [
-    ["hours", "one key per business"],
-    ["members", "one key per staff id, sorted"],
-    ["bookings", "rows selected for update, by id"],
-    ["slots", "the insert itself"],
+    ["member lock", "coordinate writes for this staff member"],
+    ["availability", "check hours, absences and visits"],
+    ["resource locks", "sorted ids; recheck buffered windows"],
+    ["slot insert", "database constraints check overlap"],
 ];
 const LOCK_GROUND = {
     wide: [{ y: 262, amp: 9 }],
     narrow: [{ y: 338, amp: 8 }],
 };
 const NOTE = [
-    "every lock held to the end",
-    "so the check cannot go stale",
-    "between reading and writing",
+    "locks held through commit",
+    "waiting resource requests",
+    "recheck after acquiring the lock",
 ];
 
 function LockOrder() {
@@ -154,11 +154,11 @@ function LockOrder() {
             className="fig"
             viewBox={frame(w, h)}
             role="img"
-            aria-label="The four locks a booking takes, numbered in the order they are always taken: the hours key, then members by id, then booking rows by id, then the slot insert. All of them are held until the transaction ends."
+            aria-label="The new-slot path takes the member lock, checks availability, takes resource locks in sorted order and rechecks their availability, then inserts the slot under database overlap constraints. Locks remain held through commit."
         >
             <Plate w={w} h={h} ground={LOCK_GROUND[narrow ? "narrow" : "wide"]}>
                 <text className="fig-title" x="0" y="18">
-                    always this order
+                    creating a new slot
                 </text>
                 <path
                     className="fig-water"

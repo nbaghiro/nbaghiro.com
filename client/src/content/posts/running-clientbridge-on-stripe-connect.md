@@ -1,5 +1,6 @@
 title: Running Clientbridge as a Stripe Connect platform
 date: 2026-10-29
+updated: 2026-11-03
 about: Clientbridge
 cover: /img/posts/running-clientbridge-on-stripe-connect-wide.webp
 card: /img/posts/running-clientbridge-on-stripe-connect-card.webp
@@ -18,7 +19,7 @@ Clientbridge creates those accounts through the Accounts v2 API. In v2 an accoun
 - **merchant**, for a business that takes payments from its clients. It requests the `card_payments` and `link_payments` capabilities and sets the statement descriptor from the business's name.
 - **customer**, for a business that pays Clientbridge for its plan. It requests `automatic_indirect_tax`, so Stripe Tax can place the business by its address and charge the right sales tax on the plan.
 
-The same account is both. The business that collects a client's deposit is the same legal entity that pays the monthly plan, so it is verified once and its address is entered once.
+The same account is both. The business that collects a client's deposit is the same legal entity that pays the monthly plan, so the configurations can share identity information already supplied. Stripe can still request updated or additional information later.
 
 ![A client pays into the business's own Stripe account, which pays out to the business's bank. The merchant configuration sends Clientbridge its application fee, and the customer configuration pays the plan.](figure:connect-accounts)
 
@@ -51,13 +52,13 @@ Each of these fields assigns a piece of work to either Stripe or the platform.
 
 `losses_collector: stripe` means Stripe is liable for the business's negative balances. A balance goes negative when more leaves the account than is in it: a refund larger than the available funds, or a chargeback after the money has been paid out. With this setting, that shortfall is between Stripe and the business. Clientbridge remains liable for negative balances on its own platform account, but not for those of the businesses it serves.
 
-`dashboard: none` means the business never signs in to Stripe. Everything it needs, from onboarding to payouts, is provided inside Clientbridge.
+`dashboard: none` means Clientbridge does not give the business a separate Stripe Dashboard. It provides onboarding and payment-management screens through embedded components, which can still require Stripe authentication.
 
-Those two choices also decide who verifies the business. Stripe documents that it collects the identity and business requirements (know your customer, or KYC) in most configurations, and that the platform takes this on only when it holds the losses and gives the business no dashboard. Because Clientbridge leaves losses with Stripe, Stripe collects and reviews the documents, tracks what is due and by when, and decides whether the account can take payments.
+These choices also affect who collects verification requirements. [Stripe's configuration documentation](https://docs.stripe.com/connect/accounts-v2/connected-account-configuration) describes how loss responsibility and dashboard access determine that assignment. In this configuration Stripe collects and reviews the requirements; Clientbridge presents their status and the embedded flow for supplying information.
 
 ![What Stripe handles and what Clientbridge handles, once the account's responsibilities are set.](figure:who-handles-what)
 
-This is what makes payments practical for a small platform. Verifying identities, assessing risk and covering fraud losses need specialist teams and are subject to financial regulation. With these settings, Stripe does that work for every business on Clientbridge.
+The responsibility settings let Clientbridge use Stripe's verification and connected-account risk processes. They do not remove Clientbridge's responsibility for its own platform balance, application behavior or obligations under its agreements.
 
 The tradeoff is control. Stripe decides when an account needs more information and whether it can accept payments. Clientbridge can show the business what Stripe needs and link it to the place to provide it, but it cannot override Stripe's decision.
 
@@ -99,18 +100,20 @@ The same pattern covers each way a client can pay:
 - **A Canadian pre-authorized debit.** The intent is limited to `acss_debit` and refers to a mandate the client has already accepted.
 - **A membership.** It is a Stripe subscription on the business's account, using a price created on that account, with `application_fee_percent` instead of a fixed amount.
 
-Every request that creates something has an idempotency key derived from the operation it represents. A retry after a timeout therefore refers to the same payment and does not create a second one.
+Creation requests use an idempotency key tied to the intended operation. Recovery must retain that identity and its parameters, then observe the provider's retention and retry rules. For [Stripe API v1](https://docs.stripe.com/api/idempotent_requests), a saved response is reused while the key is retained, including some error responses. A stable key does not make an indefinitely delayed retry safe without checking the existing operation.
 
 ### Sizing the fee
 
-Clientbridge's fee is calculated against Stripe's. The total of Stripe's percentage and Clientbridge's percentage has a ceiling, and Clientbridge's own share is also capped. Our share is what fits under the ceiling:
+Clientbridge calculates its fee using configured estimates of Stripe's percentage for the method. It caps its own share and the modeled combined percentage:
 
 ```python
 room = ceiling_bps - stripe_bps        # stripe_bps depends on the method
 fee = amount * max(0, min(room, max_bps)) // 10000
 ```
 
-A card costs more in Stripe fees than a pre-authorized debit, so Clientbridge takes less on a card. On a debit, Clientbridge's share reaches its own cap before the combined percentage reaches the ceiling. A charge in another currency adds Stripe's conversion fee, which can take Stripe's share past the ceiling on its own, and then Clientbridge takes nothing. Stripe's fixed amount per payment is charged on top in every case.
+With those configured rates, a card leaves less room for Clientbridge's share than a pre-authorized debit. A configured conversion surcharge can use all the remaining room, reducing the application fee to zero. Fixed fees sit outside this percentage calculation.
+
+This is a pricing rule, not a measurement of each transaction's eventual effective cost. The final balance transaction can include fee details that differ from the estimate. Those reported amounts belong in reconciliation; the formula should not be advertised as an unconditional cap on every processing charge.
 
 ![Three charges drawn against the ceiling: a card, a pre-authorized debit and a card in another currency. Schematic, not to scale.](figure:fee-ceiling)
 
@@ -130,19 +133,19 @@ Clientbridge receives three event streams:
 - thin v2 events about the accounts themselves
 - platform account events for its own plan subscriptions
 
-The first and third are snapshot events. Each one carries the object as it was when the event happened, rendered at the API version of the endpoint. A thin event carries only the id of the object it is about. The handler reads the account's current state from Stripe when it processes the event, so a thin event is never parsed at an old version and never describes a state that has since changed.
+The first and third are snapshot events, carrying an object representation associated with the event and its API version. Thin v2 notifications identify the affected object; the handler retrieves its state when processing the notification. That read can be newer than the event, but it can also change again afterward. It still needs the appropriate API contract and concurrency handling.
 
 Each event is processed in the same order:
 
 1. **Verify** the signature.
 2. **Check the API version.** Payloads are parsed against one pinned Stripe API version. An event rendered at another version is rejected, and its payload is kept so the event is not lost.
 3. **Deduplicate.** The event id is the primary key of the webhooks table, and the row is locked while it is processed. A second delivery of a processed event does nothing. If two deliveries race, the one that loses on the key steps aside.
-4. **Apply in one transaction.** The event's effect and the notice it sends the client commit together, or neither commits.
+4. **Apply in one transaction.** The local business changes and queued notification record commit together. Sending that notification is later work; a committed queue record is not proof of delivery.
 5. **Keep failures.** An event that raises is stored with its payload in a failed row, so it remains visible after Stripe stops retrying.
 
 ![The five steps every Stripe event passes through, and the replay job that feeds missed events back into the same path.](figure:event-pipeline)
 
-The notice in step 4 is only sent while the event is recent. If an event arrives more than a day after it happened, Clientbridge still updates its records but does not send the client a message about something that is already old. The exception is an issued gift card, which the client still needs to receive.
+For most event types, the handler only queues a client notice while the event is recent. Events older than a day still update records without generating the usual notice. Issued gift cards are an exception because their recipients still need the card.
 
 Stripe retries deliveries, but an event can still be missed. A scheduled job looks for undelivered events from the past seven days, re-reads each affected object from Stripe and applies the event that the object's current state represents. If a payment has been refunded since the missed event, the replay applies the refund rather than the earlier state. Account events cannot be listed as undelivered, so the job re-reads the account itself. Each run is capped at 100 events per account and 500 in total, so one account with a long backlog cannot hold up the others.
 
@@ -157,8 +160,8 @@ Refunds, disputes and payouts are recorded the same way from their events. Payou
 
 Because each entry comes from the event that caused it, the business's books in Clientbridge can be checked against Stripe's balance transactions, and Stripe remains the authority on what actually moved.
 
-## What Stripe handles, and what remains
+## What remains with Clientbridge
 
-Stripe handles identity verification and ongoing requirements, card network rules, holding and paying out funds, the dispute process, and the losses when a business cannot cover its balance. These are the parts of payments that need licences, risk teams and agreements with the card networks.
+For this configuration, Stripe provides the payment infrastructure, verification process and assigned connected-account loss handling. Clientbridge decides when to request a charge, calculates the amount and sales tax, presents the invoice and receipt, and reconciles its records with Stripe.
 
-Clientbridge handles when a charge happens and for how much, the sales tax on it, the invoice and receipt, and keeping its records consistent with Stripe through retries, concurrent deliveries and missed events. That work is substantial, but it is ordinary software engineering. Without Connect, the parts Stripe handles would need a regulated payments operation of Clientbridge's own.
+The boundary needs to remain visible during failures. An accepted payment can still need a local invoice update; a committed notification can still need delivery; a missed event can still need replay. The integration is complete only when those application states are recoverable as well.

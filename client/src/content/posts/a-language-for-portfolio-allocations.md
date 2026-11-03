@@ -1,5 +1,6 @@
 title: A language for portfolio allocations
 date: 2026-10-18
+updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/a-language-for-portfolio-allocations-wide.webp
 card: /img/posts/a-language-for-portfolio-allocations-card.webp
@@ -7,9 +8,7 @@ summary: LlamaTrade represents strategies as trees of allocation rules. A worked
 
 LlamaTrade uses a small domain-specific language to describe portfolio allocations. A strategy can divide capital between groups, select assets, and change its allocation when a condition is met. The evaluator returns target weights. A separate session decides when to rebalance and turns those weights into intended orders.
 
-That separation gives the language a specific job. It needs to describe how allocations compose, preserve that meaning when a strategy is edited, and make its data requirements available before evaluation begins.
-
-The syntax uses S-expressions: parenthesised forms whose first item names the operation. Each allocation form corresponds to a node in a tree. The visual editor has its own representation of that tree, and the backend parses the text into Python objects.
+The syntax uses S-expressions: parenthesised forms whose first item names the operation. Each allocation form corresponds to a node in a tree. The visual editor has its own representation of that tree, and the backend parses the text into Python objects. They currently support different subsets of conditions: compound `and`, `or` and `not` expressions do not survive visual import correctly. The editor limitation is described below.
 
 ## Following one strategy through the system
 
@@ -99,7 +98,13 @@ result[symbol]   = combined[symbol] * 100 / sum(combined)
 
 The normalisation step also explains some less apparent behaviour. If two branches allocate to the same symbol, their contributions are added. If a conditional child returns an empty allocation, it contributes nothing and the remaining contributions are normalised to 100%.
 
-An empty branch therefore does not reserve its former share as cash. If the entire allocation is empty, `StrategySession` currently returns no intended orders. That is different from issuing orders to liquidate existing holdings. The meaning of an empty result has to be understood at both the evaluator and session layers.
+There are three different outcomes to keep separate:
+
+- An empty child contributes no weight; the remaining children are normalised to 100%.
+- An entirely empty allocation makes `StrategySession` return no intended orders, leaving existing holdings untouched by that evaluation.
+- Liquidating holdings requires an explicit execution decision. An empty allocation is not a sell-all instruction.
+
+For example, if a 60% child disappears and the remaining child holds bonds, normalisation gives the bonds 100%. It does not reserve 60% as cash.
 
 Equal weighting also operates on child blocks. An equal block containing a nested pair and one standalone asset assigns half to each child. The nested pair splits its half, producing 25%, 25%, 50%. Flattening the tree first would change the meaning to three equal shares.
 
@@ -136,15 +141,11 @@ The backtest and live runner both use this session implementation. Sharing those
 
 ## Preserving meaning through the editor
 
-The browser uses TypeScript and stores blocks by id, with parent and child references. The backend uses nested Python nodes. The serializer translates between the visual tree and the text form.
+The browser stores blocks by id, with parent and child references; Python uses nested nodes. Shared examples compare their canonical JSON and test parse/emit round trips. Losing a group's `:weight 60` can leave valid text with different allocations, so these comparisons retain values and structure.
 
-The tests use canonical JSON to compare these representations. For the shared corpus, Python parses each source file and compares the result with committed JSON. It also serialises and reparses the strategy. The TypeScript tests parse the same cases, project the editor tree to the canonical shape, and check a parse/emit round-trip.
+The current importer handles comparisons and crossovers, but not Python's compound `and`, `or` and `not` conditions. Importing an unsupported condition falls back to a default price comparison. Until the importer rejects or represents those expressions, a strategy using them must not be assumed to survive visual editing unchanged.
 
-Comparing the full tree is useful here. Losing a group's `:weight 60` can leave text that still parses while changing the resulting allocation. The round-trip tests compare values and structure, rather than checking only that the parser accepts the output.
-
-The corpus establishes agreement for its cases, not the whole grammar. One current gap is compound logical conditions. Python supports `and`, `or` and `not`, while the editor importer handles comparisons and crossovers. In a direct check, importing an `and` condition and emitting it again replaced it with the importer's default price comparison. Such expressions cannot currently be assumed to survive visual editing unchanged.
-
-The worked allocation example in this article was checked separately through the Python evaluator and through a TypeScript parse/emit cycle. It produced 30%, 30%, 40%, and its canonical tree survived that editor round-trip. Those checks are specific to the example.
+[Preserving a strategy through the editor](https://nbaghiro.com/blogs/preserving-a-strategy-through-the-editor) follows that conversion and its tests. The 30%, 30%, 40% example here was checked through both the evaluator and an editor round trip.
 
 ## Testing a language's behaviour
 
@@ -152,4 +153,4 @@ The tests need to cover several different contracts. Parser tests check accepted
 
 For this review, 438 Python cases passed across the DSL suite and the selected composition, session and condition-evaluation suites. The two selected TypeScript suites also passed 99 cases using the available test runner. That is evidence for those tested behaviours. It does not make the editor importer a complete implementation of the backend grammar, or establish that a valid strategy is economically useful.
 
-The main design responsibility is keeping each layer's meaning explicit. A group owns a share, a child subdivides it, a filter preserves relative weights, and a session converts the resulting allocation into intended orders. Those rules determine what the strategy does, and they need the same attention as the syntax used to write it.
+A group receives a share from its parent, a child subdivides it, and a filter preserves the selected symbols' relative weights. A session then turns the final allocation into intended orders. Those are the contracts the language tests need to preserve.

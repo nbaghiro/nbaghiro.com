@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Terraform and Pulumi</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* The same three things on both sides, so the only difference in the picture is
+       what joins them: a dashed pointer across a gap, or two arrows and a check. Same fog,
+       ink hairlines and water-coloured accent as the other plates. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center var(--crop, 46%);
+                filter: saturate(0.68) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.32) 0%,
+                    rgba(233, 236, 234, 0.54) 16%,
+                    rgba(233, 236, 234, 0.82) 32%,
+                    rgba(233, 236, 234, 0.9) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .mist.dash {
+                stroke-dasharray: 5 4;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .water.faint {
+                stroke: #9aa8a3;
+                stroke-dasharray: 5 4;
+            }
+            .head {
+                fill: #4e7872;
+                stroke: none;
+            }
+            .fillbox {
+                fill: rgba(27, 37, 34, 0.08);
+                stroke: none;
+            }
+            .pill {
+                fill: #e9ecea;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.mono {
+                font-size: 11.5px;
+                fill: #46544f;
+            }
+            text.pale {
+                fill: #9aa8a3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="ph-slot.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // Three nodes a side: the pools the pods open, the number in the middle, and the
+            // flag the instance is created with. On the left the middle is missing and a
+            // dashed pointer crosses the gap. On the right it is a function, and the join is
+            // an assertion, so the picture closes.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            sheet.style.setProperty("--crop", wide ? "14%" : "34%");
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, rx: 3, class: cls });
+            const line = (x1, y1, x2, y2, cls, extra = {}) =>
+                el("line", { x1, y1, x2, y2, class: cls, ...extra });
+            const txt = (x, y, s, cls = "", anchor = "start") =>
+                el("text", { x, y, class: cls, "text-anchor": anchor }, s);
+
+            const defs = document.createElementNS(ns, "defs");
+            defs.innerHTML =
+                '<marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">' +
+                '<path d="M0 0 L8 4 L0 8" class="head"/></marker>' +
+                '<marker id="b" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">' +
+                '<path d="M0 0 L8 4 L0 8" fill="#9aa8a3"/></marker>';
+            S.appendChild(defs);
+
+            const NW = 300;
+            const NH = wide ? 50 : 60;
+            const LEFT = 60;
+            const RIGHT = 640;
+            const TOP = wide ? 96 : 236;
+            const GAP = wide ? 78 : 104;
+            const row = (i) => TOP + i * (NH + GAP - NH + (wide ? 34 : 48)) + i * NH;
+            const ROWS = [0, 1, 2].map((i) => TOP + i * (NH + (wide ? 36 : 50)));
+            const cx = (x) => x + NW / 2;
+
+            // the divider between the two readings of the same rule
+            line(500, TOP - 46, 500, ROWS[2] + NH + 30, "mist dash");
+
+            const node = (x, y, name, sub, faded) => {
+                rect(x, y, NW, NH, faded ? "pill" : "pill");
+                if (!faded) rect(x, y, NW, NH, "fillbox");
+                txt(x + 18, y + (wide ? 21 : 25), name, "name");
+                txt(x + 18, y + (wide ? 39 : 45), sub, "mono");
+            };
+
+            const heading = (x, title, sub) => {
+                txt(x, TOP - 46, title, "name");
+                txt(x, TOP - 26, sub, "pale");
+            };
+
+            heading(LEFT, "Terraform", "the rule is written down");
+            heading(RIGHT, "Pulumi", "the rule is arithmetic");
+
+            // the two outer nodes are the same on both sides
+            const pools = ["pod connection pools", "DB_POOL_SIZE + DB_MAX_OVERFLOW"];
+            const flag = ["the instance", "max_connections"];
+
+            node(LEFT, ROWS[0], pools[0], pools[1]);
+            node(RIGHT, ROWS[0], pools[0], pools[1]);
+            node(LEFT, ROWS[2], flag[0], flag[1]);
+            node(RIGHT, ROWS[2], flag[0], flag[1]);
+
+            // LEFT: nothing in the middle, and a dashed pointer straight past it
+            const lx = cx(LEFT);
+            line(lx, ROWS[0] + NH, lx, ROWS[2], "water faint", {
+                "marker-end": "url(#b)",
+            });
+            rect(lx - 86, ROWS[1] + (wide ? 6 : 10), 172, wide ? 34 : 38, "pill");
+            txt(lx, ROWS[1] + (wide ? 28 : 36), "a comment", "pale", "middle");
+
+            // RIGHT: the middle is a function, and the last join is an assertion
+            const rx = cx(RIGHT);
+            node(RIGHT, ROWS[1], "peak_connections()", "rollout, and migrating");
+            line(rx, ROWS[0] + NH, rx, ROWS[1], "water", {
+                "marker-end": "url(#a)",
+            });
+            line(rx, ROWS[1] + NH, rx, ROWS[2], "water", {
+                "marker-end": "url(#a)",
+            });
+            txt(rx + 14, ROWS[1] + NH + (wide ? 24 : 32), "assert ≤", "mono");
+
+            // the check that closes it
+            const ty = ROWS[2] + NH + (wide ? 26 : 32);
+            el("path", {
+                d: `M${RIGHT} ${ty - 5} l7 7 l15 -17`,
+                class: "water",
+            });
+            txt(RIGHT + 30, ty + 4, "checked in CI, with no cloud account", "pale");
+            txt(LEFT, ty + 4, "checked by whoever reads it", "pale");
+        </script>
+    </body>
+</html>

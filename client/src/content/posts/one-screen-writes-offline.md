@@ -1,5 +1,6 @@
 title: Offline reads and a queued working-week edit
 date: 2026-10-02
+updated: 2026-11-03
 about: Clientbridge
 cover: /img/posts/one-screen-writes-offline-wide.webp
 card: /img/posts/one-screen-writes-offline-card.webp
@@ -7,7 +8,7 @@ summary: Clientbridge reads replicated business data locally, while the server s
 
 Clientbridge combines booking, invoicing and payments for service businesses. Its web and mobile clients keep a local replica of business data so they can read information already synced to the device when the connection is poor.
 
-That does not mean every action can be completed offline. A booking needs to be checked against other bookings, working hours and resource availability. A local copy may not include a change another device has just made.
+Booking confirmation still needs current working hours, capacity and other bookings, which a disconnected device may not have.
 
 The design separates local reads from authoritative writes. Most writes go through server commands. The working-week editor has a narrower offline path: it queues a proposal for the server to accept or reject later.
 
@@ -17,7 +18,7 @@ Postgres is the source of truth, and PowerSync replicates the rows selected by t
 
 ![Replicated data travels from Postgres to local SQLite. Commands go to the server, and their resulting changes return through replication.](figure:two-paths)
 
-This improves access to already-synced data, but it does not guarantee that every screen opens instantly or that no read ever uses an API. Initial synchronization, missing data and older history still need handling.
+Initial synchronization, missing data and older history still need explicit loading and recovery states.
 
 The code subscribes to a moving window for time-based history: twelve months back and twenty-four ahead. Older records can be requested online. Other replicated tables have different retention needs.
 
@@ -41,7 +42,9 @@ The working-week editor can save a local proposal when it cannot reach the serve
 
 An uploader sends it as a typed command. The server checks authorization, takes the relevant locks, and compares the current revision with the one the device expected. If another change has already advanced the revision, the command rejects the proposal for review rather than merging it silently.
 
-This makes the offline action precise: the device has saved an edit to be submitted. It has not confirmed that the business's working hours have changed.
+Suppose two devices start from hours revision 12. Device A saves a Monday edit offline; device B changes the week online and advances it to revision 13. When A reconnects, its proposal still expects 12 and is rejected for review. The user needs to compare the proposed week with the accepted week, then revise or discard the proposal. Silently applying A would erase the decision made on B.
+
+Until acceptance, the interface is showing an edit saved on this device, not confirmed business hours.
 
 ## Retries need a stable identity
 
@@ -71,6 +74,6 @@ These checks make the proposal more than a delayed update. The server validates 
 
 The queue needs ordering, stable payloads, retry identities, revision checks and a clear rule for confirmation. It also needs a usable response when the server refuses an edit.
 
-That is a meaningful maintenance cost, even for one editor. It should be weighed against the value of accepting that particular action while disconnected.
+The outbox is durable local data, not a second server backup. Closing the app differs from explicitly clearing its replica: the lifecycle has a discard path that removes local data. A sign-out flow must therefore distinguish disconnecting from discarding pending proposals and tell the user before unsent work is lost. Browser storage removal can also remove a proposal that never reached the server.
 
-For Clientbridge, local reads cover much of the day-to-day use, while the server retains decisions that depend on shared capacity or financial state. Working-week edits use a queued proposal because their acceptance can be deferred and their conflicts can be presented for review. Other offline actions would need their own justification and conflict behavior.
+Other offline actions need their own acceptance rules, conflict behavior and local-data lifecycle. Reusing the queue alone does not supply those decisions.

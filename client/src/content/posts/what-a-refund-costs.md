@@ -1,5 +1,6 @@
 title: What a refund costs the business
 date: 2026-09-16
+updated: 2026-11-03
 about: Payments
 category: Industry & practice
 cover: /img/posts/what-a-refund-costs-wide.webp
@@ -22,7 +23,13 @@ Looking only at the 90 sales that remained would leave out the fees on the ten r
 
 ## Keeping the amounts distinct
 
-The returned $1,000 and the $300 fee answer different questions. The first is money returned to customers. The second is the processing expense in this example. Combining them into one number called the cost of refunds would make it harder to understand where the money went.
+The example contains three different amounts:
+
+- **$1,000 returned principal:** the purchase amounts sent back to customers.
+- **$300 total processing expense:** fees on all 100 original payments.
+- **$30 fees attributable to refunded payments:** ten payments at the hypothetical $3 fee.
+
+Calling all $1,300 the cost of refunds would combine returned revenue with processing expense. Calling $300 the fees caused by the ten refunds would include the $270 paid on retained sales.
 
 The remaining amount is not a profit calculation either. It says nothing about the cost of providing the service, delivering goods, handling support or running the business. The example is deliberately limited to the payment movements and fees.
 
@@ -38,9 +45,7 @@ For a first comparison, the aim can stay modest: apply each arrangement to the s
 
 ## What the records have to hold
 
-The question is only answerable later if the data is kept at the time. A charge that stores
-its amount but not the fee deducted from it cannot be reconciled without going back to the
-provider's statements and matching by hand.
+Store provider identifiers so a payment and its refunds can be linked to reported fees. Missing local fee details can sometimes be retrieved through provider APIs; without identifiers, reconciliation may require more expensive statement matching.
 
 For each payment I would keep the gross amount, the fee as the provider reported it, the net
 received and the identifier the provider used. A refund needs the payment it belongs to, its
@@ -53,18 +58,13 @@ the settled amount is the one to reconcile against, not the amount shown at chec
 
 ## Pricing shapes behave differently
 
-Flat-rate pricing quotes one percentage and a fixed amount per transaction. Interchange-plus
-separates the network's cost from the processor's margin. Blended pricing averages across card
-types. The same month of transactions can produce different totals under each, and refunds
-interact with each differently.
+A flat-rate arrangement may use a blended percentage plus a fixed fee across several card types. Interchange-plus exposes interchange separately from the processor's markup. Those are useful distinctions, but “flat-rate” and “blended” are not mutually exclusive categories. Refund treatment must still be read for the actual agreement.
 
 A card mix matters here as well. Premium consumer cards and commercial cards often carry higher
 interchange than standard debit. A business whose customers mostly tap a debit card has a
 different cost profile from one taking corporate cards, even at identical volume.
 
-None of that is visible in a headline rate, and none of it is a reason to assume the worst. It
-is a reason to run the comparison on the business's own transaction mix rather than on a round
-number.
+Use the same transaction mix for each comparison, including payment method, currency and refunds.
 
 ## Reconciling what actually happened
 
@@ -72,4 +72,4 @@ Afterward, the provider's records should be used to check the calculation. I wou
 
 Timing matters to that review. A payment collected in one period may be refunded in another. Comparing a month's refunds with only that month's new sales can mix different groups of transactions. Reviewing a group of payments together with their later refunds answers a different question from reviewing cash movements during a calendar month; both views can be useful if they are labeled clearly.
 
-This gives the business a more complete picture of payment costs. The original sale, the amount returned and the fees that remain are all visible, so a low headline rate does not have to carry more meaning than it actually provides.
+Cancellation and refund are also different operations. [Stripe distinguishes cancelling an incomplete payment from refunding a successful one](https://docs.stripe.com/refunds). Where cancellation is still available, its fee treatment can differ from a refund after processing. The comparison should use the operation the business would actually perform.

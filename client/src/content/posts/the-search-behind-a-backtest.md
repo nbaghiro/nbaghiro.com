@@ -1,5 +1,6 @@
 title: How many strategies were tested before this one
 date: 2026-09-18
+updated: 2026-11-03
 about: Research methods
 category: Industry & practice
 cover: /img/posts/the-search-behind-a-backtest-wide.webp
@@ -20,7 +21,18 @@ Bailey, Borwein, López de Prado and Zhu examine this selection problem in [The 
 
 ## Keeping a record before choosing
 
-For the example, I would record the reason for trying those parameters, the data period, the code revision and the assumptions about execution and costs. Each run would keep its configuration and result, including configurations that were later rejected.
+For the 24-configuration example, a run record could contain:
+
+```
+Experiment      Hypothesis and selection metric
+Inputs          Universe snapshot, data version, interval, date range
+Implementation  Code revision and parameter values
+Execution       Decision timestamp, fill rule, costs and slippage
+Selection       Development data and evaluation data already inspected
+Outcome         Metrics, selected/rejected status and reason
+```
+
+Keep one record for each trial, including manual changes to dates, assets and assumptions.
 
 That record makes subsequent questions answerable. Did a change follow a stated hypothesis, or was it introduced after seeing a disappointing result? Was the asset universe available at the time being simulated? Did the cost assumptions change between runs?
 
@@ -32,24 +44,17 @@ Data reserved for evaluation loses that role if its results are repeatedly used 
 
 I would decide in advance which data can guide development and when the reserved evaluation will be examined. If the result prompts further work, I would record that the evaluation informed the revision. A new assessment then needs to account for that history rather than presenting the revised strategy as untouched by it.
 
-This can feel inconvenient when historical data is limited. It is still useful to acknowledge the limit. Reusing the same information while describing each attempt as a fresh test would make the evidence look stronger than it is.
+Three parts of evaluation need separate records. Parameter search chooses among alternatives; holdout discipline controls which outcomes influenced that choice; chronological evaluation checks how decisions perform on later data. A walk-forward process can repeat development and later evaluation in time order, but its schedule and selection rule must also be fixed or recorded when changed.
+
+The cited paper's combinatorially symmetric cross-validation compares selection performance across data partitions to estimate overfitting risk. Keeping a trial log makes that kind of analysis possible; the log alone does not calculate the probability.
 
 ## What the simulation leaves out
 
-A backtest computes what a rule would have decided. Whether those decisions could have been
-carried out is a separate question, and the gap between them is where a good-looking result
-often goes.
+A backtest calculates decisions and simulated outcomes under an execution model. The reported result depends on whether that model reflects when and how the intended orders could trade.
 
-Fills are the first assumption. A simulation that executes at the closing price assumes the
-order could be placed at that price, in that size, at that moment. For a liquid instrument in
-modest size that is close enough to be useful. For a thinly traded one, or a position large
-relative to the volume that day, it is a claim about market impact that the backtest is not in a
-position to make.
+Fills are the first assumption. Execution at the closing price needs a specific order-timing model, available information and treatment of slippage. Liquidity and modest size can reduce some execution costs, but do not by themselves establish that a decision made from the close could have traded at that same close.
 
-Survivorship is the second. A universe assembled from the instruments that exist today has
-quietly excluded everything that was delisted, merged or failed. Returns measured over a
-universe selected by having survived are higher than returns that were available at the time,
-and nothing in the chart indicates it.
+Survivorship is another source of distortion. A universe assembled only from instruments that exist today excludes delisted, merged or failed instruments. That selection can bias results; the size and direction depend on the strategy and data. The report should identify how the historical universe was constructed.
 
 Corporate actions, borrowing costs for short positions and the timing of data availability each
 add their own version of the same problem. A price series revised after the fact contains
@@ -60,10 +65,7 @@ information the strategy could not have had on the day.
 The record described here is most useful for the experiments that were abandoned, and those are
 the ones least likely to get written up.
 
-A configuration tried and rejected is evidence. It documents part of the search, and without it
-the surviving strategy looks like a first idea that happened to work. Six months later, the same
-parameter will look promising again to the same person, and the record is what prevents a second
-run at it.
+Rejected configurations document the search as well as the selected result. Keep the configuration, outcome and reason for rejecting it so later work can distinguish a new hypothesis from one already tested.
 
 A short note is usually enough: what was tried, what the result was, and why it was set aside.
 Whether it was rejected on the evidence or on a judgement about the mechanism is worth stating,

@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Deciding what runs next</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* The workflow as it is drawn, with the branch nobody took left open and the join
+       after it still reached. Same fog, ink hairlines and water-coloured accent as the
+       other plates, so the two FlowMaestro covers read as a pair. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center var(--crop, 46%);
+                filter: saturate(0.68) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.32) 0%,
+                    rgba(233, 236, 234, 0.54) 16%,
+                    rgba(233, 236, 234, 0.82) 32%,
+                    rgba(233, 236, 234, 0.9) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .mist.dash {
+                stroke-dasharray: 5 4;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .water.faint {
+                stroke: #9aa8a3;
+                stroke-dasharray: 5 4;
+            }
+            .head {
+                fill: #4e7872;
+                stroke: none;
+            }
+            .fillbox {
+                fill: rgba(27, 37, 34, 0.08);
+                stroke: none;
+            }
+            .pill {
+                fill: #e9ecea;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.mono {
+                font-size: 11.5px;
+                fill: #46544f;
+            }
+            text.pale {
+                fill: #9aa8a3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="ph-callers.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+            // Eight nodes, nine edges. The conditional took one branch, the other is left
+            // open, and the join after them is still reached because one parent completed.
+            const S = document.getElementById("plate");
+            const sheet = document.querySelector(".sheet");
+            const [PW, PH] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            sheet.style.setProperty("--w", `${PW}px`);
+            sheet.style.setProperty("--h", `${PH}px`);
+            const wide = PW / PH > 2;
+            sheet.style.setProperty("--crop", wide ? "8%" : "32%");
+            const VB = wide ? [1000, 384] : [1000, 667];
+            S.setAttribute("viewBox", `0 0 ${VB[0]} ${VB[1]}`);
+
+            const ns = "http://www.w3.org/2000/svg";
+            const el = (name, attrs, text) => {
+                const n = document.createElementNS(ns, name);
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text !== undefined) n.textContent = text;
+                S.appendChild(n);
+                return n;
+            };
+            const rect = (x, y, w, h, cls) =>
+                el("rect", { x, y, width: w, height: h, class: cls });
+            const line = (x1, y1, x2, y2, cls) =>
+                el("line", { x1, y1, x2, y2, class: cls });
+            const defs = document.createElementNS(ns, "defs");
+            defs.innerHTML =
+                '<marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">' +
+                '<path d="M0 0 L8 4 L0 8" class="head"/></marker>' +
+                '<marker id="b" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">' +
+                '<path d="M0 0 L8 4 L0 8" fill="#9aa8a3"/></marker>';
+            S.appendChild(defs);
+
+            const NW = 112;
+            const NH = wide ? 46 : 56;
+            const COLS = [46, 204, 362, 520, 678, 836];
+            const ROWS = wide ? [88, 170, 252] : [196, 300, 404];
+            const mid = (y) => y + NH / 2;
+
+            // name, column, row, caption, whether the run left it untouched
+            const NODES = [
+                ["trigger", 0, 1, "input", false],
+                ["enrich", 1, 0, "http", false],
+                ["score", 1, 2, "llm", false],
+                ["check", 2, 1, "conditional", false],
+                ["notify", 3, 0, "http", false],
+                ["nurture", 3, 2, "skipped", true],
+                ["record", 4, 1, "http", false],
+                ["done", 5, 1, "output", false],
+            ];
+
+            const edge = (from, to, faint) => {
+                const [c1, r1] = from;
+                const [c2, r2] = to;
+                const x1 = COLS[c1] + NW;
+                const y1 = mid(ROWS[r1]);
+                const x2 = COLS[c2] - 6;
+                const y2 = mid(ROWS[r2]);
+                el("path", {
+                    d: `M${x1} ${y1} C${x1 + 26} ${y1}, ${x2 - 26} ${y2}, ${x2} ${y2}`,
+                    class: faint ? "water faint" : "water",
+                    "marker-end": faint ? "url(#b)" : "url(#a)",
+                });
+            };
+
+            edge([0, 1], [1, 0]);
+            edge([0, 1], [1, 2]);
+            edge([1, 0], [2, 1]);
+            edge([1, 2], [2, 1]);
+            edge([2, 1], [3, 0]);
+            edge([2, 1], [3, 2], true);
+            edge([3, 0], [4, 1]);
+            edge([3, 2], [4, 1], true);
+            edge([4, 1], [5, 1]);
+
+            for (const [name, c, r, note, open] of NODES) {
+                const x = COLS[c];
+                const y = ROWS[r];
+                if (!open) rect(x, y, NW, NH, "fillbox");
+                rect(x, y, NW, NH, open ? "mist dash" : "ink");
+                el(
+                    "text",
+                    {
+                        x: x + NW / 2,
+                        y: y + NH / 2 - 2,
+                        class: open ? "name pale" : "name",
+                        "text-anchor": "middle",
+                    },
+                    name
+                );
+                el(
+                    "text",
+                    {
+                        x: x + NW / 2,
+                        y: y + NH / 2 + 15,
+                        class: open ? "mono pale" : "mono",
+                        "text-anchor": "middle",
+                    },
+                    note
+                );
+            }
+
+            // the two handles the conditional chose between
+            const hx = (COLS[2] + NW + COLS[3]) / 2;
+            const label = (y, t, pale) => {
+                const w = t.length * 6.4 + 16;
+                rect(hx - w / 2, y - 11, w, 20, "pill");
+                el(
+                    "text",
+                    {
+                        x: hx,
+                        y: y + 3,
+                        class: pale ? "mono pale" : "mono",
+                        "text-anchor": "middle",
+                    },
+                    t
+                );
+            };
+            label((mid(ROWS[1]) + mid(ROWS[0])) / 2, "true", false);
+            label((mid(ROWS[1]) + mid(ROWS[2])) / 2, "false", true);
+
+            // the measured rule the other plates close on, with the qualification the post makes
+            const ruleY = ROWS[2] + NH + (wide ? 28 : 54);
+            line(46, ruleY, 954, ruleY, "ink thin");
+            for (let i = 0; i <= 4; i += 1) {
+                const x = 46 + ((954 - 46) / 4) * i;
+                line(x, ruleY - (i % 4 === 0 ? 6 : 4), x, ruleY, "ink thin");
+            }
+            el(
+                "text",
+                { x: 46, y: ruleY + 18 },
+                "the join still runs: every dependency settled, and one of them completed"
+            );
+
+            // registration ticks
+            const R = 18;
+            const B2 = VB[1] - 26;
+            for (const [x, y, sx, sy] of [
+                [30, 26, 1, 1],
+                [970, 26, -1, 1],
+                [30, B2, 1, -1],
+                [970, B2, -1, -1],
+            ]) {
+                line(x, y, x + R * sx, y, "ink thin");
+                line(x, y, x, y + R * sy, "ink thin");
+            }
+        </script>
+    </body>
+</html>

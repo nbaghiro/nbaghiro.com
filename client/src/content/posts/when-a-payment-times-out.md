@@ -1,5 +1,6 @@
 title: When a payment times out
 date: 2026-09-13
+updated: 2026-11-03
 about: Payments
 category: Industry & practice
 cover: /img/posts/when-a-payment-times-out-wide.webp
@@ -38,13 +39,9 @@ The order and payment records should make these stages distinguishable. A confir
 
 Not every uncertain payment gets resolved by someone refreshing a page. A customer can close
 the tab and not come back. The system still has a record saying an operation was attempted and
-no confirmation arrived, and something has to finish that story.
+no confirmation arrived, and a recovery process still needs to resolve it.
 
-A periodic reconciliation pass can query the provider for operations left in an unresolved
-state past some age, using the identifier stored with the attempt. The provider's record is the
-authority on whether money moved. Where it says the charge exists, the local record is updated
-and any fulfillment that was waiting can proceed. Where it has no such charge, the attempt can
-be closed as never completed.
+A periodic reconciliation pass can retrieve unresolved operations using the provider identifiers stored with them. A confirmed successful payment can advance the local payment record and any pending fulfillment. A no-match response needs the provider's documented processing and lookup semantics before it can be interpreted as a definitive failure. It is not automatically permission to start another charge.
 
 That pass needs a defined age before it acts. Querying immediately races the original request.
 Waiting too long leaves the customer without an answer and the business without the funds
@@ -53,17 +50,18 @@ which is a documented property worth looking up rather than guessing.
 
 ## Deciding how long uncertain is allowed to last
 
-An unresolved payment is a state, not an error, and it needs an expiry. Without one the record
-sits in the database indefinitely and nobody is accountable for it.
+An unresolved payment needs a review deadline. Reaching that deadline escalates uncertainty; it does not establish that the payment failed.
 
-I would give the state a deadline and a destination. After the reconciliation pass has tried and
-still cannot determine the result, the operation moves somewhere a person looks: a queue, a
-report, something with a name. The customer gets a message that says what is known and what
-happens next, with the order reference.
+Define the states and the next owner explicitly:
 
-The alternative tends to emerge by accident. Unresolved attempts accumulate, nobody reads them,
-and the first time anyone notices is when a customer asks why they were charged for something
-they never received.
+```
+Payment pending    -> confirmed paid, confirmed failed, or unresolved
+Unresolved        -> reconciliation -> confirmed result or manual review
+Payment paid      -> fulfillment pending -> fulfilled
+Review deadline   -> escalate; do not infer failure or create a new charge
+```
+
+After automated recovery cannot establish the outcome, put the operation in a named support queue with its order reference, provider identifiers and attempts. Tell the customer what is known and what happens next.
 
 ## Giving the customer an accurate status
 

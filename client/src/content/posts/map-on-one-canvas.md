@@ -1,5 +1,6 @@
 title: Moving Lumischool's map to WebGL
 date: 2026-09-08
+updated: 2026-11-03
 about: Lumischool
 cover: /img/posts/map-on-one-canvas-wide.webp
 card: /img/posts/map-on-one-canvas-card.webp
@@ -31,7 +32,7 @@ The current renderer uses WebGL2 for terrain and artwork. It draws the paper gri
 
 ![A simplified view of the map's drawing stages: the grid, terrain, progress-dependent detail, illustration batches and moving foreground artwork.](figure:five-passes)
 
-The camera changes how that content is positioned on screen. The renderer still has work to do when new content enters view, textures arrive or animations advance. Moving to a canvas gives the application more control over that work and its resource budgets; it does not make a pan or zoom free.
+The camera changes how that content is positioned on screen. The renderer still has work to do when new content enters view, textures arrive or animations advance. Moving to a canvas makes that work and its resource budgets explicit.
 
 The scene schedules further frames while visible animation or preparation needs them. It can stop requesting frames when the scene has settled.
 
@@ -48,8 +49,6 @@ The tile cache has an explicit memory allowance, currently 160 MiB on a normal d
 The renderer reads the output of the existing SVG drawing code. This matters because illustrations can vary with their seed, state and moving parts. A separate catalogue containing every possible rendered variation would be expensive to maintain.
 
 The current code has several ways to obtain pixels. It first tries retained artwork, then looks for a matching prebuilt asset. When a suitable asset is unavailable, workers rasterize a display list of the drawing. The worker pool is capped at four, with device-dependent limits.
-
-That is more specific than saying that every illustration is rendered at runtime. The implementation now supports both prebuilt artwork and on-demand rasterization.
 
 Small drawings can share texture-atlas pages so the GPU can draw them in batches. Larger drawings use separate textures or tiles, depending on the scene and drawing size. A moving part can be represented separately, allowing it to animate without rasterizing the whole illustration again.
 
@@ -75,6 +74,8 @@ The drawing and interaction layers still have to stay aligned as the camera move
 
 The historical notes report improved frame times on a Mac in Chrome. For panning, the recorded median fell from 33 ms with the earlier Canvas2D terrain to 8.3 ms, with the 95th percentile falling from 134 ms to 9.2 ms.
 
-Those results describe that workload and implementation at the time of measurement. They do not establish current performance on every device. The reviewed report does not include a completed follow-up iPhone result, and this source review did not run a new device benchmark.
+These desktop results do not answer the original phone failure. The reviewed notes do not contain a completed follow-up run of the full map on the same iPhone, and this update adds no new device benchmark. That comparison remains necessary: record whether the page survives, its peak memory and its pan/zoom responsiveness under the original workload.
 
-The current architecture makes texture reuse, work scheduling and memory budgets explicit. That is the part of the change I would carry into another large illustrated interface: inspect all the resources involved, then make their lifetime and cost manageable in the application.
+The renderer also handles WebGL context loss. It stops using invalid GPU resources, rebuilds its drawing state on restoration and lets the scene restore what it needs. That recovery path matters on constrained devices, where a texture budget alone cannot guarantee that the graphics context stays available.
+
+The result is an architecture with explicit resource lifetimes. Its device-level outcome should be reported separately when the matching phone test is available.

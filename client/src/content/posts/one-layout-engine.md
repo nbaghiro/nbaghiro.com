@@ -1,5 +1,6 @@
 title: One layout engine for decks, documents and websites
 date: 2026-09-04
+updated: 2026-11-03
 about: Galleo
 cover: /img/posts/layout-engine-wide.webp
 card: /img/posts/layout-engine-card.webp
@@ -29,7 +30,7 @@ Widths are calculated first because a parent determines the space available to i
 
 Flexible children can grow or shrink within their limits. Fixed and percentage sizes remain constrained, so a container can still overflow when its contents cannot fit. Tables reuse the distribution logic to size columns across rows.
 
-Keeping the solver in TypeScript also keeps it alongside the browser's text-measurement code. That simplifies the integration. It is not, by itself, evidence that a WebAssembly implementation would be slower; that would require a comparison of the actual implementations.
+Keeping the solver in TypeScript places it alongside the browser's text-measurement code and avoids a separate language boundary for that integration.
 
 ## Text measurement is shared too
 
@@ -39,7 +40,7 @@ Galleo measures text with Canvas 2D and uses that measurement path when producin
 
 The export code also handles fonts explicitly. The vector PDF path embeds font data where available. PowerPoint text is emitted with the engine's line breaks and automatic wrapping disabled.
 
-These choices reduce reflow between outputs. They still need tests: the solver, the measurement code and the format-specific writers can each introduce differences.
+For example, a paragraph may receive 320 CSS pixels of available width. The text measurer determines its wrapped lines at that width; their line heights determine the paragraph's resolved height. Positioning then produces text commands with coordinates, which each export backend translates into its own units and drawing operations. The format writer should not independently rewrap the paragraph after the solver has placed the content below it.
 
 ## Formats supply layout settings
 
@@ -49,7 +50,7 @@ A format profile describes the frame, content width, spacing and typography scal
 
 The document's 816-unit width is a CSS-pixel layout dimension, approximately 8.5 inches at 96 pixels per inch. It is not 816 PDF points; the export path converts between the units it needs.
 
-Changing a page size can therefore be a profile change without adding a new solver. A format change, resize or content edit can all request a new layout through the same interface. The cost still depends on the tree, text measurement and rendering work, so sharing the interface is not a performance guarantee.
+Changing a page size can therefore be a profile change without adding a new solver. A format change, resize or content edit can all request a new layout through the same interface.
 
 ## Shared geometry, separate backends
 
@@ -59,7 +60,14 @@ The solver returns drawing commands in paint order and a second list of node reg
 
 The DOM backend renders the editor. Canvas 2D supports presentation and image rendering. PDF and PowerPoint writers translate the same geometry into their own formats.
 
-The distinction between geometry and output is important here. PDF supports a vector path, but the exporter also has raster fallbacks. PowerPoint can preserve suitable shapes and text as editable objects; other commands or effects may become images. Sharing layout does not mean that every element is editable or vector-based in every export.
+Each backend preserves a different set of capabilities:
+
+- **DOM:** editor elements and interaction regions use the resolved geometry.
+- **Canvas 2D:** the geometry becomes pixels for presentation and image output.
+- **PDF:** suitable commands remain vector content, with raster fallbacks where needed.
+- **PowerPoint:** suitable text and shapes remain editable; unsupported commands or effects may become images.
+
+Semantic structure is separate from those coordinates. Headings, reading order and table relationships need their own export representation and checks. A geometrically faithful PDF is not, on that evidence alone, an accessible tagged document.
 
 ## Pagination uses the command list
 
@@ -75,4 +83,4 @@ Owning layout also means owning wrapping, alignment, clipping and pagination beh
 
 The format layer has readability limits too. Its fit logic uses a scale floor of 0.7 and a minimum text size of 11 pixels when deciding how far to reduce a section. Those are product choices encoded as constraints, not proof that every slide will remain readable.
 
-For Galleo, the value is having a shared description of the geometry across the editor and exports. The remaining work is to make each backend faithful to it and to handle the places where the output formats differ.
+The solver centralizes geometry; each backend remains responsible for faithfully representing it within the format's capabilities.
