@@ -10,8 +10,8 @@ export const FOUNDER_POSTS = [
     },
     {
         id: "galleo",
-        title: "Presentation tools are dead",
-        text: "Presentation tools are dead. At least the ones whose main value is helping you arrange text in boxes.\n\nWhen an agent can turn the same material into a deck, document, or working website, a separate subscription just to make slides becomes a harder sell. Adding a prompt box doesn’t change that.\n\nI built Galleo around that idea: one piece of content, presented in different formats. I’m opening up the code so anyone can fork it, build on it, or reuse whatever parts they find useful.\n\nThe live version will stay running at galleo.app.\n\nCode: https://github.com/nbaghiro/galleo",
+        title: "Where presentation tools fit now",
+        text: "I’m finding it harder to see why most people would need a separate AI presentation tool.\n\nYou can already give ChatGPT or Claude your notes, a document, or an outline and ask it to generate a slide deck right inside the app. You can work through the content and ask for revisions in the same conversation, without moving everything into another tool.\n\nThere’s still a place for dedicated presentation software, especially when you need precise design control or a team’s established workflow. But for someone who just needs a clear presentation, the AI app they already use can handle more of that work now. A separate product has to offer enough to justify the extra step and subscription.\n\nThat has changed how I think about Galleo, which I built to turn the same content into a presentation, document, or website.\n\nI’m making the code available for anyone who wants to fork it, build on it, or reuse parts they find useful. The live version will stay running at galleo.app.\n\nCode: https://github.com/nbaghiro/galleo",
         url: "https://github.com/nbaghiro/galleo",
         linkLabel: "Open the repository",
         note: "Before publishing: Galleo’s repository is public but has no license yet. Add a license that permits the reuse described in this draft.",
