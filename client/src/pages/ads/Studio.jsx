@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
     fetchJson,
     mediaUrl,
@@ -26,6 +26,7 @@ import { Account } from "./Account";
 import { Shots } from "./Shots";
 import { Record } from "./Record";
 import { AppStores } from "./AppStores";
+import { FounderPosts, FOUNDER_POSTS } from "./FounderPosts";
 
 const countIn = (doc) =>
     (doc?.groups ?? []).reduce((n, g) => n + g.items.length, 0);
@@ -67,9 +68,12 @@ const TABS = [
 // post can be overridden; theme, overrides, size and tab are kept per device.
 export function Studio({ root }) {
     const { project } = useParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [manifest, setManifest] = useState(null);
     const [error, setError] = useState("");
-    const [tab, setTab] = useState(() => pref.get(`${project}.tab`, "posts"));
+    const [tab, setTab] = useState(
+        () => searchParams.get("tab") || pref.get(`${project}.tab`, "posts")
+    );
     const [theme, setThemeState] = useState(() =>
         pref.get(`${project}.theme`, "")
     );
@@ -135,6 +139,13 @@ export function Studio({ root }) {
     const pick = (id) => {
         setTab(id);
         pref.set(`${project}.tab`, id);
+        setSearchParams(
+            (params) => {
+                params.set("tab", id);
+                return params;
+            },
+            { replace: true }
+        );
         window.scrollTo({ top: 0 });
     };
     // a profile kit may carry the same posts in several voices: a tab per voice, or, with
@@ -150,6 +161,9 @@ export function Studio({ root }) {
     const tabs = library
         ? [
               ["library", "Posts", (m) => m.linkedin?.posts?.length],
+              ...(project === "clientbridge-profile"
+                  ? [["founder", "Founder posts", () => FOUNDER_POSTS.length]]
+                  : []),
               ...(quoteCount(manifest)
                   ? [["quotes", "Quotes", quoteCount]]
                   : []),
@@ -278,6 +292,7 @@ export function Studio({ root }) {
                 {active === "co-apps" && <Applications {...ctx} />}
                 {active === "notes" && <Strategy {...ctx} />}
                 {active === "library" && <Library {...ctx} />}
+                {active === "founder" && <FounderPosts />}
                 {active === "quotes" && <Quotes {...ctx} />}
                 {active === "industry" && <Industry {...ctx} />}
                 {active === "breakdowns" && (
