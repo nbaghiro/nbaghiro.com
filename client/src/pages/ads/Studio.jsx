@@ -33,6 +33,9 @@ const quoteCount = (m) => countIn(m.quotes);
 const industryCount = (m) => countIn(m.industry);
 const breakdownCount = (m) => countIn(m.breakdowns);
 const shotCount = (m) => m.shots?.items?.length ?? 0;
+// the composites: several finished screens in one frame. They live in the gallery too, but a
+// set is a different thing to reach for than a single shot and was unfindable among seventy.
+const setCount = (m) => m.sets?.items?.length ?? 0;
 
 const TABS = [
     ["posts", "Posts", (m) => m.posts?.length],
@@ -156,6 +159,9 @@ export function Studio({ root }) {
               ...(breakdownCount(manifest)
                   ? [["breakdowns", "Breakdowns", breakdownCount]]
                   : []),
+              ...(setCount(manifest)
+                  ? [["sets", "Screens together", setCount]]
+                  : []),
               ...(shotCount(manifest)
                   ? [["shots", "All shots", shotCount]]
                   : []),
@@ -277,6 +283,7 @@ export function Studio({ root }) {
                 {active === "breakdowns" && (
                     <Industry {...ctx} doc={manifest.breakdowns} />
                 )}
+                {active === "sets" && <Shots {...ctx} section="sets" />}
                 {active === "shots" && <Shots {...ctx} />}
                 {active === "store" && <AppStores {...ctx} />}
                 {active === "record" && <Record {...ctx} />}

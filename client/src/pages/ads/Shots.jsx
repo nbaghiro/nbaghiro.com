@@ -6,8 +6,8 @@ import { Lightbox } from "./Lightbox";
 // a shot can be found and reused under different words, which is the opposite of the Posts tab,
 // where an image belongs to the text beside it. A shot no post currently uses is not an error
 // here, it is the point, so those are filterable rather than hidden.
-export function Shots({ manifest, url }) {
-    const doc = manifest.shots;
+export function Shots({ manifest, url, section = "shots" }) {
+    const doc = manifest[section];
     const items = useMemo(() => doc?.items ?? [], [doc]);
     const [only, setOnly] = useState("");
     const [lb, setLb] = useState(null);
