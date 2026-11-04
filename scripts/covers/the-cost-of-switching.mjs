@@ -1,0 +1,12 @@
+import sharp from 'sharp';
+import { writeFile } from 'node:fs/promises';
+const out = 'client/public/img/posts/the-cost-of-switching';
+const wrap = (body) => `<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="769" viewBox="0 0 2000 769">${body}</svg>`;
+const bg = `<defs><linearGradient id="fog" x2="1" y2="1"><stop stop-color="#e8e9df"/><stop offset="1" stop-color="#cbd9d2"/></linearGradient></defs><path fill="url(#fog)" d="M0 0h2000v769H0z"/><g fill="none" stroke="#718d7d" opacity=".12">${Array.from({length:9},(_,i)=>`<path d="M-50 ${350+i*60}Q700 ${80+i*45} 2050 ${300+i*55}"/>`).join('')}</g>`;
+const card=(x,y,label,detail)=>`<rect x="${x}" y="${y}" width="350" height="95" rx="12" fill="#f5f4ed" stroke="#819387"/><text x="${x+25}" y="${y+40}" font-family="sans-serif" font-size="24" fill="#263e34">${label}</text><text x="${x+25}" y="${y+70}" font-family="sans-serif" font-size="17" fill="#62746a">${detail}</text>`;
+const art=`<g><text x="300" y="160" font-family="sans-serif" letter-spacing="4" font-size="19" fill="#4a6456">MOVING A WORKING BUSINESS</text><text x="300" y="230" font-family="serif" font-size="47" fill="#243c30">The records move. The work continues.</text>${card(300,310,'Clients','Contacts and history')}${card(300,430,'Bookings','People, times, and services')}${card(300,550,'Payments','Deposits and balances')}<g fill="none" stroke="#7c9385" stroke-width="2"><path d="M675 357H850Q880 357 880 387V477H1060M675 477H1060M675 597H850Q880 597 880 567V477"/><path d="m1045 466 15 11-15 11"/></g><rect x="1110" y="310" width="590" height="335" rx="18" fill="#e3ece5" stroke="#7e9987"/><text x="1150" y="365" font-family="sans-serif" font-size="26" fill="#294b39">The next working day</text><path d="M1150 389H1660" stroke="#a3b5a8"/><g font-family="sans-serif" font-size="23" fill="#405c4b"><text x="1150" y="440">A team that knows what to do</text><text x="1150" y="505">Clients who can still book</text><text x="1150" y="570">Records the owner can trust</text></g></g>`;
+await writeFile('scripts/covers/the-cost-of-switching.svg',wrap(bg+art));
+await sharp(Buffer.from(wrap(bg))).webp({quality:90}).toFile(out+'-bg.webp');
+await sharp(Buffer.from(wrap(art))).webp({quality:95}).toFile(out+'-art.webp');
+await sharp(Buffer.from(wrap(bg+art))).webp({quality:92}).toFile(out+'-wide.webp');
+await sharp(Buffer.from(wrap(bg+art))).resize(1200,630,{fit:'contain',background:'#dce3da'}).webp({quality:92}).toFile(out+'-card.webp');
