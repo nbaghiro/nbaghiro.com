@@ -11,6 +11,7 @@ import {
     useReveal,
     WIDE,
 } from "./figures/plate";
+import { SWITCHING_FIGURES } from "./figures/the-cost-of-switching";
 import { SLOT_FIGURES } from "./figures/when-a-slot-is-free";
 import { VARIANT_FIGURES } from "./figures/every-version-checked";
 import { SLEEVE_FIGURES } from "./figures/one-account-many-strategies";
@@ -2560,6 +2561,7 @@ export function OutboxWeek() {
 }
 
 export const FIGURES = {
+    ...SWITCHING_FIGURES,
     ...SLOT_FIGURES,
     ...VARIANT_FIGURES,
     ...SLEEVE_FIGURES,
