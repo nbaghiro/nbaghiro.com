@@ -6,7 +6,7 @@ cover: /img/posts/terraform-and-pulumi-wide.webp
 card: /img/posts/terraform-and-pulumi-card.webp
 summary: A technical comparison of Terraform and Pulumi in three projects: database connection calculations, tests across configuration layers, preview limitations, secrets in state, and resource changes.
 
-I use Terraform for LlamaTrade and Pulumi for Clientbridge and FlowMaestro. Both tools let me describe cloud resources in code, review changes before applying them, and keep track of the resources they manage. The projects use Google Cloud for infrastructure such as Kubernetes clusters, databases, networking, and access permissions.
+I use Terraform for [LlamaTrade](https://llamatrade.ai) and Pulumi for [Clientbridge](https://clientbridge.ca) and [FlowMaestro](https://flowmaestro.ai). Both tools let me describe cloud resources in code, review changes before applying them, and keep track of the resources they manage. The projects use Google Cloud for infrastructure such as Kubernetes clusters, databases, networking, and access permissions.
 
 Each project was built with its current tool. This is a comparison of those setups, rather than a migration story. I’ll start with a requirement shared by LlamaTrade and Clientbridge: their applications need to stay within the connection limit of a Cloud SQL database. That example helps explain how configuration and tests fit together in each repository.
 
