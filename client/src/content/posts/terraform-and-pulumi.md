@@ -6,7 +6,7 @@ cover: /img/posts/terraform-and-pulumi-wide.webp
 card: /img/posts/terraform-and-pulumi-card.webp
 summary: How I use Terraform in LlamaTrade and Pulumi in Clientbridge and FlowMaestro, with examples of shared configuration, infrastructure tests, secrets, and deployment checks.
 
-I use Terraform for LlamaTrade and Pulumi for Clientbridge and FlowMaestro. Both tools let me describe cloud resources in code, review changes before applying them, and keep track of the resources they manage. The projects use Google Cloud, and FlowMaestro also supports Render.
+I use Terraform for LlamaTrade and Pulumi for Clientbridge and FlowMaestro. Both tools let me describe cloud resources in code, review changes before applying them, and keep track of the resources they manage. The projects use Google Cloud for infrastructure such as Kubernetes clusters, databases, networking, and access permissions.
 
 Each project was built with its current tool. This is a comparison of those setups, rather than a migration story. I’ll start with a requirement shared by LlamaTrade and Clientbridge: their applications need to stay within the connection limit of a Cloud SQL database. That example helps explain how configuration and tests fit together in each repository.
 
