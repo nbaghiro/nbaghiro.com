@@ -4,7 +4,7 @@ updated: 2026-11-06
 about: Infrastructure
 cover: /img/posts/terraform-and-pulumi-wide.webp
 card: /img/posts/terraform-and-pulumi-card.webp
-summary: How I use Terraform in LlamaTrade and Pulumi in Clientbridge and FlowMaestro, with examples of shared configuration, infrastructure tests, secrets, and deployment checks.
+summary: A technical comparison of Terraform and Pulumi in three projects: database connection calculations, tests across configuration layers, preview limitations, secrets in state, and resource changes.
 
 I use Terraform for LlamaTrade and Pulumi for Clientbridge and FlowMaestro. Both tools let me describe cloud resources in code, review changes before applying them, and keep track of the resources they manage. The projects use Google Cloud for infrastructure such as Kubernetes clusters, databases, networking, and access permissions.
 
@@ -16,7 +16,7 @@ Both LlamaTrade and Clientbridge run application pods on GKE Autopilot and conne
 
 The busiest point can be during a deployment, when old and new pods are running at the same time. Counting only the connections used during normal operation can miss that overlap. If the total exceeds the limit, some processes may be unable to connect. I use ‘connection budget’ below to mean this estimate of the connections the system may need.
 
-In LlamaTrade, the Terraform variable documents what the limit needs to cover:
+In LlamaTrade, the Terraform variable documents what the limit needs to cover. This excerpt shortens the description; the full variable also explains the database-tier defaults:
 
 ```hcl
 variable "db_max_connections" {
@@ -52,6 +52,12 @@ def peak_connections(env: Environment) -> int:
     return max(rollout, migrating)
 ```
 
+The API portion is worth working through. Production currently has two API replicas, two worker processes per replica, a pool size of three, and one overflow connection per process. In normal operation that is `2 × 2 × (3 + 1) = 16` possible API connections. The calculation allows one extra pod during rollout, giving `3 × 2 × 4 = 24`. It then adds the background worker, authentication service, and PowerSync allowances. Staging shares the database instance, so its estimate must also be included.
+
+The `max(rollout, migrating)` assumes the migration job completes before the application rollout begins. Adding both totals would overcount those two phases under that deployment sequence. Taking the larger one would undercount if the sequence changed and the jobs could overlap. The replica counts, process counts, rollout strategy, and job ordering are all inputs to the model, even when some are expressed as constants or conventions.
+
+There is another limit to the calculation. Clientbridge sets `maxSurge=1` and `maxUnavailable=0` for these rolling deployments, but [Kubernetes documents that terminating pods can temporarily push the total above replicas plus maxSurge](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/). A terminating process may still hold connections while it drains. The current calculation is therefore a configured rollout estimate, not a strict upper bound on every live connection. I would use connection metrics and a rollout exercise to check the drain assumptions, then add an explicit allowance if needed. Raising `max_connections` also needs to be assessed against database resources; a larger setting does not create more database capacity.
+
 The calculation uses the same `DB_POOL_SIZE` and `DB_MAX_OVERFLOW` constants that supply the containers’ environment variables. A test then checks the generated resources and the total across environments:
 
 ```python
@@ -71,9 +77,21 @@ def test_the_connection_pools_fit_the_instance(
     assert {"name": "max_connections", "value": str(database.MAX_CONNECTIONS)} in flags
 ```
 
-The test checks three things: the pool settings given to the application, the total connection estimate across environments, and the database flag in the generated resource definition. If a change raises the estimate above the configured limit, the test fails before deployment.
+The test checks three things: the pool settings given to the application, the total connection estimate across environments, and the database flag in the generated resource definition. If a change raises the estimate above the configured limit, the test fails before deployment. Passing means that this model fits the limit; it does not verify that the model includes every process that can connect.
 
 Shared configuration makes this check easier to maintain in Clientbridge. Terraform can also calculate a budget and check conditions. In LlamaTrade, the extra work is reading values from the separate Kustomize setup. CI could compare the rendered Kubernetes files with Terraform’s JSON plan, or both could use shared settings. The requirement can be checked with either tool.
+
+## Checking a requirement across Terraform and Kustomize
+
+For LlamaTrade, I would add a CI check that reads the output of both tools. This is a proposed improvement, not a check the repository already runs.
+
+The inputs would be a saved Terraform plan converted with `terraform show -json` and the Kubernetes files rendered for the intended environment with Kustomize. The checker would find the planned Cloud SQL limit, then calculate the application side from the rendered Deployments, Jobs, and autoscaling settings. It needs to use each service’s effective environment variables, including overrides, rather than multiply the global ConfigMap defaults by a pod count.
+
+That distinction matters here. The reviewed configuration gives the trading service a pool plus overflow allowance of ten connections and an HPA maximum of ten pods: 100 connections before any rollout allowance. The global default is only five per process. Using that default for trading would undercount it by half under the current one-process-per-pod assumption. Changing the process model would require changing this calculation too.
+
+I would make the checker report the contribution from each service and fail clearly when an input cannot be resolved. An unknown value in a Terraform plan is not zero. Likewise, a null `db_max_connections` means this configuration leaves the database-tier default in place; it does not supply a numeric limit the checker can safely compare. The check needs an explicit limit or a deliberately verified source for that default. [Terraform’s JSON format](https://developer.hashicorp.com/terraform/internals/json-format) represents planned values and unknown values separately.
+
+Keeping the cloud and workload configurations separate allows independent deployment and review. The cost is maintaining this connection between them. Shared Python configuration makes the Clientbridge calculation simpler, but it also means a shared constant can change several generated resources at once. In either setup, the review should show which resources and assumptions a change affects.
 
 ## Creating the cluster and its workloads
 
@@ -142,13 +160,27 @@ Other tests check that resources use the intended namespace, that HTTPRoute and 
 
 Terraform also has [native tests](https://developer.hashicorp.com/terraform/language/tests), including mocked providers. Its [JSON plan output](https://developer.hashicorp.com/terraform/cli/commands/show) can be inspected by an external program, so checks on resource relationships and calculated values can be written for Terraform too. In Clientbridge, Python made those checks convenient alongside the existing configuration code. In the version reviewed for this article, LlamaTrade’s Terraform directory has no `.tftest.hcl` files. Adding tests would be a smaller change than moving it to another tool.
 
+### Separating configuration tests from deployment checks
+
+The API-enablement assertion above verifies that the dependency edges were declared. It does not prove that an API becomes usable immediately after enablement, that the deploying identity has sufficient permissions, or that a provider handles a transient error correctly. Those require checks against the real service.
+
+A useful test setup should also make missing mock behavior visible. If every unknown provider field is replaced with a convenient placeholder, a test can keep passing after the real provider’s output shape has changed. I would keep mock outputs small, review them when provider versions change, and make unexpected resource types or required fields fail explicitly. This is a recommendation for strengthening the harness, not a claim that all those failures are already enforced.
+
+I would use three levels of evidence: tests over generated resources for configuration rules, a provider-backed plan or preview for proposed changes, and deployment checks for actual behavior. For example, a namespace assertion belongs in the first level; an unexpected database replacement belongs in plan review; and a pod’s ability to connect with its real database role belongs in a deployment check. Each catches failures the others can miss.
+
 ## Secrets and the state file
 
 Infrastructure state records the resources a tool manages and their known properties. Secret values can end up in that record, so their handling needs to be considered separately from whether they are visible in terminal output. Marking a Terraform value `sensitive` hides it from ordinary display, but should not be treated as removing it from state. [Pulumi's secret handling](https://www.pulumi.com/docs/iac/concepts/secrets/) encrypts marked values and tracks their use through output transformations. Both still require care about what the program creates, logs and exports.
 
+Terraform also supports [ephemeral values and write-only resource arguments](https://developer.hashicorp.com/terraform/language/manage-sensitive-data) that can avoid storing supported values in plans and state. These depend on the Terraform version, the provider, and the particular resource argument. Adding `sensitive = true` to an ordinary input does not give it those properties. I would check the specific resource schema before choosing how to pass a password.
+
+Encryption and omission solve different problems. An encrypted value remains part of the state and needs the right decryption access. A value omitted from state must be supplied or managed elsewhere. Neither approach makes it safe to print a resolved secret into logs or write it into an unprotected generated file. Terraform JSON plans and other review artifacts also need care because machine-readable output can include sensitive data.
+
 In Clientbridge, the infrastructure program creates the Secret Manager entries and access rules. A separate script writes the secret values through the API. The script uses the same environment and database definitions, so names and connection URL formats stay consistent without passing the secret values through infrastructure state.
 
-Tests inspect the generated resources and outputs for secret-bearing types and values. They also check that the shared list of secrets matches the entries created. The script that writes the values still needs its own access controls and auditing.
+Tests inspect the generated resources and outputs for secret-bearing types and values. They also check that the shared list of secrets matches the entries created. The script that writes the values still needs its own access controls and auditing. These tests catch marked secret values and selected resource types; they cannot recognize every arbitrary string that someone might accidentally hard-code as a credential.
+
+This separation also adds operational work. Creating a Secret Manager entry does not mean it has a usable version. Initialization needs to happen before a workload depends on the value, and rotation needs to account for when that workload reloads it. Recovery must cover the values and their access permissions as well as infrastructure state. Keeping values out of state reduces one place they are stored; it does not remove their lifecycle.
 
 LlamaTrade could use the same approach with Terraform. What matters here is deciding where secret values are written and stored, then checking that the code follows that decision.
 
@@ -186,6 +218,30 @@ This article focuses on configuration, tests, and deployment behavior in these p
 
 Pulumi lets application code determine which resources to create. That flexibility needs care when some values are not known until deployment. [Its documentation](https://www.pulumi.com/docs/iac/concepts/inputs-outputs/apply/) recommends avoiding resource creation inside `apply`: when an input is unknown during preview, those resources may be absent from the preview.
 
+For example, these simplified Pulumi Python snippets have different preview behavior. Here the callback creates the resource:
+
+```python
+endpoint.apply(
+    lambda host: k8s.core.v1.ConfigMap(
+        "service-config",
+        data={"API_URL": f"https://{host}"},
+        opts=pulumi.ResourceOptions(provider=provider),
+    )
+)
+```
+
+If `endpoint` is unknown, the callback does not run during preview, so this ConfigMap may not be registered there. A more predictable form declares the resource immediately and lets only its data depend on the output:
+
+```python
+k8s.core.v1.ConfigMap(
+    "service-config",
+    data=endpoint.apply(lambda host: {"API_URL": f"https://{host}"}),
+    opts=pulumi.ResourceOptions(provider=provider),
+)
+```
+
+Now the resource is visible to the program even if its final data is unknown. That improves review, but it does not make the unknown value available to a policy that needs to inspect the URL. These are illustrative patterns, not extracts from Clientbridge’s configuration.
+
 Clientbridge uses output transformations for values and declares resources outside those callbacks. That helps keep resource definitions visible during preview. It is a practice to maintain as the code changes. Terraform limits some forms of dynamic resource creation, which can make the configuration easier to reason about before applying it.
 
 For policy checks, I would look at when the check runs and what information it has. [Pulumi resource validation policies](https://www.pulumi.com/docs/discovery-governance/guides/write-a-policy-pack/) can inspect and block a resource before creation or update. Stack validation examines the completed graph at the end of a preview or update pass; properties unknown during preview remain unknown there. A resource-level rule and a check over the whole stack can therefore run at different points.
@@ -193,6 +249,14 @@ For policy checks, I would look at when the check runs and what information it h
 Terraform's JSON plan can feed policy tooling before apply. In either system, a rule meant to prevent a resource from being created needs to run before creation and have enough information to decide whether to allow it.
 
 An existing Terraform setup also has value in the modules, reviews, and deployment procedures the team already understands. Moving tools requires keeping track of existing resources correctly, replacing the code, and checking the resulting plans. For LlamaTrade, adding the connection-budget check would not by itself justify that work.
+
+## Reviewing replacements and changes outside the code
+
+A valid configuration can still propose a disruptive operation. Before applying a change, I would check whether it updates an existing resource, replaces it, or removes it. A rename or a move between modules can affect resource identity even when the intended cloud object is the same. Terraform has moved blocks, and Pulumi has aliases, for describing supported identity changes; neither should be treated as a general guarantee that a refactor is harmless. The resulting plan still needs review. See [Terraform’s refactoring guidance](https://developer.hashicorp.com/terraform/language/modules/develop/refactoring) and [Pulumi’s aliases](https://www.pulumi.com/docs/iac/concepts/resources/options/aliases/).
+
+The live environment can also change without a code change. A manually edited setting or a permission removed elsewhere may invalidate an assumption that passed in a mock test. I would review a refreshed plan or preview when investigating that drift, rather than assume the saved state is a complete description of the current system. The safe response depends on whether the manual change was intentional and whether the code should adopt or reverse it.
+
+Separating application deployments from cloud updates can keep routine releases smaller. Managing related resources together can make dependencies easier to express. Neither organization prevents an accidental database replacement or an access change with a wider effect than expected. Review of the actual proposed operations remains necessary.
 
 ## What I would do next in each project
 
