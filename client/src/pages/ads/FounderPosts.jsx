@@ -2,6 +2,13 @@ import { Field } from "./actions";
 
 export const FOUNDER_POSTS = [
     {
+        id: "terraform-pulumi",
+        title: "Terraform and Pulumi across three projects",
+        text: "I use Terraform for LlamaTrade and Pulumi for Clientbridge and FlowMaestro. Working with both has made me pay more attention to how the infrastructure settings and application settings are checked together.\n\nOne example is database connections. The database needs enough capacity for the application’s connection pools, including the overlap when old and new instances run during a deployment.\n\nIn Clientbridge, the Pulumi code and a Python test use shared settings to check that total. In LlamaTrade, Terraform and the Kubernetes configuration are separate, so checking the same requirement needs values from both.\n\nBoth tools can support that check. The difference in these projects is how the configuration is organized and what tests are in place.\n\nI wrote about those examples, along with secrets, providers, and deployment previews:\nhttps://nbaghiro.com/blogs/terraform-and-pulumi",
+        url: "https://nbaghiro.com/blogs/terraform-and-pulumi",
+        linkLabel: "Read the article",
+    },
+    {
         id: "switching-cost",
         title: "The cost of switching",
         text: "One challenge with building Clientbridge (clientbridge.ca) is that a business can like the product and still have good reasons not to switch.\n\nThe setup looks different from one business to the next. It might be Clover for payments, a separate booking tool, and spreadsheets or messages to keep track of the rest. Much of the process is manual, but it’s familiar and they know how to manage it. Switching means changing those routines while keeping the business running.\n\nI also see something encouraging in that. These are important, recurring needs. Once a business trusts you with its daily work, there is an opportunity to help with more of it, from booking through to payment, without making them manage everything in separate tools.\n\nThat gives me confidence in the direction. The part we still have to earn is making the move worthwhile and continuing to deliver value afterwards.\n\nI wrote more about this here:\nhttps://nbaghiro.com/blogs/the-cost-of-switching",
@@ -22,7 +29,8 @@ export function FounderPosts() {
     return (
         <>
             <p className="lede">
-                Personal posts about building Clientbridge and Galleo.
+                Personal posts about building products and the decisions behind
+                them.
             </p>
             {FOUNDER_POSTS.map((post) => (
                 <section className="post" id={post.id} key={post.id}>
