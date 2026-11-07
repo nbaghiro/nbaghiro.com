@@ -70,6 +70,8 @@ app.use("/api", (req, res) => {
 if (process.env.NODE_ENV === "production") {
     const clientBuildPath = path.join(__dirname, "../../client/dist");
     app.use(express.static(clientBuildPath));
+    // Missing images must not fall through to the SPA and return HTML with a 200.
+    app.use("/img", (req, res) => res.sendStatus(404));
 
     // A link preview is built by a crawler that does not run JavaScript, so everything it
     // needs has to be in the HTML this route returns. Sending index.html unchanged gave every
@@ -113,9 +115,14 @@ if (process.env.NODE_ENV === "production") {
             `<meta property="og:description" content="${esc(card.description)}" />`,
             `<meta property="og:url" content="${esc(card.url)}" />`,
             `<meta property="og:image" content="${esc(card.image)}" />`,
+            `<meta property="og:image:type" content="image/jpeg" />`,
+            `<meta property="og:image:alt" content="${esc(card.title)}" />`,
             `<meta property="og:image:width" content="1200" />`,
             `<meta property="og:image:height" content="627" />`,
             `<meta name="twitter:card" content="summary_large_image" />`,
+            `<meta name="twitter:title" content="${esc(card.title)}" />`,
+            `<meta name="twitter:description" content="${esc(card.description)}" />`,
+            `<meta name="twitter:image" content="${esc(card.image)}" />`,
         ].join("\n        ");
         // the shell's own title and description describe the site, so they come out rather
         // than sitting alongside the piece's and leaving the crawler to choose

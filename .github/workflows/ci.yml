@@ -32,3 +32,5 @@ jobs:
             - run: npm run lint
 
             - run: npm run build
+
+            - run: node --test tests/*.test.mjs

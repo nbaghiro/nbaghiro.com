@@ -1,6 +1,7 @@
 // The link-preview image for each written piece: client/public/img/posts/<slug>-og.jpg.
 //
-//   node scripts/og-images.mjs
+//   node scripts/og-images.mjs --build  (generated deployment assets)
+//   node scripts/og-images.mjs          (update checked-in previews)
 //
 // Two reasons it is not just the cover. The covers are WebP, and LinkedIn documents JPG, PNG
 // and GIF without saying it will fetch WebP. And they are 2.6:1, where a preview is 1.91:1, so
@@ -14,7 +15,8 @@ import sharp from "sharp";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const POSTS = path.join(ROOT, "client/src/content/posts");
-const IMG = path.join(ROOT, "client/public/img/posts");
+const IMG = path.join(ROOT, process.argv.includes("--build") ? "client/dist/img/posts" : "client/public/img/posts");
+fs.mkdirSync(IMG, { recursive: true });
 const W = 1200;
 const H = 627;
 
@@ -50,8 +52,7 @@ for (const file of fs.readdirSync(POSTS).filter((f) => f.endsWith(".md")).sort()
     const meta = metaOf(file);
     const cover = meta.cover && path.join(ROOT, "client/public", meta.cover.replace(/^\//, ""));
     if (!cover || !fs.existsSync(cover)) {
-        console.log(`  ${slug}: no cover, skipped`);
-        continue;
+        throw new Error(`${slug}: missing cover for the social preview`);
     }
     const fitted = await sharp(cover).resize({ width: W, fit: "inside" }).toBuffer();
     const { height } = await sharp(fitted).metadata();
@@ -68,4 +69,4 @@ for (const file of fs.readdirSync(POSTS).filter((f) => f.endsWith(".md")).sort()
         .toFile(path.join(IMG, `${slug}-og.jpg`));
     made++;
 }
-console.log(`${made} preview image(s) at ${W}x${H} in client/public/img/posts`);
+console.log(`${made} preview image(s) at ${W}x${H} in ${path.relative(ROOT, IMG)}`);
