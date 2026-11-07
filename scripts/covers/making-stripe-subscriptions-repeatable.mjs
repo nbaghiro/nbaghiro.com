@@ -1,0 +1,12 @@
+import sharp from 'sharp';
+import { writeFile } from 'node:fs/promises';
+const out = 'client/public/img/posts/making-stripe-subscriptions-repeatable';
+const wrap = (body) => `<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="769" viewBox="0 0 2000 769">${body}</svg>`;
+const bg = '<rect width="2000" height="769" fill="#e8e8ef"/><g stroke="#cdd0dd" opacity=".5">'+Array.from({length:14},(_,i)=>`<path d="M${i*160} 0v769"/>`).join('')+'</g>';
+const card=(x,n,title,a,b)=>`<rect x="${x}" y="330" width="420" height="235" rx="18" fill="#f8f8fa" stroke="#b7bdcf"/><text x="${x+30}" y="375" font-family="sans-serif" font-size="18" fill="#737e9d">${n}</text><text x="${x+30}" y="425" font-family="sans-serif" font-size="29" fill="#293248">${title}</text><text x="${x+30}" y="480" font-family="sans-serif" font-size="21" fill="#59657d">${a}</text><text x="${x+30}" y="518" font-family="sans-serif" font-size="21" fill="#59657d">${b}</text>`;
+const art=`<text x="300" y="160" font-family="sans-serif" font-size="19" letter-spacing="4" fill="#67728c">STRIPE SUBSCRIPTIONS</text><text x="300" y="235" font-family="serif" font-size="49" fill="#293248">The parts worth making repeatable</text>${card(300,'01 / CONFIGURE','Plan catalog','Products and prices','Portal and webhook')}${card(790,'02 / PROCESS','Billing lifecycle','Checkout and retries','Events and transactions')}${card(1280,'03 / ENFORCE','Product access','Plans and allowances','Upgrade and cancellation rules')}<g fill="none" stroke="#8591ac" stroke-width="3"><path d="M733 446h42m-12-10 12 10-12 10M1223 446h42m-12-10 12 10-12 10"/></g><text x="300" y="645" font-family="sans-serif" font-size="22" fill="#59657d">Automate the repeated setup. Keep the product decisions explicit.</text>`;
+await writeFile('scripts/covers/making-stripe-subscriptions-repeatable.svg',wrap(bg+art));
+await sharp(Buffer.from(wrap(bg))).webp({quality:90}).toFile(out+'-bg.webp');
+await sharp(Buffer.from(wrap(art))).webp({quality:95}).toFile(out+'-art.webp');
+await sharp(Buffer.from(wrap(bg+art))).webp({quality:92}).toFile(out+'-wide.webp');
+await sharp(Buffer.from(wrap(bg+art))).resize(1200,630,{fit:'contain',background:'#e8e8ef'}).webp({quality:92}).toFile(out+'-card.webp');

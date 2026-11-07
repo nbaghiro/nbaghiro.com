@@ -2,6 +2,13 @@ import { Field } from "./actions";
 
 export const FOUNDER_POSTS = [
     {
+        id: "stripe-subscriptions",
+        title: "Making Stripe subscriptions repeatable",
+        text: "Adding Stripe subscriptions to a new product usually brings back the same work: plans, prices, checkout, renewals, cancellations, and keeping access in sync with billing.\n\nI’ve been turning that repeated work into code I can reuse across products.\n\nIn Galleo, a setup script reads the plan catalog and configures Stripe products, prices, the customer portal, and the webhook endpoint. It can preview changes and check for differences without writing anything.\n\nThe application handles another part of the repetition. Retrying a checkout can reuse the same purchase attempt. Webhook receipts are saved in the same transaction as their billing changes. Credits are granted once per paid period, even when several events report it.\n\nThere are limits to what should carry over unchanged. Moving a lookup key to a new price does not migrate existing subscribers. Grace periods, upgrade timing, and cancellation rules still need to fit each product.\n\nThese shortcuts give me a tested starting point for the next integration. I wrote about the setup, the failure cases, and the parts that still need product-specific decisions:\nhttps://nbaghiro.com/blogs/making-stripe-subscriptions-repeatable",
+        url: "https://nbaghiro.com/blogs/making-stripe-subscriptions-repeatable",
+        linkLabel: "Read the article",
+    },
+    {
         id: "terraform-pulumi",
         title: "Terraform and Pulumi across three projects",
         text: "I use Terraform for LlamaTrade and Pulumi for Clientbridge and FlowMaestro. Working with both has made me pay more attention to how the infrastructure settings and application settings are checked together.\n\nOne example is database connections. The database needs enough capacity for the application’s connection pools, including the overlap when old and new instances run during a deployment.\n\nIn Clientbridge, the Pulumi code and a Python test use shared settings to check that total. In LlamaTrade, Terraform and the Kubernetes configuration are separate, so checking the same requirement needs values from both.\n\nBoth tools can support that check. The difference in these projects is how the configuration is organized and what tests are in place.\n\nI wrote about those examples, along with secrets, providers, and deployment previews:\nhttps://nbaghiro.com/blogs/terraform-and-pulumi",
