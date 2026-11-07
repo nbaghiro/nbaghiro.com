@@ -7,9 +7,9 @@ summary: How I automate Stripe catalog setup and reuse subscription patterns, wi
 
 Adding subscriptions to a new product brings back a familiar set of tasks. Define plans, create prices, connect customers to accounts, open checkout, handle renewals, and decide what access someone has when their payment status changes.
 
-Across [Galleo](https://galleo.app) and [Tondo](https://tondo.page), much of that structure repeats. I’ve built shortcuts around it, including a setup script in Galleo that reads the plan catalog and configures Stripe products, prices, the customer portal, and the webhook endpoint. The application code also handles repeated checkout requests and duplicate events.
+Across the products I work on, much of that structure repeats. I’ve automated the catalog setup and built patterns for checkout retries, subscription updates, and duplicate events. I’m shaping that work into standalone billing tooling that can live outside the individual product repositories.
 
-That gives me working code to start from when adding subscriptions to another product. It is not yet one package that installs billing into every application unchanged. The reusable parts are the setup process and lifecycle patterns; the account model, access rules, and product limits still need to fit the application.
+The intended boundary is straightforward: shared tooling owns the setup process and lifecycle handling; each product supplies its catalog, account mapping, and access rules. The examples below come from working implementations that inform that separation. Packaging them together is a further step, rather than something every product already installs unchanged.
 
 This article is about a web product selling its own recurring subscriptions. A marketplace collecting payments for other businesses, or an app selling through an app store, has additional requirements.
 
@@ -25,15 +25,15 @@ Stripe handles payment collection and recurring billing. My application still ne
 
 ## Turning the catalog into setup code
 
-Galleo keeps its plans in `model/billing.ts`. The setup script imports that catalog instead of maintaining a second list of plan names and amounts for the Stripe Dashboard.
+Plans are defined in a typed catalog. The setup script reads that catalog instead of maintaining a second list of names and amounts for the Stripe Dashboard. In the standalone tooling, the catalog would be an input supplied by each product.
 
-Each managed product has a stable metadata identifier. Each price has a lookup key, such as `galleo_pro_month` or `galleo_pro_year`. The script looks up those objects and compares their configuration before deciding whether to create or update anything.
+Each managed product has a stable metadata identifier. Each price has a lookup key, using a product namespace, for example `product_pro_month` or `product_pro_year`. The script looks up those objects and compares their configuration before deciding whether to create or update anything.
 
 For a price, the comparison includes the product, currency, amount, recurring interval, and active status. Checking only the name would miss a yearly price accidentally configured as monthly. Checking only the amount would miss a price attached to the wrong product.
 
 Annual pricing also needs an explicit unit. If the catalog stores the effective monthly rate for an annual plan, the annual charge is twelve times that amount. The script performs that conversion before creating the yearly price. A pricing label and a charge amount are related, but they are not always the same number.
 
-The commands in Galleo are:
+The existing setup exposes three commands. A standalone runner would preserve these operations:
 
 ```sh
 # Report the changes without writing them.
@@ -56,11 +56,11 @@ Live mode requires an explicit flag and a live key. The script refuses a live ke
 
 Stripe prices are versioned objects in practice: changing the amount requires creating another price. Archiving a price prevents new purchases with it while existing subscriptions can continue using it. [Stripe’s price management documentation](https://docs.stripe.com/products-prices/manage-prices) explains those rules.
 
-Galleo’s script creates a replacement when the desired price differs, transfers the lookup key, and archives the previous price. New purchases can resolve to the replacement without changing the logical plan name in application code.
+The setup script creates a replacement when the desired price differs, transfers the lookup key, and archives the previous price. New purchases can resolve to the replacement without changing the logical plan name in application code.
 
 Existing subscribers do not automatically move to the new amount. That needs a separate decision about grandfathering, notification, timing, and any billing adjustment. A script that silently changed every subscriber while synchronizing the catalog would combine two very different operations.
 
-The setup also limits cleanup to objects identified as belonging to Galleo. It should not archive unrelated products in the same Stripe account.
+The setup also limits cleanup to objects identified as belonging to the selected product. It should not archive unrelated products in the same Stripe account.
 
 This is useful repeatable provisioning, but it is not a database transaction across Stripe. Two setup processes running at once can race, and a failure can leave some operations completed. I run catalog changes as a controlled deployment step and inspect the resulting differences. The script is also specific about what it compares; it does not currently detect every possible setting, including an existing webhook endpoint’s API version.
 
@@ -68,13 +68,13 @@ This is useful repeatable provisioning, but it is not a database transaction acr
 
 Before opening checkout, the server needs to answer two questions: who is allowed to purchase, and which account should receive the subscription?
 
-In Galleo, the billing customer belongs to a workspace. In Tondo, the billing flow resolves the signed-in person and their stored Stripe customer. That distinction affects authorization, database relationships, and which account receives access after payment.
+In one implementation, the billing customer belongs to a workspace. In another, the billing flow resolves the signed-in person and their stored Stripe customer. That distinction affects authorization, database relationships, and which account receives access after payment.
 
 The browser should send a supported plan and billing interval. The server resolves those to an allowed price and a customer it owns. Accepting an arbitrary customer identifier from the browser would let a caller cross account boundaries. Accepting arbitrary prices would let the browser bypass the product’s supported catalog.
 
 There is also a less obvious problem: a successful request to Stripe can be followed by a failed response to the application. If the user clicks again, the application needs to recover the original checkout instead of creating another purchase opportunity.
 
-Galleo stores checkout intents in the database. An intent records the requested purchase, a Stripe idempotency key, processing status, and the resulting session. Its schema restricts a workspace to one open subscription intent. A lease coordinates workers while a request is in progress, and a retry can reuse the same key.
+The checkout implementation stores purchase intents in the database. An intent records the requested purchase, a Stripe idempotency key, processing status, and the resulting session. Its schema restricts a workspace to one open subscription intent. A lease coordinates workers while a request is in progress, and a retry can reuse the same key.
 
 That is more useful than generating a fresh idempotency key on every HTTP request. A fresh key describes a new operation, even if the customer is retrying the same purchase. Stripe’s [idempotent request behavior](https://docs.stripe.com/api/idempotent_requests) provides the API mechanism; the application has to preserve the identity of the purchase attempt.
 
@@ -86,13 +86,13 @@ The checkout return page is a place to show progress and fetch billing status. R
 
 Renewals and payment failures happen without the customer visiting the product. Stripe sends events so the application can react to them. The [subscription webhook documentation](https://docs.stripe.com/billing/subscriptions/webhooks) describes the lifecycle events, including subscription changes and invoice outcomes.
 
-In Galleo, the webhook handler verifies the signature against the raw request body before processing the event. Stripe can redeliver events and does not guarantee their delivery order, so handling cannot assume each event arrives once in chronological order. Those requirements are covered in [Stripe’s webhook documentation](https://docs.stripe.com/webhooks).
+The webhook handler verifies the signature against the raw request body before processing the event. Stripe can redeliver events and does not guarantee their delivery order, so handling cannot assume each event arrives once in chronological order. Those requirements are covered in [Stripe’s webhook documentation](https://docs.stripe.com/webhooks).
 
-For relevant subscription events, Galleo fetches the current subscription from Stripe before updating local state. That avoids blindly applying an older event payload after a newer one. Tondo follows a similar approach by fetching the customer’s subscriptions when synchronizing its plan.
+For relevant subscription events, the handler fetches the current subscription from Stripe before updating local state. That avoids blindly applying an older event payload after a newer one. Another implementation fetches the customer’s subscriptions when synchronizing its plan. Both use the event as a reason to refresh the application’s view of billing.
 
 Fetching current state reduces one source of stale updates. It does not, on its own, solve every concurrency problem: two workers can fetch at different times and finish their writes in reverse order. A broader reusable implementation needs a deliberate coordination or reconciliation strategy for that case. I would not describe a current-state fetch as a complete ordering guarantee.
 
-Galleo also records processed event IDs. The important detail is that the receipt and its database effects are committed in the same transaction:
+The handler also records processed event IDs. The important detail is that the receipt and its database effects are committed in the same transaction:
 
 ![A webhook receipt and its billing changes commit together. If processing fails, neither is saved, so a later delivery can retry.](figure:subscription-webhook-commit)
 
@@ -104,7 +104,7 @@ Product events are queued in a database outbox alongside the billing changes. Th
 
 One paid period can produce several distinct events. Deduplicating by event ID alone does not stop all of them from granting the same allowance.
 
-Galleo includes credits with its paid plans, so it gives the allowance its own business identity. The grant is keyed by the paid period and plan. Different events reporting that same paid period reach the same grant rather than each adding credits.
+For a product that includes credits with its paid plans, I give the allowance its own business identity. The grant is keyed by the paid period and plan. Different events reporting that same paid period reach the same grant rather than each adding credits.
 
 This matters during checkout, renewal, and plan changes. It also explains why a generic webhook handler is only part of a reusable billing implementation. The application needs an invariant such as “this paid period grants its allowance once,” then a database constraint and transaction that enforce it.
 
@@ -116,17 +116,17 @@ A subscription status is an input to access decisions, not a complete access pol
 
 A trial may allow the full product or a limited version. A failed renewal may start a grace period. Cancellation scheduled for the end of a paid period may leave access in place until that date. An upgrade may need to wait for its payment before unlocking more capacity.
 
-Galleo’s implementation has explicit rules for this. An unpaid upgrade does not immediately raise the local plan. A downgrade within the current paid period can be recorded as pending. Allowance calculations also account for the unused portion of an earlier period when a change replaces it.
+One implementation has explicit rules for this. An unpaid upgrade does not immediately raise the local plan. A downgrade within the current paid period can be recorded as pending. Allowance calculations also account for the unused portion of an earlier period when a change replaces it.
 
-Tondo makes different choices. Its synchronization code treats `past_due` as a paid-plan state alongside `active` and `trialing`, while stopped states follow a separate path. That is a product policy encoded in the application, not a general statement that a past-due subscription has been paid.
+Another implementation makes different choices. Its synchronization code treats `past_due` as a paid-plan state alongside `active` and `trialing`, while stopped states follow a separate path. That is a product policy encoded in the application, not a general statement that a past-due subscription has been paid.
 
-The portal configuration follows the same principle. Galleo enables payment-method updates and invoice history there, but keeps subscription changes and cancellation in its own application flow. Automatically enabling every portal feature would create another route for changing billing that the product needs to support correctly.
+The portal configuration follows the same principle. One configuration enables payment-method updates and invoice history there, while keeping subscription changes and cancellation in the application flow. Automatically enabling every portal feature would create another route for changing billing that the product needs to support correctly.
 
 These are the settings I want to make explicit when adapting the implementation. Copying the code without reviewing them would also copy another product’s business rules.
 
 ## Testing the failures that repeat
 
-Galleo’s billing tests cover more than a successful checkout. There are cases for repeated clicks, concurrent first purchases, retrying after a request fails at Stripe, expired sessions, redelivered events, and transaction rollback. There are also checks that several events for one paid period do not grant the allowance again.
+The existing billing tests cover more than a successful checkout. There are cases for repeated clicks, concurrent first purchases, retrying after a request fails at Stripe, expired sessions, redelivered events, and transaction rollback. There are also checks that several events for one paid period do not grant the allowance again.
 
 Those tests are valuable reusable material because the failure modes recur across products. They make the expected behavior concrete before changing the integration.
 
@@ -140,8 +140,7 @@ The repeatable work is now represented in code: the catalog becomes Stripe confi
 
 The remaining work is still meaningful. A new product needs its account mapping, plan limits, access policy, customer-facing flows, and deployment configuration. Account activation and the business inputs required for tax configuration also sit outside this setup script.
 
-My next step toward broader reuse would be extracting stable interfaces around those differences: a catalog, a customer resolver, an access policy, and persistence adapters. The existing code gives me examples to extract from. I would keep the first version narrow enough that it remains understandable when a payment fails.
+The standalone tooling should expose stable interfaces around those differences: a catalog, a customer resolver, an access policy, and persistence adapters. Keeping that tooling outside the product repositories would let fixes to shared behavior be released once and adopted through a versioned dependency. Each product would still own its configuration and integration tests. The existing implementations provide the behavior to extract and verify.
 
 The benefit is not that subscriptions become a single API call. It is that the repeated decisions and failure handling no longer have to start from an empty file.
 
-The concrete implementation discussed here is in Galleo’s [setup script](https://github.com/nbaghiro/galleo/blob/main/scripts/stripe-setup.ts), [billing service](https://github.com/nbaghiro/galleo/blob/main/services/core/billing.ts), and [billing tests](https://github.com/nbaghiro/galleo/blob/main/services/api/__tests__/billing.itest.ts).
