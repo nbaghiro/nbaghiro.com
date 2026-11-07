@@ -5,6 +5,7 @@ import {
     fetchJson,
     readRoot,
     rootFrom,
+    rootFromLocation,
     storeRoot,
     whenText,
     DEFAULT_BASE,
@@ -217,17 +218,10 @@ function Ads() {
     useFavicon("mark");
     const navigate = useNavigate();
     const [root, setRoot] = useState(() => {
-        const hash = window.location.hash.slice(1);
-        const sectionLink = hash === "profile" || hash.startsWith("post-");
-        let fromHash = "";
-        try {
-            if (!sectionLink) fromHash = rootFrom(decodeURIComponent(hash));
-        } catch {
-            // A malformed fragment must not replace the saved studio address.
-        }
+        const fromHash = rootFromLocation(window.location);
         if (fromHash) {
             storeRoot(fromHash);
-            window.history.replaceState(null, "", window.location.pathname);
+            window.history.replaceState(null, "", window.location.pathname + window.location.search);
             return fromHash;
         }
         return readRoot();

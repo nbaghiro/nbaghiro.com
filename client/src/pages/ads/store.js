@@ -26,6 +26,17 @@ export function rootFrom(input) {
     return DEFAULT_BASE ? `${DEFAULT_BASE}/${v}` : "";
 }
 
+// Only the studio landing page accepts a library address in its fragment.
+// Project-page fragments are section anchors, never replacement credentials.
+export function rootFromLocation({ pathname, hash }) {
+    if (!/^\/ads\/?$/.test(pathname)) return "";
+    try {
+        return rootFrom(decodeURIComponent(hash.replace(/^#/, "")));
+    } catch {
+        return "";
+    }
+}
+
 export function storeRoot(root) {
     try {
         if (root) localStorage.setItem(ROOT_KEY, root);
