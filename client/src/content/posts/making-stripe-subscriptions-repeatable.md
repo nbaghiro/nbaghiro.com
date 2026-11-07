@@ -1,8 +1,8 @@
 title: Making Stripe subscriptions repeatable
 date: 2026-11-07
 about: Engineering
-cover: /img/posts/making-stripe-subscriptions-repeatable-wide.webp
-card: /img/posts/making-stripe-subscriptions-repeatable-card.webp
+cover: /img/posts/making-stripe-subscriptions-repeatable-v2-wide.webp
+card: /img/posts/making-stripe-subscriptions-repeatable-v2-card.webp
 summary: How I automate Stripe catalog setup and reuse subscription patterns, with examples of price changes, checkout retries, webhook transactions, and product access rules.
 
 Adding subscriptions to a new product brings back a familiar set of tasks. Define plans, create prices, connect customers to accounts, open checkout, handle renewals, and decide what access someone has when their payment status changes.
@@ -52,6 +52,8 @@ Live mode requires an explicit flag and a live key. The script refuses a live ke
 
 ## A price change is also a migration decision
 
+![Changing the catalog determines the price for new purchases. Moving existing subscribers is a separate operation.](figure:subscription-price-change)
+
 Stripe prices are versioned objects in practice: changing the amount requires creating another price. Archiving a price prevents new purchases with it while existing subscriptions can continue using it. [Stripe’s price management documentation](https://docs.stripe.com/products-prices/manage-prices) explains those rules.
 
 Galleo’s script creates a replacement when the desired price differs, transfers the lookup key, and archives the previous price. New purchases can resolve to the replacement without changing the logical plan name in application code.
@@ -92,15 +94,7 @@ Fetching current state reduces one source of stale updates. It does not, on its 
 
 Galleo also records processed event IDs. The important detail is that the receipt and its database effects are committed in the same transaction:
 
-```text
-Verify the signature
-Fetch the relevant Stripe state
-Begin database transaction
-  Claim the event ID, or skip an existing receipt
-  Apply the local billing changes
-  Record any resulting product events
-Commit
-```
+![A webhook receipt and its billing changes commit together. If processing fails, neither is saved, so a later delivery can retry.](figure:subscription-webhook-commit)
 
 If processing fails, the receipt rolls back with the changes. A later delivery can try again. Recording the event as processed before applying its effects would risk losing the update permanently after a failure.
 

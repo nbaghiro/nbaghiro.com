@@ -1,3 +1,4 @@
+import { SUBSCRIPTION_FIGURES } from "./figures/making-stripe-subscriptions-repeatable";
 import { useState } from "react";
 import "./Figures.css";
 import {
@@ -2574,6 +2575,7 @@ export const FIGURES = {
     ...EDITOR_DSL_FIGURES,
     ...LEDGER_CHECK_FIGURES,
     ...CONNECT_FIGURES,
+    ...SUBSCRIPTION_FIGURES,
     ...WORKFLOW_PLAN_FIGURES,
     "three-passes": ThreePasses,
     "three-formats": ThreeFormats,
