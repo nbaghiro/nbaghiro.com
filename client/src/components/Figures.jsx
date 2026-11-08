@@ -1,3 +1,4 @@
+import { MUX_FIGURES } from "./figures/mux-videojs-and-the-cost-of-video";
 import { SUBSCRIPTION_FIGURES } from "./figures/making-stripe-subscriptions-repeatable";
 import { useState } from "react";
 import "./Figures.css";
@@ -2562,6 +2563,7 @@ export function OutboxWeek() {
 }
 
 export const FIGURES = {
+    ...MUX_FIGURES,
     ...SWITCHING_FIGURES,
     ...SLOT_FIGURES,
     ...VARIANT_FIGURES,
