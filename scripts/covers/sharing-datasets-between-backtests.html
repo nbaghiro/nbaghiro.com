@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Sharing datasets between backtests</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* One platform account with an account under it for every business, and the three
+       settings fixed when each of those accounts is created. Over the same fog the rest of
+       the site is photographed in, in the ink language of the post's figures. */
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #dfe4e2;
+            }
+            .sheet img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 40%;
+                filter: saturate(0.7) contrast(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(233, 236, 234, 0.1) 0%,
+                    rgba(233, 236, 234, 0.46) 28%,
+                    rgba(233, 236, 234, 0.78) 56%,
+                    rgba(233, 236, 234, 0.88) 100%
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .ink {
+                fill: none;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
+                stroke-width: 1;
+            }
+            .paper {
+                fill: rgba(240, 243, 241, 0.72);
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .chip {
+                fill: rgba(78, 120, 114, 0.62);
+                stroke: none;
+            }
+            .chip.pale {
+                fill: rgba(78, 120, 114, 0.2);
+            }
+            .tick {
+                stroke: #46544f;
+                stroke-width: 1.1;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.small {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 14px;
+                fill: #1b2522;
+            }
+            text.key {
+                font-family: "JetBrains Mono", ui-monospace, monospace;
+                font-size: 12.5px;
+                fill: #1b2522;
+            }
+            text.num {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 13px;
+                fill: #68756f;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="ph-callers.jpg" alt="" />
+            <div class="wash"></div>
+            <svg preserveAspectRatio="none" id="plate"></svg>
+        </div>
+        <script>
+const sheet=document.querySelector('.sheet'), S=document.querySelector('svg');
+const [w,h]=(location.hash.slice(1)||'2000x769').split('x').map(Number);
+sheet.style.setProperty('--w',w+'px');sheet.style.setProperty('--h',h+'px');
+const wide=w/h>2; const W=wide?1000:500,H=wide?384:500;
+S.setAttribute('viewBox',`0 0 ${W} ${H}`);
+const el=(tag,a,t)=>{const n=document.createElementNS('http://www.w3.org/2000/svg',tag);Object.entries(a).forEach(([k,v])=>n.setAttribute(k,v));if(t)n.textContent=t;S.append(n);};
+const line=(d,c='mist')=>el('path',{d,class:c});
+const text=(x,y,t,c='')=>el('text',{x,y,class:c},t);
+const box=(x,y,bw,title,note)=>{el('rect',{x,y,width:bw,height:64,class:'paper'});el('rect',{x,y,width:bw,height:64,class:'ink'});text(x+16,y+26,title,'name');text(x+16,y+47,note);};
+text(40,49,'Sharing datasets between backtests','name');
+text(40,70,'a specification, a lease, and a complete snapshot');
+box(40,105,wide?330:420,'one normalized specification','symbols · dates · adjustment · version');
+const by=wide?218:235;
+['run A','run B'].forEach((t,i)=>{const x=40+i*(wide?180:230),bw=wide?150:190;el('rect',{x,y:by,width:bw,height:58,class:'paper'});el('rect',{x,y:by,width:bw,height:58,class:'ink'});text(x+16,by+34,t,'name');});
+if(wide){
+text(465,49,'one reusable input','name');text(465,70,'separate simulations read the prepared bars');
+[['identify','same complete spec → same snapshot key'],['prepare','coordinate fetches with a bounded Redis lease'],['publish','temporary Parquet → atomic replacement']].forEach(([t,d],i)=>{const y=120+i*73;text(465,y,String(i+1).padStart(2,'0'),'num');text(505,y,t,'name');text(505,y+23,d);line(`M465 ${y+38}H948`);});
+text(40,314,'shared storage is part of the design','small');text(40,337,'a Redis lock does not make local files shared');
+}else{
+text(40,344,'prepare → publish → reuse','name');text(40,374,'A complete snapshot before simulation starts.');text(40,416,'shared storage is part of the design','small');text(40,442,'a Redis lock does not make local files shared');
+}
+[[18,18,1,1],[W-18,18,-1,1],[18,H-18,1,-1],[W-18,H-18,-1,-1]].forEach(([x,y,sx,sy])=>line(`M${x+9*sx} ${y}H${x}V${y+9*sy}`,'ink thin'));
+for(let x=40;x<W-40;x+=14)line(`M${x} ${H-28}v${x%70===40?6:3}`);
+        </script></body></html>

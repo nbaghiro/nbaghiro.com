@@ -1,3 +1,7 @@
+import { DATASET_FIGURES } from "./figures/sharing-datasets-between-backtests";
+import { CUSTOMER_DOMAIN_FIGURES } from "./figures/serving-pages-on-customer-domains";
+import { INVOICE_ARITHMETIC_FIGURES } from "./figures/invoice-arithmetic-down-to-the-cent";
+import { STOCK_MOVEMENT_FIGURES } from "./figures/stock-movements-and-repeated-events";
 import { MUX_FIGURES } from "./figures/mux-videojs-and-the-cost-of-video";
 import { SUBSCRIPTION_FIGURES } from "./figures/making-stripe-subscriptions-repeatable";
 import { useState } from "react";
@@ -2563,6 +2567,10 @@ export function OutboxWeek() {
 }
 
 export const FIGURES = {
+    ...DATASET_FIGURES,
+    ...CUSTOMER_DOMAIN_FIGURES,
+    ...INVOICE_ARITHMETIC_FIGURES,
+    ...STOCK_MOVEMENT_FIGURES,
     ...MUX_FIGURES,
     ...SWITCHING_FIGURES,
     ...SLOT_FIGURES,
