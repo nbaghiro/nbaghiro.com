@@ -1,3 +1,10 @@
+import { URL_FETCH_FIGURES } from "./figures/fetching-user-provided-urls";
+import { COLLAB_ORDER_FIGURES } from "./figures/ordering-collaborative-edits";
+import { CALENDAR_SYNC_FIGURES } from "./figures/calendar-membership-and-incremental-sync";
+import { EXPORT_PERMISSION_FIGURES } from "./figures/permissions-before-cached-exports";
+import { TENANT_ISOLATION_FIGURES } from "./figures/tenant-isolation-in-postgresql";
+import { CREDIT_RECOVERY_FIGURES } from "./figures/recovering-ai-credit-reservations";
+import { SSE_RESUME_FIGURES } from "./figures/resuming-an-ai-response";
 import { DATASET_FIGURES } from "./figures/sharing-datasets-between-backtests";
 import { CUSTOMER_DOMAIN_FIGURES } from "./figures/serving-pages-on-customer-domains";
 import { INVOICE_ARITHMETIC_FIGURES } from "./figures/invoice-arithmetic-down-to-the-cent";
@@ -2567,6 +2574,13 @@ export function OutboxWeek() {
 }
 
 export const FIGURES = {
+    ...SSE_RESUME_FIGURES,
+    ...CREDIT_RECOVERY_FIGURES,
+    ...TENANT_ISOLATION_FIGURES,
+    ...EXPORT_PERMISSION_FIGURES,
+    ...CALENDAR_SYNC_FIGURES,
+    ...COLLAB_ORDER_FIGURES,
+    ...URL_FETCH_FIGURES,
     ...DATASET_FIGURES,
     ...CUSTOMER_DOMAIN_FIGURES,
     ...INVOICE_ARITHMETIC_FIGURES,
