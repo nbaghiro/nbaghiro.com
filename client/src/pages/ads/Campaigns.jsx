@@ -8,8 +8,8 @@ export function Campaigns({ manifest, url }) {
     return (
         <>
             <p className="lede">
-                Multi-screen visuals with company-page LinkedIn copy. All
-                screens use demo accounts.
+                Multi-screen visuals with company posts, first comments, and
+                personal reposts. All screens use demo accounts.
             </p>
             {items.map((item, index) => (
                 <article className="campaign-post" key={item.id}>
@@ -46,7 +46,16 @@ export function Campaigns({ manifest, url }) {
                             {item.surface} · Company page · Draft
                         </p>
                         <h2>{item.title}</h2>
-                        <Field label="LinkedIn copy" text={item.text} count />
+                        <Field label="Company post" text={item.text} count />
+                        <Field
+                            label="First comment · company page"
+                            text={item.firstComment}
+                        />
+                        <Field
+                            label="Personal repost"
+                            text={item.repost}
+                            count
+                        />
                     </div>
                 </article>
             ))}
