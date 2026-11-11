@@ -88,5 +88,50 @@
         "file": "campaigns/2026-11-11/shop.png",
         "firstComment": "Learn more at https://clientbridge.ca",
         "repost": "The shop in Clientbridge works on desktop and mobile. Clients can browse products, place an order for pickup, and check its progress on the order page."
+    },
+    {
+        "id": "booking-pages",
+        "title": "Booking with your business",
+        "subtitle": "Your services, prices, and appointment lengths, ready for clients to choose.",
+        "screens": [
+            ["connect-book-fieldnote-phone", "Photography"],
+            ["connect-book-harbourside-phone", "Massage and wellness"],
+            ["connect-book-maplemain-phone", "Hair studio"]
+        ],
+        "text": "Clientbridge gives clients a booking page with your services, prices, and appointment lengths.\n\nThey can see which services require a deposit and read your cancellation notice before choosing a visit.\n\nThese examples show a photographer, a massage clinic, and a hair studio from our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
+        "repost": "A few examples of booking pages in Clientbridge. Each business has its own services, prices, deposits, and cancellation notice.",
+        "surface": "Phone",
+        "file": "campaigns/2026-11-11/booking-pages.png",
+        "firstComment": "Learn more at https://clientbridge.ca"
+    },
+    {
+        "id": "mobile-shops",
+        "title": "A shop for the products you sell",
+        "subtitle": "Clients can browse your products and order for pickup from their phone.",
+        "screens": [
+            ["connect-shop-brightwater-phone", "Home supplies"],
+            ["connect-shop-inkwell-phone", "Tattoo aftercare"],
+            ["connect-shop-maplemain-phone", "Hair care"]
+        ],
+        "text": "Clientbridge lets clients shop for products through your business’s page.\n\nYour products appear with their photos, prices, and categories. Clients can add items to an order and arrange pickup.\n\nThese examples show home supplies, tattoo aftercare, and hair care from three demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
+        "repost": "Here’s how different product ranges look in Clientbridge’s mobile shop. Clients can browse what a business sells and place an order for pickup.",
+        "surface": "Phone",
+        "file": "campaigns/2026-11-11/mobile-shops.png",
+        "firstComment": "Learn more at https://clientbridge.ca"
+    },
+    {
+        "id": "estimate-payment-receipt",
+        "title": "Estimates, payments, and receipts",
+        "subtitle": "Clear details clients can open from a link on their phone.",
+        "screens": [
+            ["connect-estimate-northlight-phone", "Estimate"],
+            ["connect-pay-northlight-phone", "Payment"],
+            ["connect-receipt-northlight-phone", "Receipt"]
+        ],
+        "text": "Clientbridge gives clients pages for reviewing an estimate, paying an invoice, and viewing a receipt.\n\nThey can check the work and costs on the estimate, pay by card on the invoice page, and see what was paid on the receipt.\n\nThese are separate examples from Northlight Security, one of our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
+        "repost": "A closer look at Clientbridge’s estimate, payment, and receipt pages. Each gives the client the details they need through a link on their phone.",
+        "surface": "Phone",
+        "file": "campaigns/2026-11-11/estimate-payment-receipt.png",
+        "firstComment": "Learn more at https://clientbridge.ca"
     }
 ]

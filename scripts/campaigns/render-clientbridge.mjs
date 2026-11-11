@@ -20,6 +20,7 @@ const b=await chromium.launch({channel:'chrome'});
 try {
  const p=await b.newPage({viewport:{width:1200,height:1200},deviceScaleFactor:2});
  for(const item of items){
+  if(process.argv.length > 2 && !process.argv.slice(2).includes(item.id)) continue;
   const plates=item.screens.map(([name,cap])=>{const tab=name.startsWith('tablet:');const src=tab?tablet+'/'+name.slice(7)+'.png':social+'/m/'+name+'.png';const buf=fs.readFileSync(src);const w=buf.readUInt32BE(16),h=buf.readUInt32BE(20);return {src:tab?'/tablet/'+name.slice(7)+'.png':'/m/'+name+'.png',base:w,w,h,x:0,y:0,phone:!tab&&/phone|ios\//.test(name),cap};});
   const plan={kind:'doc',shape:'row',eyebrow:'Clientbridge',head:item.title,sub:item.subtitle,plates};
   await p.goto('http://127.0.0.1:8693/shot.html?plan='+encodeURIComponent(JSON.stringify(plan)));
