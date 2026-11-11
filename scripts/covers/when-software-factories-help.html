@@ -3,11 +3,16 @@
     <head>
         <meta charset="utf-8" />
         <title>Where software factories are useful</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"
             rel="stylesheet"
         />
         <style>
+            /* One platform account with an account under it for every business, and the three
+       settings fixed when each of those accounts is created. Over the same fog the rest of
+       the site is photographed in, in the ink language of the post's figures. */
             * {
                 margin: 0;
                 box-sizing: border-box;
@@ -21,23 +26,26 @@
                 width: var(--w);
                 height: var(--h);
                 overflow: hidden;
-                background: #e9ecea;
+                background: #dfe4e2;
             }
             .sheet img {
                 position: absolute;
+                inset: 0;
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-                opacity: 0.28;
-                filter: grayscale(1);
+                object-position: center 40%;
+                filter: saturate(0.7) contrast(1);
             }
             .wash {
                 position: absolute;
                 inset: 0;
                 background: linear-gradient(
-                    180deg,
-                    rgba(233, 236, 234, 0.55),
-                    rgba(233, 236, 234, 0.96)
+                    to bottom,
+                    rgba(233, 236, 234, 0.1) 0%,
+                    rgba(233, 236, 234, 0.46) 28%,
+                    rgba(233, 236, 234, 0.78) 56%,
+                    rgba(233, 236, 234, 0.88) 100%
                 );
             }
             svg {
@@ -46,27 +54,62 @@
                 width: 100%;
                 height: 100%;
             }
-            text {
-                fill: #1b2522;
-                font-family: "Instrument Sans", sans-serif;
-            }
-            .name {
-                font-family: "Newsreader", Georgia, serif;
-            }
-            .ascii {
-                white-space: pre;
-                font-family:
-                    "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
-                    monospace;
-                fill: #435b53;
-            }
-            .hint {
-                fill: #526a61;
-            }
-            .line {
+            .ink {
                 fill: none;
-                stroke: #aeb9b5;
+                stroke: #1b2522;
+                stroke-width: 1.3;
+            }
+            .ink.thin {
                 stroke-width: 1;
+            }
+            .paper {
+                fill: rgba(240, 243, 241, 0.72);
+            }
+            .mist {
+                fill: none;
+                stroke: #7e8d88;
+                stroke-width: 1;
+            }
+            .water {
+                fill: none;
+                stroke: #4e7872;
+                stroke-width: 1.3;
+            }
+            .chip {
+                fill: rgba(78, 120, 114, 0.62);
+                stroke: none;
+            }
+            .chip.pale {
+                fill: rgba(78, 120, 114, 0.2);
+            }
+            .tick {
+                stroke: #46544f;
+                stroke-width: 1.1;
+            }
+            text {
+                font-family: "Instrument Sans", system-ui, sans-serif;
+                font-size: 12px;
+                fill: #68756f;
+            }
+            text.name {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 18px;
+                fill: #1b2522;
+            }
+            text.small {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 14px;
+                fill: #1b2522;
+            }
+            text.key {
+                font-family: "JetBrains Mono", ui-monospace, monospace;
+                font-size: 12.5px;
+                fill: #1b2522;
+            }
+            text.num {
+                font-family: "Newsreader", Georgia, serif;
+                font-size: 13px;
+                fill: #68756f;
             }
         </style>
     </head>
@@ -74,122 +117,78 @@
         <div class="sheet">
             <img src="ph-callers.jpg" alt="" />
             <div class="wash"></div>
-            <svg id="plate"></svg>
+            <svg preserveAspectRatio="none" id="plate"></svg>
         </div>
         <script>
+            const sheet = document.querySelector(".sheet"),
+                S = document.querySelector("svg");
             const [w, h] = (location.hash.slice(1) || "2000x769")
                 .split("x")
                 .map(Number);
-            const wide = w / h > 2,
-                W = wide ? 1000 : 500,
+            sheet.style.setProperty("--w", w + "px");
+            sheet.style.setProperty("--h", h + "px");
+            const wide = w / h > 2;
+            const W = wide ? 1000 : 500,
                 H = wide ? 384 : 500;
-            document.querySelector(".sheet").style.cssText =
-                `--w:${w}px;--h:${h}px`;
-            const S = document.querySelector("svg");
             S.setAttribute("viewBox", `0 0 ${W} ${H}`);
-            function el(tag, attrs, text) {
+            const el = (tag, a, t) => {
                 const n = document.createElementNS(
                     "http://www.w3.org/2000/svg",
                     tag
                 );
-                for (const [k, v] of Object.entries(attrs))
-                    n.setAttribute(k, v);
-                if (text) n.textContent = text;
+                Object.entries(a).forEach(([k, v]) => n.setAttribute(k, v));
+                if (t) n.textContent = t;
                 S.append(n);
-            }
-            const left = wide ? 44 : 32;
-            el(
-                "text",
-                {
-                    x: left,
-                    y: 45,
-                    "font-size": 11,
-                    "letter-spacing": 2,
-                    class: "hint",
-                },
-                "ENGINEERING / OPERATIONS"
-            );
-            el(
-                "text",
-                {
-                    x: left,
-                    y: wide ? 88 : 91,
-                    "font-size": wide ? 34 : 33,
-                    class: "name",
-                },
-                wide
-                    ? "Where software factories are useful"
-                    : "Where software factories"
-            );
-            if (!wide)
-                el(
-                    "text",
-                    { x: left, y: 126, "font-size": 33, class: "name" },
-                    "are useful"
-                );
-            el(
-                "text",
-                {
-                    x: left,
-                    y: wide ? 118 : 158,
-                    "font-size": 13,
-                    class: "hint",
-                },
-                "Repeated work, clear scope, reviewed decisions."
-            );
-            const rows = wide
-                ? [
-                      "    _____________                 __________________                  ______________",
-                      "   /            /|               /                 /|                /             /|",
-                      "  +------------+ |              +-----------------+ |               +-------------+ |",
-                      "  |  SIGNALS   | |              |  INVESTIGATION  | |               |   REVIEW    | |",
-                      "  |  repeated  | +---- . ---->  |  collect + test | +---- . ---->   |  decide     | |",
-                      "  |  failures  |/              |  keep evidence  |/                |  check use  |/",
-                      "  +------------+               +-----------------+                 +-------------+",
-                      "         ^                                                                |",
-                      "         +--------------------- observe the result <-----------------------+",
-                  ]
-                : [
-                      "    __________________________",
-                      "   /                         /|",
-                      "  +-------------------------+ |",
-                      "  | COLLECT -> INVESTIGATE   | |",
-                      "  | Repeated, bounded work  |/",
-                      "  +-------------------------+",
-                      "               |",
-                      "               v",
-                      "  [ REVIEW ] ---> [ OBSERVE ]",
-                  ];
-            const cell = wide ? 10.2 : 12,
-                pitch = wide ? 19 : 21,
-                start = wide ? 168 : 205;
-            rows.forEach((line, i) =>
-                el(
-                    "text",
-                    {
-                        x: left,
-                        y: start + i * pitch,
-                        "font-size": cell / 0.6,
-                        class: "ascii",
-                        "xml:space": "preserve",
-                        textLength: line.length * cell,
-                        lengthAdjust: "spacingAndGlyphs",
-                    },
-                    line
-                )
-            );
-            el("path", { d: `M${left} ${H - 38}H${W - left}`, class: "line" });
-            el(
-                "text",
-                { x: left, y: H - 17, "font-size": 11, class: "hint" },
-                wide
-                    ? "Start with one recurring task. Add coordination when it earns its place."
-                    : "Start with one recurring task."
-            );
-            el("path", {
-                d: `M18 29V18H29 M${W - 29} 18H${W - 18}V29 M18 ${H - 29}V${H - 18}H29 M${W - 29} ${H - 18}H${W - 18}V${H - 29}`,
-                class: "line",
+            };
+            const line = (d, c = "mist") => el("path", { d, class: c });
+            const text = (x, y, t, c = "") => el("text", { x, y, class: c }, t);
+            const box = (x, y, bw, title, note) => {
+                el("rect", { x, y, width: bw, height: 64, class: "paper" });
+                el("rect", { x, y, width: bw, height: 64, class: "ink" });
+                text(x + 16, y + 26, title, "name");
+                text(x + 16, y + 47, note);
+            };
+            text(40, 49, "Where software factories are useful", "name");
+            text(40, 70, "Automating repeated operational work");
+            const steps = [
+                ["Collect evidence", "Signals, traces, and related reports"],
+                ["Investigate", "Reproduce the failure and explain the cause"],
+                [
+                    "Review and observe",
+                    "Choose the action, then check the result",
+                ],
+            ];
+            steps.forEach(([title, note], i) => {
+                const y = 103 + i * (wide ? 80 : 90);
+                box(40, y, 420, title, note);
+                if (i < 2)
+                    line(
+                        `M250 ${y + 64}v${wide ? 12 : 22}m-3-5 3 5 3-5`,
+                        "water"
+                    );
             });
+            if (wide) {
+                text(520, 49, "Match automation to the workload", "name");
+                text(520, 123, "Repetition makes the case", "name");
+                text(520, 150, "Start with work the team already repeats.");
+                line("M520 178H948");
+                text(520, 224, "Review remains part of the process", "name");
+                text(520, 251, "Limit new work when the review queue is full.");
+                text(520, 321, "Add coordination as the workload requires it.");
+            } else {
+                text(40, 414, "Start with one recurring task", "small");
+                text(40, 440, "Add coordination as the workload requires it.");
+            }
+            [
+                [18, 18, 1, 1],
+                [W - 18, 18, -1, 1],
+                [18, H - 18, 1, -1],
+                [W - 18, H - 18, -1, -1],
+            ].forEach(([x, y, sx, sy]) =>
+                line(`M${x + 9 * sx} ${y}H${x}V${y + 9 * sy}`, "ink thin")
+            );
+            for (let x = 40; x < W - 40; x += 14)
+                line(`M${x} ${H - 28}v${x % 70 === 40 ? 6 : 3}`);
         </script>
     </body>
 </html>

@@ -1,4 +1,4 @@
-import { FACTORY_ASCII_FIGURES } from "./figures/when-software-factories-help";
+import { FACTORY_FIGURES } from "./figures/when-software-factories-help";
 import { URL_FETCH_FIGURES } from "./figures/fetching-user-provided-urls";
 import { COLLAB_ORDER_FIGURES } from "./figures/ordering-collaborative-edits";
 import { CALENDAR_SYNC_FIGURES } from "./figures/calendar-membership-and-incremental-sync";
@@ -2582,7 +2582,7 @@ export const FIGURES = {
     ...CALENDAR_SYNC_FIGURES,
     ...COLLAB_ORDER_FIGURES,
     ...URL_FETCH_FIGURES,
-    ...FACTORY_ASCII_FIGURES,
+    ...FACTORY_FIGURES,
     ...DATASET_FIGURES,
     ...CUSTOMER_DOMAIN_FIGURES,
     ...INVOICE_ARITHMETIC_FIGURES,
