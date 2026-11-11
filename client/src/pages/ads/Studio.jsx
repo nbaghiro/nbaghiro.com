@@ -23,6 +23,7 @@ import { Library } from "./Library";
 import { Quotes } from "./Quotes";
 import { Industry } from "./Industry";
 import { Account } from "./Account";
+import { Campaigns } from "./Campaigns";
 import { Shots } from "./Shots";
 import { Record } from "./Record";
 import { AppStores } from "./AppStores";
@@ -173,6 +174,15 @@ export function Studio({ root }) {
               ...(breakdownCount(manifest)
                   ? [["breakdowns", "Breakdowns", breakdownCount]]
                   : []),
+              ...(manifest.campaigns?.items?.length
+                  ? [
+                        [
+                            "campaigns",
+                            "Screen posts",
+                            (m) => m.campaigns.items.length,
+                        ],
+                    ]
+                  : []),
               ...(setCount(manifest)
                   ? [["sets", "Screens together", setCount]]
                   : []),
@@ -298,6 +308,7 @@ export function Studio({ root }) {
                 {active === "breakdowns" && (
                     <Industry {...ctx} doc={manifest.breakdowns} />
                 )}
+                {active === "campaigns" && <Campaigns {...ctx} />}
                 {active === "sets" && <Shots {...ctx} section="sets" />}
                 {active === "shots" && <Shots {...ctx} />}
                 {active === "store" && <AppStores {...ctx} />}

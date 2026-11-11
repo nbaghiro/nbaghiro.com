@@ -1,0 +1,80 @@
+[
+    {
+        "id": "schedule",
+        "title": "Your schedule on phone and tablet",
+        "subtitle": "Check today\u2019s appointments and see who is coming next.",
+        "surface": "Phone + tablet",
+        "screens": [
+            ["tablet:tablet-schedule", "Team schedule"],
+            ["ios/schedule", "On your phone"],
+            ["ios/today", "Today"]
+        ],
+        "text": "Clientbridge keeps your schedule available on your phone and tablet.\n\nUse the tablet view to see the team\u2019s appointments across the day. On your phone, check your schedule and see who is coming next.\n\nThese screens show examples from our demo accounts.\n\nLearn more at clientbridge.ca",
+        "file": "campaigns/2026-11-11/schedule.png"
+    },
+    {
+        "id": "clients",
+        "title": "Client details where you need them",
+        "subtitle": "Find a client, open their record, and check the details before their visit.",
+        "surface": "Phone + tablet",
+        "screens": [
+            ["tablet:tablet-clients", "Client list and record"],
+            ["ios/clients", "Find a client"],
+            ["ios/client-record", "Client details"]
+        ],
+        "text": "Clientbridge brings your client list and client records together.\n\nOn a tablet, you can keep the list open beside the selected client\u2019s details. On your phone, find a client and open their record while you\u2019re away from your desk.\n\nThe screens show demo client records.\n\nLearn more at clientbridge.ca",
+        "file": "campaigns/2026-11-11/clients.png"
+    },
+    {
+        "id": "invoices",
+        "title": "Invoices at your desk and on your phone",
+        "subtitle": "Review invoices in the app and let clients pay through a link.",
+        "surface": "Phone + desktop",
+        "screens": [
+            ["web-invoices", "Business invoices"],
+            ["ios/invoices", "On your phone"],
+            ["connect-pay-lakeside-phone", "Client payment page"]
+        ],
+        "text": "With Clientbridge, you can review invoices on your computer or phone and send clients a link to pay.\n\nThe client\u2019s page shows what the invoice is for and the amount due, with card payment on the same page.\n\nThese examples show the business view and a client payment page from our demo accounts.\n\nLearn more at clientbridge.ca",
+        "file": "campaigns/2026-11-11/invoices.png"
+    },
+    {
+        "id": "visit",
+        "title": "Before the client arrives",
+        "subtitle": "Clients can fill out a form, sign an agreement, and review their booking from a link.",
+        "surface": "Phone",
+        "screens": [
+            ["connect-form-northlight-phone", "Form"],
+            ["connect-contract-fieldnote-phone", "Agreement"],
+            ["connect-manage-lakeside-phone", "Booking details"]
+        ],
+        "text": "Clientbridge gives clients a way to handle the details before their visit.\n\nThey can fill out a form, sign an agreement, or review their booking through a link. They can also move or cancel a booking within the business\u2019s policy.\n\nThese screens show separate examples from our demo businesses.\n\nLearn more at clientbridge.ca",
+        "file": "campaigns/2026-11-11/visit.png"
+    },
+    {
+        "id": "payments",
+        "title": "A payment page for your business",
+        "subtitle": "Clients can review their invoice and pay by card on their phone.",
+        "surface": "Phone",
+        "screens": [
+            ["connect-pay-birchbark-phone", "Birchbark"],
+            ["connect-pay-fieldnote-phone", "Fieldnote"],
+            ["connect-pay-lakeside-phone", "Lakeside"]
+        ],
+        "text": "Clientbridge lets clients pay an invoice from a link on their phone.\n\nThe page carries your business\u2019s branding and shows the invoice details and amount due. Clients can pay by card without installing an app or creating an account.\n\nHere are examples from three of our demo businesses.\n\nLearn more at clientbridge.ca",
+        "file": "campaigns/2026-11-11/payments.png"
+    },
+    {
+        "id": "shop",
+        "title": "Your shop on desktop and mobile",
+        "subtitle": "Clients can browse products and place an order through your business\u2019s page.",
+        "surface": "Phone + desktop",
+        "screens": [
+            ["connect-shop-desk", "Desktop shop"],
+            ["connect-shop-phone", "Mobile shop"],
+            ["connect-order-phone", "Order page"]
+        ],
+        "text": "Clientbridge gives your business an online shop that clients can use on their computer or phone.\n\nThey can browse your products, check prices, and place an order for pickup. The shop sits alongside your booking page.\n\nThese screens show examples from a demo business.\n\nLearn more at clientbridge.ca",
+        "file": "campaigns/2026-11-11/shop.png"
+    }
+]
