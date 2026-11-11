@@ -1,0 +1,29 @@
+/* Real character-grid drawings, with the site's paper and ink colours. */
+.fig.factory-ascii .factory-ascii-row {
+    font-family:
+        "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    fill: #435b53;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+.fig.factory-ascii .factory-ascii-flow {
+    fill: var(--water);
+}
+.factory-ascii.is-shown .factory-ascii-flow {
+    animation: factory-signal 1.5s ease-in-out 2;
+    animation-delay: var(--flow-delay, 0s);
+}
+@keyframes factory-signal {
+    0%,
+    100% {
+        fill: #4e7872;
+    }
+    50% {
+        fill: #152b23;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .factory-ascii.is-shown .factory-ascii-flow {
+        animation: none;
+    }
+}

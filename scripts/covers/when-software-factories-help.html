@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Where software factories are useful</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400&family=Instrument+Sans:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: var(--w);
+                height: var(--h);
+                overflow: hidden;
+                background: #e9ecea;
+            }
+            .sheet img {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0.28;
+                filter: grayscale(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    180deg,
+                    rgba(233, 236, 234, 0.55),
+                    rgba(233, 236, 234, 0.96)
+                );
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            text {
+                fill: #1b2522;
+                font-family: "Instrument Sans", sans-serif;
+            }
+            .name {
+                font-family: "Newsreader", Georgia, serif;
+            }
+            .ascii {
+                white-space: pre;
+                font-family:
+                    "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+                    monospace;
+                fill: #435b53;
+            }
+            .hint {
+                fill: #526a61;
+            }
+            .line {
+                fill: none;
+                stroke: #aeb9b5;
+                stroke-width: 1;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img src="ph-callers.jpg" alt="" />
+            <div class="wash"></div>
+            <svg id="plate"></svg>
+        </div>
+        <script>
+            const [w, h] = (location.hash.slice(1) || "2000x769")
+                .split("x")
+                .map(Number);
+            const wide = w / h > 2,
+                W = wide ? 1000 : 500,
+                H = wide ? 384 : 500;
+            document.querySelector(".sheet").style.cssText =
+                `--w:${w}px;--h:${h}px`;
+            const S = document.querySelector("svg");
+            S.setAttribute("viewBox", `0 0 ${W} ${H}`);
+            function el(tag, attrs, text) {
+                const n = document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    tag
+                );
+                for (const [k, v] of Object.entries(attrs))
+                    n.setAttribute(k, v);
+                if (text) n.textContent = text;
+                S.append(n);
+            }
+            const left = wide ? 44 : 32;
+            el(
+                "text",
+                {
+                    x: left,
+                    y: 45,
+                    "font-size": 11,
+                    "letter-spacing": 2,
+                    class: "hint",
+                },
+                "ENGINEERING / OPERATIONS"
+            );
+            el(
+                "text",
+                {
+                    x: left,
+                    y: wide ? 88 : 91,
+                    "font-size": wide ? 34 : 33,
+                    class: "name",
+                },
+                wide
+                    ? "Where software factories are useful"
+                    : "Where software factories"
+            );
+            if (!wide)
+                el(
+                    "text",
+                    { x: left, y: 126, "font-size": 33, class: "name" },
+                    "are useful"
+                );
+            el(
+                "text",
+                {
+                    x: left,
+                    y: wide ? 118 : 158,
+                    "font-size": 13,
+                    class: "hint",
+                },
+                "Repeated work, clear scope, reviewed decisions."
+            );
+            const rows = wide
+                ? [
+                      "    _____________                 __________________                  ______________",
+                      "   /            /|               /                 /|                /             /|",
+                      "  +------------+ |              +-----------------+ |               +-------------+ |",
+                      "  |  SIGNALS   | |              |  INVESTIGATION  | |               |   REVIEW    | |",
+                      "  |  repeated  | +---- . ---->  |  collect + test | +---- . ---->   |  decide     | |",
+                      "  |  failures  |/              |  keep evidence  |/                |  check use  |/",
+                      "  +------------+               +-----------------+                 +-------------+",
+                      "         ^                                                                |",
+                      "         +--------------------- observe the result <-----------------------+",
+                  ]
+                : [
+                      "    __________________________",
+                      "   /                         /|",
+                      "  +-------------------------+ |",
+                      "  | COLLECT -> INVESTIGATE   | |",
+                      "  | Repeated, bounded work  |/",
+                      "  +-------------------------+",
+                      "               |",
+                      "               v",
+                      "  [ REVIEW ] ---> [ OBSERVE ]",
+                  ];
+            const cell = wide ? 10.2 : 12,
+                pitch = wide ? 19 : 21,
+                start = wide ? 168 : 205;
+            rows.forEach((line, i) =>
+                el(
+                    "text",
+                    {
+                        x: left,
+                        y: start + i * pitch,
+                        "font-size": cell / 0.6,
+                        class: "ascii",
+                        "xml:space": "preserve",
+                        textLength: line.length * cell,
+                        lengthAdjust: "spacingAndGlyphs",
+                    },
+                    line
+                )
+            );
+            el("path", { d: `M${left} ${H - 38}H${W - left}`, class: "line" });
+            el(
+                "text",
+                { x: left, y: H - 17, "font-size": 11, class: "hint" },
+                wide
+                    ? "Start with one recurring task. Add coordination when it earns its place."
+                    : "Start with one recurring task."
+            );
+            el("path", {
+                d: `M18 29V18H29 M${W - 29} 18H${W - 18}V29 M18 ${H - 29}V${H - 18}H29 M${W - 29} ${H - 18}H${W - 18}V${H - 29}`,
+                class: "line",
+            });
+        </script>
+    </body>
+</html>
