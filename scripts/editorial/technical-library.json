@@ -10,7 +10,7 @@
             "cover": "/img/posts/when-software-factories-help-wide.webp",
             "summary": "Software factories become more useful when repeated operational work grows with product usage. Incident triage shows what to automate, what to keep under review, and how to tell whether the extra machinery is helping.",
             "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
+            "productMediaStatus": "Not needed for this general topic",
             "source": "Founder posts",
             "media": [],
             "status": "Ready with article visual"
@@ -100,7 +100,7 @@
             "cover": "/img/posts/permissions-before-cached-exports-wide.webp",
             "summary": "A cached file can remain valid after a person's access changes. A concrete export design separating reusable bytes, current authorization, background work, and temporary download links.",
             "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
+            "productMediaStatus": "Not needed for this general topic",
             "source": "Founder posts",
             "media": [],
             "status": "Ready with article visual"
@@ -115,7 +115,7 @@
             "cover": "/img/posts/calendar-membership-and-incremental-sync-wide.webp",
             "summary": "A calendar sync design that separates the records belonging in a calendar from the changes since a cursor, including removals, moving windows, partial failures, and recovery.",
             "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
+            "productMediaStatus": "Not needed for this general topic",
             "source": "Founder posts",
             "media": [],
             "status": "Ready with article visual"
@@ -190,7 +190,7 @@
             "cover": "/img/posts/mux-videojs-and-the-cost-of-video-wide.webp",
             "summary": "Direct uploads, asynchronous processing, signed playback, and Video.js, with a concrete cost model for storage, delivery, and the player choices that affect both.",
             "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
+            "productMediaStatus": "Not needed for this general topic",
             "source": "Founder posts",
             "media": [],
             "status": "Ready with article visual"
@@ -205,7 +205,7 @@
             "cover": "/img/posts/making-stripe-subscriptions-repeatable-v2-wide.webp",
             "summary": "How I automate Stripe catalog setup and reuse subscription patterns, with examples of price changes, checkout retries, webhook transactions, and product access rules.",
             "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
+            "productMediaStatus": "Not needed for this general topic",
             "source": "Founder posts",
             "media": [],
             "status": "Ready with article visual"
