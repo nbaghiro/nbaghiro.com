@@ -2413,3 +2413,12 @@
 .campaign-image img { display: block; width: 100%; border-radius: 14px; }
 .campaign-post h2 { margin: 12px 0 24px; }
 @media (max-width: 760px) { .campaign-post { grid-template-columns: 1fr; gap: 24px; } }
+
+.technical-entry { margin-bottom: 28px; }
+.technical-library .lib-chips { flex-wrap: wrap; }
+.technical-media-state { margin: 24px 0 14px; color: #aaa; font-size: 14px; }
+.technical-thumbnails { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+.technical-thumbnails button { padding: 0; border: 1px solid #444; background: transparent; cursor: zoom-in; }
+.technical-thumbnails img { display: block; width: 100%; }
+.technical-library article { scroll-margin-top: 110px; }
+.technical-library details summary { cursor: pointer; }

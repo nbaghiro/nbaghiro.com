@@ -10,6 +10,7 @@ import {
     whenText,
     DEFAULT_BASE,
 } from "./store";
+import { TechnicalPosts } from "./TechnicalPosts";
 import { Studio } from "./Studio";
 import { useFavicon } from "../../favicon";
 import "./ads.css";
@@ -149,6 +150,9 @@ function Projects({ root, onLock }) {
                 </button>
             </header>
             <div className="body">
+                <Link className="btn technical-entry" to="/ads/technical-posts">
+                    Technical posts · Copy, articles, and media by product
+                </Link>
                 <div className="shelf">{seg}</div>
                 {error && <p className="error">{error}</p>}
                 {index && shown.length === 0 && (
@@ -201,7 +205,11 @@ function Projects({ root, onLock }) {
                                     <div className="tile-empty">{p.name}</div>
                                 )}
                                 <h2>{p.name}</h2>
-                                <p className="meta">{countsText(p.counts)}</p>
+                                <p className="meta">
+                                    {p.id === "technical-posts"
+                                        ? "Technical copy, articles, and media by product"
+                                        : countsText(p.counts)}
+                                </p>
                                 <p className="when">
                                     Published {whenText(p.publishedAt)}
                                 </p>
@@ -221,7 +229,11 @@ function Ads() {
         const fromHash = rootFromLocation(window.location);
         if (fromHash) {
             storeRoot(fromHash);
-            window.history.replaceState(null, "", window.location.pathname + window.location.search);
+            window.history.replaceState(
+                null,
+                "",
+                window.location.pathname + window.location.search
+            );
             return fromHash;
         }
         return readRoot();
@@ -256,6 +268,10 @@ function Ads() {
         <div className="ads">
             <Routes>
                 <Route index element={<Projects root={root} onLock={lock} />} />
+                <Route
+                    path="technical-posts"
+                    element={<TechnicalPosts root={root} />}
+                />
                 <Route path=":project" element={<Studio root={root} />} />
             </Routes>
         </div>

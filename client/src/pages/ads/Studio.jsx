@@ -241,6 +241,22 @@ export function Studio({ root }) {
                     ‹
                 </Link>
                 <h1>{manifest.project.name}</h1>
+                <Link
+                    className="btn quiet desk"
+                    to={
+                        "/ads/technical-posts" +
+                        ({
+                            galleo: "?product=Galleo",
+                            lumischool: "?product=LumiSchool",
+                            clientbridge: "?product=Clientbridge",
+                            flowmaestro: "?product=FlowMaestro",
+                            llamatrade: "?product=LlamaTrade",
+                            tondo: "?product=Tondo",
+                        }[project] || "")
+                    }
+                >
+                    Technical posts
+                </Link>
                 {tabs.length > 1 && (
                     <nav className="tabs desk" aria-label="Sections">
                         {tabs.map(([id, label, count]) => (

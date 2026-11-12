@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Field } from "./actions";
 
 export const FOUNDER_POSTS = [
@@ -126,6 +127,11 @@ export const FOUNDER_POSTS = [
 export function FounderPosts() {
     return (
         <>
+            <p>
+                <Link className="btn" to="/ads/technical-posts">
+                    Open technical posts with visuals
+                </Link>
+            </p>
             <p className="lede">
                 Personal posts about building products and the decisions behind
                 them.
