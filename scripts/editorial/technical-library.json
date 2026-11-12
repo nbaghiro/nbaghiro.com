@@ -1,499 +1,639 @@
 {
-    "posts": [
+  "posts": [
+    {
+      "id": "when-software-factories-help",
+      "title": "Where software factories are useful",
+      "products": [
+        "General engineering"
+      ],
+      "text": "I can see software factories being useful as a product grows, especially when the team keeps repeating the same operational work. I would be more cautious about building one around early product development, where the next useful change is often still unclear.\n\nGumloop's recent article got me thinking about that distinction. Their system investigates engineering problems and prepares changes for human review. The part I would start with is gathering the evidence people repeatedly need.\n\nFor example, suppose bookings are succeeding but confirmation emails are delayed. A workflow could collect queue age, recent deployments, failed job traces, and related support reports into one incident record. An agent could then investigate the cause and prepare a reproduction.\n\nThat does not mean it should also decide to change production. Restoring service, preparing a permanent fix, and checking whether customers are receiving confirmations again are separate steps.\n\nThe extra machinery has costs too. It needs permissions, retry rules, recovery when a worker stops, and someone responsible for its output. If it prepares twelve patches a day and the team can review four, it has created another queue.\n\nI would start with one recurring task and measure whether it reduces the team's work. As usage and repetition grow, more coordination may become worthwhile.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/when-software-factories-help",
+      "url": "https://nbaghiro.com/blogs/when-software-factories-help",
+      "cover": "/img/posts/when-software-factories-help-wide.webp",
+      "summary": "Software factories become more useful when repeated operational work grows with product usage. Incident triage shows what to automate, what to keep under review, and how to tell whether the extra machinery is helping.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Not product-specific",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "resuming-an-ai-response",
+      "title": "Resuming an AI response after a disconnect",
+      "products": [
+        "FlowMaestro"
+      ],
+      "text": "A browser disconnect should not require starting the same AI response again.\n\nIn FlowMaestro, the agent execution route reads from a Redis Stream. The worker appends events as it runs, and the API sends each entry with its Redis ID as the SSE event ID.\n\nIf the browser receives event 7 and disconnects while 8, 9, and 10 are produced, it can reconnect with Last-Event-ID set to 7. The server reads the retained entries after that position, then keeps following the same log. Replay and live delivery use the same cursor.\n\nFresh connections need another rule. We keep a marker for the latest user message so a new connection can start at the current turn without replaying earlier turns. If the execution has finished and its event log is gone, the route can recover the final answer from the stored execution state.\n\nThere are limits worth being clear about. Retention bounds how far back replay works. An append failure can leave a gap because the worker continues even if event logging fails. An SSE cursor also says what the browser received, not whether the interface successfully applied it.\n\nThe frontend needs to distinguish a temporary connection error from a terminal error sent by the application. Closing EventSource on every network interruption would prevent its automatic reconnect.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/resuming-an-ai-response",
+      "url": "https://nbaghiro.com/blogs/resuming-an-ai-response",
+      "cover": "/img/posts/resuming-an-ai-response-wide.webp",
+      "summary": "Redis Streams, SSE event IDs, turn boundaries, and terminal-state recovery in FlowMaestro, including the limits of retention, failed appends, and browser acknowledgements.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/resuming-an-ai-response.png",
+        "label": "Returning to an interrupted response",
+        "brand": "flow"
+      }
+    },
+    {
+      "id": "recovering-ai-credit-reservations",
+      "title": "Recovering AI credit reservations after a crash",
+      "products": [
+        "Galleo"
+      ],
+      "text": "An AI operation can fail after it has already used tokens or generated an asset. The billing code still needs to decide what happens to the credits it reserved.\n\nIn Galleo, I reserve an estimate before starting the work, then settle against the usage recorded by the application. A workspace with 100 credits might reserve 30, leaving 70 available. If the run uses 8, settlement returns 22 and the balance ends at 92.\n\nThat works when the process reaches its cleanup code. A crash needs another path.\n\nWhile the run is active, it renews a database lease and saves a usage checkpoint every 30 seconds. Recovery later claims expired operations and closes them from the last checkpoint. It does not rerun the provider request. The operation is marked as recovered so the uncertainty stays visible.\n\nThere are limits. A provider can consume resources before reporting usage, and the process can die before saving its next checkpoint. A missed heartbeat can also mean a database problem rather than a dead worker. If recovery closes first, a late normal settlement makes no additional charge.\n\nThe balance updates are protected by database locks, and each operation can settle once. That keeps repeated settlement from changing the balance twice, but it does not make the saved usage a complete provider bill.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/recovering-ai-credit-reservations",
+      "url": "https://nbaghiro.com/blogs/recovering-ai-credit-reservations",
+      "cover": "/img/posts/recovering-ai-credit-reservations-wide.webp",
+      "summary": "How Galleo reserves credits before AI work, checkpoints measured usage, and closes abandoned operations, including the uncertainty that remains after a process stops reporting.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/recovering-ai-credit-reservations.png",
+        "label": "Credits while the work is running",
+        "brand": "galleo"
+      }
+    },
+    {
+      "id": "tenant-isolation-in-postgresql",
+      "title": "Tenant isolation in PostgreSQL",
+      "products": [
+        "LumiSchool"
+      ],
+      "text": "A tutor can work with more than one family in Lumischool. When they open one family's page, a query that forgets a family filter should not expose another family's children or saved work.\n\nThe database layer uses PostgreSQL row-level security for that boundary. Request queries run through a restricted role, inside a transaction that sets the current family and user with set_config(..., true).\n\nThe true argument makes those settings local to the transaction. Once it commits or rolls back, the next request sets its own context, even if the pool gives it the same connection.\n\nThe policies check existing rows with USING and proposed rows with WITH CHECK. Composite foreign keys also prevent a record in one family from referring to a child in another. Shared catalog rows have a separate read policy, without shared write access.\n\nThere are limits worth being clear about. The server still has to authenticate the caller and choose the right family. A shared application role can set its own context, so this does not protect against arbitrary SQL execution under that role. Tutor permissions within a family also need their own checks.\n\nThe test suite checks the migrated schema against the policy definitions, then exercises queries without family filters and connection reuse. Those answer different questions: whether the policies are present, and whether the tested queries behave as intended.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/tenant-isolation-in-postgresql",
+      "url": "https://nbaghiro.com/blogs/tenant-isolation-in-postgresql",
+      "cover": "/img/posts/tenant-isolation-in-postgresql-wide.webp",
+      "summary": "How Lumischool carries family context through database transactions, applies row-level policies, and checks that migrations preserve the boundary, including the limits of a shared application role.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/tenant-isolation-in-postgresql.png",
+        "label": "A family’s records stay together",
+        "brand": "lumi"
+      }
+    },
+    {
+      "id": "ordering-collaborative-edits",
+      "title": "Keeping collaborative edits in order",
+      "products": [
+        "Galleo"
+      ],
+      "text": "Two people editing the same document need more than a WebSocket connection. Their changes need an order, and a lost connection needs a way back to saved state.\n\nIn Galleo, a room queues incoming socket edits one at a time. Each write locks the document row, applies the change, and commits a new sequence number. The sender gets an acknowledgement; the other people get the operations.\n\nThe unit of change matters. If I change a title's colour while someone else changes its text, those edits touch separate data keys and both survive. If we change the same key, the later applied value wins. Structural changes from an outdated revision can be refused instead of overwriting a document the person never saw.\n\nThe less obvious part is a lost acknowledgement. A change may already be saved when the socket drops. The browser retries it over HTTP with the same mutation ID, and a receipt stored with the original write returns its result without applying the change again.\n\nThere are limits. Editing leases help people avoid typing in the same element, but they do not enforce content writes. There is no character-level text merge. Rooms and their recent history live in one process, so a restart needs a document reload, and adding another server requires more coordination.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/ordering-collaborative-edits",
+      "url": "https://nbaghiro.com/blogs/ordering-collaborative-edits",
+      "cover": "/img/posts/ordering-collaborative-edits-wide.webp",
+      "summary": "How Galleo orders document changes, retries a lost acknowledgement, and switches between WebSocket and HTTP saves, with the limits of an in-memory room.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/ordering-collaborative-edits.png",
+        "label": "Two people editing one document",
+        "brand": "galleo"
+      }
+    },
+    {
+      "id": "fetching-user-provided-urls",
+      "title": "Fetching a URL someone else controls",
+      "products": [
+        "Tondo"
+      ],
+      "text": "In Tondo, someone can paste a website address and have the assistant read it while helping them build a page. The image downloader has a similar job: fetch an address supplied from outside the application.\n\nBoth use the same HTTP wrapper. One detail I care about is where DNS validation happens.\n\nResolving a hostname, checking its address, and then passing the URL to an HTTP client can leave a gap. The client may resolve the name again and receive a different answer.\n\nTondo puts the check in the lookup function used to establish the connection. It inspects every returned address and rejects the result if any address matches the blocked ranges. A response containing both public and private addresses fails the check.\n\nRedirects repeat the process. A public first URL does not make its next destination acceptable. The wrapper follows at most three redirects and keeps one 15-second deadline across that chain.\n\nThe limits need careful wording too. The current page limit returns at most 2 MB, but oversized responses are truncated without a flag. That bounds the returned content, not every temporary allocation. Image download limits also do not bound decoded image memory.\n\nI wrote about the connection checks, IPv6 cases, redirect handling, and the parts I would tighten next. The focused tests cover policy decisions; they are not a full verification of the network boundary.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/fetching-user-provided-urls",
+      "url": "https://nbaghiro.com/blogs/fetching-user-provided-urls",
+      "cover": "/img/posts/fetching-user-provided-urls-wide.webp",
+      "summary": "How Tondo checks destinations at connection time, handles redirects, and limits downloaded content, with the gaps these controls still leave.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/fetching-user-provided-urls.png",
+        "label": "What happens after pasting a link",
+        "brand": "tondo"
+      }
+    },
+    {
+      "id": "permissions-before-cached-exports",
+      "title": "Checking permissions before serving a cached export",
+      "products": [
+        "General engineering"
+      ],
+      "text": "A cached export can still be the right file after the person requesting it has lost access.\n\nImagine a report exported on Monday. The PDF is saved so the next request does not have to render it again. On Tuesday, a team member is removed from the workspace but requests that same export.\n\nThe cache lookup should come after checking whether they can export that report now. The same permission check needs to cover both a cache hit and a request that starts new work.\n\nThe cache key solves a different problem: identifying the bytes. It needs the document revision, output format, and any settings that change the result. Redaction and personalized watermarks matter here too. Two people can share a cached file only when they are allowed to receive the same content.\n\nBackground jobs add another timing issue. Permission can change while a file is being generated. I would keep the completed file private and check access again when the client requests a download.\n\nSigned URLs also have a tradeoff. They make delivery efficient, but a URL already issued can remain usable until it expires. Removing someone from a workspace does not automatically revoke that link.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/permissions-before-cached-exports",
+      "url": "https://nbaghiro.com/blogs/permissions-before-cached-exports",
+      "cover": "/img/posts/permissions-before-cached-exports-wide.webp",
+      "summary": "A cached file can remain valid after a person's access changes. A concrete export design separating reusable bytes, current authorization, background work, and temporary download links.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Not product-specific",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "calendar-membership-and-incremental-sync",
+      "title": "Calendar membership and incremental sync",
+      "products": [
+        "General engineering"
+      ],
+      "text": "Calendar sync needs to distinguish what belongs in a calendar from what changed since the last sync.\n\nSuppose appointments A, B, and C are already copied to a staff member's calendar. Only B changes. The next delta contains B, but A and C still belong there. Treating everything absent from that response as deleted would remove valid appointments.\n\nThe opposite problem happens with cancellations. If the source query only returns active appointments, a canceled event can disappear from the query while its old copy stays on the calendar. The integration needs explicit removals or a complete reconciliation of the records it manages.\n\nPagination matters too. A failed second page cannot be treated as the end of the calendar. I would stage a full membership pass and only use it for cleanup after all pages succeed. Incremental cursors should advance after changes are safely recorded, with remote delivery tracked separately when it cannot share the database transaction.\n\nMoving date windows add another case: an appointment can enter the window without being edited. A modified-since query alone will not find that change.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/calendar-membership-and-incremental-sync",
+      "url": "https://nbaghiro.com/blogs/calendar-membership-and-incremental-sync",
+      "cover": "/img/posts/calendar-membership-and-incremental-sync-wide.webp",
+      "summary": "A calendar sync design that separates the records belonging in a calendar from the changes since a cursor, including removals, moving windows, partial failures, and recovery.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Not product-specific",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "stock-movements-and-repeated-events",
+      "title": "Keeping stock correct when events repeat",
+      "products": [
+        "Clientbridge"
+      ],
+      "text": "A repeated payment notification should not subtract the same products from stock twice.\n\nIn Clientbridge, each stock movement is keyed by the sale line and its reason. Selling two bottles records a quantity of -2 with reason “sale”. A full refund can record +2 with reason “refund”. A unique database index prevents a second movement with the same pair.\n\nThe code inserts the movement with ON CONFLICT DO NOTHING and only updates the count if the insert returns a new ID. Both writes belong to the same transaction, so a rollback removes both.\n\nThere is a separate concurrency problem when two different sales affect the same item. Both movements are valid. A row lock makes their count updates wait for each other, so one cannot overwrite the other's subtraction.\n\nThe product rules still need care. Pending online checkouts hold stock before payment finishes. Partial refunds leave stock out. Full refunds restore it, which is a limitation when the goods are damaged or never returned. The current model also assumes whole units.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/stock-movements-and-repeated-events",
+      "url": "https://nbaghiro.com/blogs/stock-movements-and-repeated-events",
+      "cover": "/img/posts/stock-movements-and-repeated-events-wide.webp",
+      "summary": "How Clientbridge combines a unique movement key, row locks, and transaction boundaries to handle repeated settlements, concurrent sales, and refunds, with the limits of each mechanism.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/stock-movements-and-repeated-events.png",
+        "label": "Updating stock once",
+        "brand": "clientbridge"
+      }
+    },
+    {
+      "id": "invoice-arithmetic-down-to-the-cent",
+      "title": "Keeping invoice arithmetic consistent down to the cent",
+      "products": [
+        "Clientbridge"
+      ],
+      "text": "In Clientbridge, an invoice needs to show the same amount on its lines, payment page, and receipt, even after a business changes its settings.\n\nWe store money in integer cents, but that only solves part of the problem. A rate of 9.975% needs more precision than whole basis points. The backend keeps the decimal rate and uses rational arithmetic for the calculation, then rounds each tax component on each line.\n\nThe rounding point matters. Two five-cent lines at an illustrative 10% rate produce one cent of tax each. Combining the lines before rounding produces one cent in total. The invoice needs to follow one policy throughout its lines, payment page, and receipt.\n\nDiscounts need an allocation rule too. A one-cent discount across three equal lines cannot be divided evenly in cents. We allocate the whole-cent shares, then distribute the remainder in a stable order before calculating tax.\n\nOnce an invoice is issued, its stored line tax is used in later views. Changing a business setting should not change what that invoice says the client owes. Drafts and open estimates have different rules, and repricing checks again after acquiring a lock so it can notice a payment that started while it waited.\n\nThere is still a tradeoff in the current model: we store each line's tax total and reconstruct its jurisdiction breakdown from historical rates. Storing the full calculation at issue time would make that history more independent of later rate-table changes.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/invoice-arithmetic-down-to-the-cent",
+      "url": "https://nbaghiro.com/blogs/invoice-arithmetic-down-to-the-cent",
+      "cover": "/img/posts/invoice-arithmetic-down-to-the-cent-wide.webp",
+      "summary": "Exact rates, per-line rounding, discount allocation, and the point when an invoice's numbers become fixed, with examples from Clientbridge's backend.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/invoice-arithmetic-down-to-the-cent.png",
+        "label": "Amounts that stay consistent",
+        "brand": "clientbridge"
+      }
+    },
+    {
+      "id": "serving-pages-on-customer-domains",
+      "title": "Serving pages on customer domains",
+      "products": [
+        "Tondo"
+      ],
+      "text": "Adding custom domains to Tondo meant deciding which parts of the application should exist on someone else's hostname.\n\nA request to maya.example.com can show that person's page, follow its tracked links, and load public photos. It cannot reach /app, /login, account APIs, or another person's page.\n\nThe hostname check runs before the application router. New application endpoints stay unavailable on customer domains unless we explicitly allow them there.\n\nOwnership is a separate check. Pointing DNS at shared hosting does not tell us which account owns the domain. We ask for a TXT value tied to the page ID and hostname, then check the hosting provider before marking the domain verified.\n\nThe database allows several pending requests for one domain, but a partial unique index permits only one verified holder. Asking first does not reserve a name.\n\nThere are tradeoffs. A verified domain still needs a published page and an eligible plan. Cached data can delay changes reaching another server process. DNS can break after verification. Transferring a domain also crosses DNS, hosting, and database state, so a successful first check does not settle every failure case.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/serving-pages-on-customer-domains",
+      "url": "https://nbaghiro.com/blogs/serving-pages-on-customer-domains",
+      "cover": "/img/posts/serving-pages-on-customer-domains-wide.webp",
+      "summary": "How Tondo separates customer pages from application routes, verifies domain ownership, and handles the gaps between DNS, hosting, database state, and cached permissions.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/serving-pages-on-customer-domains.png",
+        "label": "Serving a page on its own domain",
+        "brand": "tondo"
+      }
+    },
+    {
+      "id": "sharing-datasets-between-backtests",
+      "title": "Sharing datasets between backtests",
+      "products": [
+        "LlamaTrade"
+      ],
+      "text": "Two backtests can use different strategies and still need exactly the same historical prices. I added a preparation layer in LlamaTrade so those runs can reuse the input data.\n\nThe cache key includes the symbols, interval, warm-up start, end date, price adjustment, and a version for recent data. Symbol order does not matter. A longer warm-up period or a different adjustment does.\n\nOn a cache miss, a worker can acquire a Redis lease and prepare the dataset while other workers wait. It writes compressed Parquet to a temporary file, then replaces the final path once the write is complete. Readers do not need to open a file that is still being written.\n\nThere are important limits. Workers need access to the same storage; sharing Redis does not make their local disks shared. The lease can expire, and a waiting worker eventually prepares its own copy, so duplicate work is possible.\n\nThe key also describes the requested data, not the bytes returned by the provider. Historical revisions mean that repeatable research needs a record of the exact snapshot used, beyond a cache key and freshness policy.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/sharing-datasets-between-backtests",
+      "url": "https://nbaghiro.com/blogs/sharing-datasets-between-backtests",
+      "cover": "/img/posts/sharing-datasets-between-backtests-wide.webp",
+      "summary": "How LlamaTrade identifies reusable market-data snapshots, coordinates preparation through Redis, and publishes Parquet files, with the limits of leases, local storage, and historical data revisions.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/sharing-datasets-between-backtests.png",
+        "label": "Reusing data across backtests",
+        "brand": "llama"
+      }
+    },
+    {
+      "id": "mux-videojs-and-the-cost-of-video",
+      "title": "Mux, Video.js, and the cost of video",
+      "products": [
+        "General engineering"
+      ],
+      "text": "Mux is one of the best APIs I’ve worked with. It makes a fairly involved video pipeline easy to reason about.\n\nThe backend creates an upload URL, the browser sends the file directly to Mux, and a webhook tells the application when the asset is ready. Video.js handles playback in the browser. The application server never needs to carry the video bytes.\n\nThe details still matter. Upload complete does not mean playback ready. Webhooks can arrive more than once, so processing needs to be safe to repeat. A public playback ID is accessible outside your app; private content needs signed playback tied to your own permission checks.\n\nThe pricing tradeoff is less obvious from the integration code. You pay for the library you retain and the video you deliver, with rates that vary by resolution and quality. Buffered video counts as delivery even if the viewer leaves before watching it.\n\nFor example, 100,000 sessions averaging three delivered minutes produce 300,000 minutes of delivery. At the current Basic rate up to 720p, that is $160 in delivery after the first 100,000 free minutes, before credits and storage. If those billable minutes were all delivered at 4K, it would be $640.\n\nThat makes player behavior part of the product economics. Loading offscreen videos, keeping unnecessary MP4 copies, or allowing every preview to stream at full resolution can add costs. Loading less in advance can save delivery, but also makes startup slower.\n\nI still think the managed pipeline is a strong tradeoff. I would just model viewing and storage alongside the subscription price, then check the real usage as the product grows.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/mux-videojs-and-the-cost-of-video",
+      "url": "https://nbaghiro.com/blogs/mux-videojs-and-the-cost-of-video",
+      "cover": "/img/posts/mux-videojs-and-the-cost-of-video-wide.webp",
+      "summary": "Direct uploads, asynchronous processing, signed playback, and Video.js, with a concrete cost model for storage, delivery, and the player choices that affect both.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Not product-specific",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "making-stripe-subscriptions-repeatable",
+      "title": "Making Stripe subscriptions repeatable",
+      "products": [
+        "General engineering"
+      ],
+      "text": "Adding Stripe subscriptions to a new product usually brings back the same work: plans, prices, checkout, renewals, cancellations, and keeping access in sync with billing.\n\nI’ve automated much of that repeated work and am shaping it into standalone billing tooling, separate from the individual product repositories.\n\nThe setup script reads a product’s plan catalog and configures Stripe products, prices, the customer portal, and the webhook endpoint. It can preview changes and check for differences without writing anything.\n\nThe application handles another part of the repetition. Retrying a checkout can reuse the same purchase attempt. Webhook receipts are saved in the same transaction as their billing changes. Credits are granted once per paid period, even when several events report it.\n\nThere are limits to what should carry over unchanged. Moving a lookup key to a new price does not migrate existing subscribers. Grace periods, upgrade timing, and cancellation rules still need to fit each product.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/making-stripe-subscriptions-repeatable",
+      "url": "https://nbaghiro.com/blogs/making-stripe-subscriptions-repeatable",
+      "cover": "/img/posts/making-stripe-subscriptions-repeatable-v2-wide.webp",
+      "summary": "How I automate Stripe catalog setup and reuse subscription patterns, with examples of price changes, checkout retries, webhook transactions, and product access rules.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Not product-specific",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "terraform-and-pulumi",
+      "title": "Terraform and Pulumi across three projects",
+      "products": [
+        "Clientbridge",
+        "FlowMaestro",
+        "LlamaTrade"
+      ],
+      "text": "I use Terraform for LlamaTrade and Pulumi for Clientbridge and FlowMaestro. Working with both has made me pay more attention to how the infrastructure settings and application settings are checked together.\n\nOne example is database connections. The database needs enough capacity for the application’s connection pools, including the overlap when old and new instances run during a deployment.\n\nIn Clientbridge, the Pulumi code and a Python test use shared settings to check that total. In LlamaTrade, Terraform and the Kubernetes configuration are separate, so checking the same requirement needs values from both.\n\nBoth tools can support that check. The difference in these projects is how the configuration is organized and what tests are in place.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/terraform-and-pulumi",
+      "url": "https://nbaghiro.com/blogs/terraform-and-pulumi",
+      "cover": "/img/posts/terraform-and-pulumi-wide.webp",
+      "summary": "A technical comparison of Terraform and Pulumi in three projects: database connection calculations, tests across configuration layers, preview limitations, secrets in state, and resource changes.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/terraform-and-pulumi.png",
+        "label": "Infrastructure behind the product",
+        "brand": "clientbridge"
+      }
+    },
+    {
+      "id": "the-cost-of-switching",
+      "title": "The cost of switching",
+      "products": [
+        "Clientbridge"
+      ],
+      "text": "One challenge with building Clientbridge (clientbridge.ca) is that a business can like the product and still have good reasons not to switch.\n\nThe setup looks different from one business to the next. It might be Clover for payments, a separate booking tool, and spreadsheets or messages to keep track of the rest. Much of the process is manual, but it’s familiar and they know how to manage it. Switching means changing those routines while keeping the business running.\n\nI also see something encouraging in that. These are important, recurring needs. Once a business trusts you with its daily work, there is an opportunity to help with more of it, from booking through to payment, without making them manage everything in separate tools.\n\nThat gives me confidence in the direction. The part we still have to earn is making the move worthwhile and continuing to deliver value afterwards.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/the-cost-of-switching",
+      "url": "https://nbaghiro.com/blogs/the-cost-of-switching",
+      "cover": "/img/posts/the-cost-of-switching-wide.webp",
+      "summary": "How switching costs change customer acquisition: choosing a market, connecting marketing to sales, proving a migration can work, and measuring adoption beyond the first payment.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/the-cost-of-switching.png",
+        "label": "Moving the work a business already does",
+        "brand": "clientbridge"
+      }
+    },
+    {
+      "id": "one-layout-engine",
+      "title": "One layout engine for decks, documents and websites",
+      "products": [
+        "Galleo"
+      ],
+      "text": "In Galleo, a change to the text, font or available width can affect the size and position of the surrounding content. The layout engine recalculates those relationships for the deck, document and website views.\n\nFor example, a paragraph beside an image may need more lines when its column becomes narrower. If the containing box is sized to its content, it needs more height, and the content below it moves. Changing the font can also change the line breaks and the height the paragraph needs.\n\nThe engine calculates widths first, then measures the text at those widths. It uses the resulting heights to size the containers before calculating positions and alignment. Each box has sizing rules that determine whether it follows its content, shares available space or uses a specified size.\n\nThe same process runs with different layout profiles for each format. A deck uses a page frame, a document uses a reading column, and a website takes its width from the viewport. The content stays together while its layout is calculated for each view.\n\nThe article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/one-layout-engine",
+      "url": "https://nbaghiro.com/blogs/one-layout-engine",
+      "cover": "/img/posts/layout-engine-wide.webp",
+      "summary": "Galleo shares layout geometry between its editor and exports. How the solver works, why text measurement matters, and where the output formats still differ.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder series",
+      "media": [
         {
-            "id": "when-software-factories-help",
-            "title": "Where software factories are useful",
-            "products": ["General engineering"],
-            "text": "I can see software factories being useful as a product grows, especially when the team keeps repeating the same operational work. I would be more cautious about building one around early product development, where the next useful change is often still unclear.\n\nGumloop's recent article got me thinking about that distinction. Their system investigates engineering problems and prepares changes for human review. The part I would start with is gathering the evidence people repeatedly need.\n\nFor example, suppose bookings are succeeding but confirmation emails are delayed. A workflow could collect queue age, recent deployments, failed job traces, and related support reports into one incident record. An agent could then investigate the cause and prepare a reproduction.\n\nThat does not mean it should also decide to change production. Restoring service, preparing a permanent fix, and checking whether customers are receiving confirmations again are separate steps.\n\nThe extra machinery has costs too. It needs permissions, retry rules, recovery when a worker stops, and someone responsible for its output. If it prepares twelve patches a day and the team can review four, it has created another queue.\n\nI would start with one recurring task and measure whether it reduces the team's work. As usage and repetition grow, more coordination may become worthwhile.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/when-software-factories-help",
-            "url": "https://nbaghiro.com/blogs/when-software-factories-help",
-            "cover": "/img/posts/when-software-factories-help-wide.webp",
-            "summary": "Software factories become more useful when repeated operational work grows with product usage. Incident triage shows what to automate, what to keep under review, and how to tell whether the extra machinery is helping.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Not needed for this general topic",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
+          "project": "founder-series",
+          "file": "pages/s02-galleo-engine-combo/01.png",
+          "label": "Existing carousel · page 1"
         },
         {
-            "id": "resuming-an-ai-response",
-            "title": "Resuming an AI response after a disconnect",
-            "products": ["FlowMaestro"],
-            "text": "A browser disconnect should not require starting the same AI response again.\n\nIn FlowMaestro, the agent execution route reads from a Redis Stream. The worker appends events as it runs, and the API sends each entry with its Redis ID as the SSE event ID.\n\nIf the browser receives event 7 and disconnects while 8, 9, and 10 are produced, it can reconnect with Last-Event-ID set to 7. The server reads the retained entries after that position, then keeps following the same log. Replay and live delivery use the same cursor.\n\nFresh connections need another rule. We keep a marker for the latest user message so a new connection can start at the current turn without replaying earlier turns. If the execution has finished and its event log is gone, the route can recover the final answer from the stored execution state.\n\nThere are limits worth being clear about. Retention bounds how far back replay works. An append failure can leave a gap because the worker continues even if event logging fails. An SSE cursor also says what the browser received, not whether the interface successfully applied it.\n\nThe frontend needs to distinguish a temporary connection error from a terminal error sent by the application. Closing EventSource on every network interruption would prevent its automatic reconnect.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/resuming-an-ai-response",
-            "url": "https://nbaghiro.com/blogs/resuming-an-ai-response",
-            "cover": "/img/posts/resuming-an-ai-response-wide.webp",
-            "summary": "Redis Streams, SSE event IDs, turn boundaries, and terminal-state recovery in FlowMaestro, including the limits of retention, failed appends, and browser acknowledgements.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
+          "project": "founder-series",
+          "file": "pages/s02-galleo-engine-combo/02.png",
+          "label": "Existing carousel · page 2"
         },
         {
-            "id": "recovering-ai-credit-reservations",
-            "title": "Recovering AI credit reservations after a crash",
-            "products": ["Galleo"],
-            "text": "An AI operation can fail after it has already used tokens or generated an asset. The billing code still needs to decide what happens to the credits it reserved.\n\nIn Galleo, I reserve an estimate before starting the work, then settle against the usage recorded by the application. A workspace with 100 credits might reserve 30, leaving 70 available. If the run uses 8, settlement returns 22 and the balance ends at 92.\n\nThat works when the process reaches its cleanup code. A crash needs another path.\n\nWhile the run is active, it renews a database lease and saves a usage checkpoint every 30 seconds. Recovery later claims expired operations and closes them from the last checkpoint. It does not rerun the provider request. The operation is marked as recovered so the uncertainty stays visible.\n\nThere are limits. A provider can consume resources before reporting usage, and the process can die before saving its next checkpoint. A missed heartbeat can also mean a database problem rather than a dead worker. If recovery closes first, a late normal settlement makes no additional charge.\n\nThe balance updates are protected by database locks, and each operation can settle once. That keeps repeated settlement from changing the balance twice, but it does not make the saved usage a complete provider bill.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/recovering-ai-credit-reservations",
-            "url": "https://nbaghiro.com/blogs/recovering-ai-credit-reservations",
-            "cover": "/img/posts/recovering-ai-credit-reservations-wide.webp",
-            "summary": "How Galleo reserves credits before AI work, checkpoints measured usage, and closes abandoned operations, including the uncertainty that remains after a process stops reporting.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
+          "project": "founder-series",
+          "file": "pages/s02-galleo-engine-combo/03.png",
+          "label": "Existing carousel · page 3"
         },
         {
-            "id": "tenant-isolation-in-postgresql",
-            "title": "Tenant isolation in PostgreSQL",
-            "products": ["LumiSchool"],
-            "text": "A tutor can work with more than one family in Lumischool. When they open one family's page, a query that forgets a family filter should not expose another family's children or saved work.\n\nThe database layer uses PostgreSQL row-level security for that boundary. Request queries run through a restricted role, inside a transaction that sets the current family and user with set_config(..., true).\n\nThe true argument makes those settings local to the transaction. Once it commits or rolls back, the next request sets its own context, even if the pool gives it the same connection.\n\nThe policies check existing rows with USING and proposed rows with WITH CHECK. Composite foreign keys also prevent a record in one family from referring to a child in another. Shared catalog rows have a separate read policy, without shared write access.\n\nThere are limits worth being clear about. The server still has to authenticate the caller and choose the right family. A shared application role can set its own context, so this does not protect against arbitrary SQL execution under that role. Tutor permissions within a family also need their own checks.\n\nThe test suite checks the migrated schema against the policy definitions, then exercises queries without family filters and connection reuse. Those answer different questions: whether the policies are present, and whether the tested queries behave as intended.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/tenant-isolation-in-postgresql",
-            "url": "https://nbaghiro.com/blogs/tenant-isolation-in-postgresql",
-            "cover": "/img/posts/tenant-isolation-in-postgresql-wide.webp",
-            "summary": "How Lumischool carries family context through database transactions, applies row-level policies, and checks that migrations preserve the boundary, including the limits of a shared application role.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
+          "project": "founder-series",
+          "file": "pages/s02-galleo-engine-combo/04.png",
+          "label": "Existing carousel · page 4"
         },
         {
-            "id": "ordering-collaborative-edits",
-            "title": "Keeping collaborative edits in order",
-            "products": ["Galleo"],
-            "text": "Two people editing the same document need more than a WebSocket connection. Their changes need an order, and a lost connection needs a way back to saved state.\n\nIn Galleo, a room queues incoming socket edits one at a time. Each write locks the document row, applies the change, and commits a new sequence number. The sender gets an acknowledgement; the other people get the operations.\n\nThe unit of change matters. If I change a title's colour while someone else changes its text, those edits touch separate data keys and both survive. If we change the same key, the later applied value wins. Structural changes from an outdated revision can be refused instead of overwriting a document the person never saw.\n\nThe less obvious part is a lost acknowledgement. A change may already be saved when the socket drops. The browser retries it over HTTP with the same mutation ID, and a receipt stored with the original write returns its result without applying the change again.\n\nThere are limits. Editing leases help people avoid typing in the same element, but they do not enforce content writes. There is no character-level text merge. Rooms and their recent history live in one process, so a restart needs a document reload, and adding another server requires more coordination.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/ordering-collaborative-edits",
-            "url": "https://nbaghiro.com/blogs/ordering-collaborative-edits",
-            "cover": "/img/posts/ordering-collaborative-edits-wide.webp",
-            "summary": "How Galleo orders document changes, retries a lost acknowledgement, and switches between WebSocket and HTTP saves, with the limits of an in-memory room.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
+          "project": "founder-series",
+          "file": "pages/s02-galleo-engine-combo/05.png",
+          "label": "Existing carousel · page 5"
         },
         {
-            "id": "fetching-user-provided-urls",
-            "title": "Fetching a URL someone else controls",
-            "products": ["Tondo"],
-            "text": "In Tondo, someone can paste a website address and have the assistant read it while helping them build a page. The image downloader has a similar job: fetch an address supplied from outside the application.\n\nBoth use the same HTTP wrapper. One detail I care about is where DNS validation happens.\n\nResolving a hostname, checking its address, and then passing the URL to an HTTP client can leave a gap. The client may resolve the name again and receive a different answer.\n\nTondo puts the check in the lookup function used to establish the connection. It inspects every returned address and rejects the result if any address matches the blocked ranges. A response containing both public and private addresses fails the check.\n\nRedirects repeat the process. A public first URL does not make its next destination acceptable. The wrapper follows at most three redirects and keeps one 15-second deadline across that chain.\n\nThe limits need careful wording too. The current page limit returns at most 2 MB, but oversized responses are truncated without a flag. That bounds the returned content, not every temporary allocation. Image download limits also do not bound decoded image memory.\n\nI wrote about the connection checks, IPv6 cases, redirect handling, and the parts I would tighten next. The focused tests cover policy decisions; they are not a full verification of the network boundary.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/fetching-user-provided-urls",
-            "url": "https://nbaghiro.com/blogs/fetching-user-provided-urls",
-            "cover": "/img/posts/fetching-user-provided-urls-wide.webp",
-            "summary": "How Tondo checks destinations at connection time, handles redirects, and limits downloaded content, with the gaps these controls still leave.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
+          "project": "founder-series",
+          "file": "pages/s02-galleo-engine-combo/06.png",
+          "label": "Existing carousel · page 6"
         },
         {
-            "id": "permissions-before-cached-exports",
-            "title": "Checking permissions before serving a cached export",
-            "products": ["General engineering"],
-            "text": "A cached export can still be the right file after the person requesting it has lost access.\n\nImagine a report exported on Monday. The PDF is saved so the next request does not have to render it again. On Tuesday, a team member is removed from the workspace but requests that same export.\n\nThe cache lookup should come after checking whether they can export that report now. The same permission check needs to cover both a cache hit and a request that starts new work.\n\nThe cache key solves a different problem: identifying the bytes. It needs the document revision, output format, and any settings that change the result. Redaction and personalized watermarks matter here too. Two people can share a cached file only when they are allowed to receive the same content.\n\nBackground jobs add another timing issue. Permission can change while a file is being generated. I would keep the completed file private and check access again when the client requests a download.\n\nSigned URLs also have a tradeoff. They make delivery efficient, but a URL already issued can remain usable until it expires. Removing someone from a workspace does not automatically revoke that link.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/permissions-before-cached-exports",
-            "url": "https://nbaghiro.com/blogs/permissions-before-cached-exports",
-            "cover": "/img/posts/permissions-before-cached-exports-wide.webp",
-            "summary": "A cached file can remain valid after a person's access changes. A concrete export design separating reusable bytes, current authorization, background work, and temporary download links.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Not needed for this general topic",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "calendar-membership-and-incremental-sync",
-            "title": "Calendar membership and incremental sync",
-            "products": ["General engineering"],
-            "text": "Calendar sync needs to distinguish what belongs in a calendar from what changed since the last sync.\n\nSuppose appointments A, B, and C are already copied to a staff member's calendar. Only B changes. The next delta contains B, but A and C still belong there. Treating everything absent from that response as deleted would remove valid appointments.\n\nThe opposite problem happens with cancellations. If the source query only returns active appointments, a canceled event can disappear from the query while its old copy stays on the calendar. The integration needs explicit removals or a complete reconciliation of the records it manages.\n\nPagination matters too. A failed second page cannot be treated as the end of the calendar. I would stage a full membership pass and only use it for cleanup after all pages succeed. Incremental cursors should advance after changes are safely recorded, with remote delivery tracked separately when it cannot share the database transaction.\n\nMoving date windows add another case: an appointment can enter the window without being edited. A modified-since query alone will not find that change.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/calendar-membership-and-incremental-sync",
-            "url": "https://nbaghiro.com/blogs/calendar-membership-and-incremental-sync",
-            "cover": "/img/posts/calendar-membership-and-incremental-sync-wide.webp",
-            "summary": "A calendar sync design that separates the records belonging in a calendar from the changes since a cursor, including removals, moving windows, partial failures, and recovery.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Not needed for this general topic",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "stock-movements-and-repeated-events",
-            "title": "Keeping stock correct when events repeat",
-            "products": ["Clientbridge"],
-            "text": "A repeated payment notification should not subtract the same products from stock twice.\n\nIn Clientbridge, each stock movement is keyed by the sale line and its reason. Selling two bottles records a quantity of -2 with reason “sale”. A full refund can record +2 with reason “refund”. A unique database index prevents a second movement with the same pair.\n\nThe code inserts the movement with ON CONFLICT DO NOTHING and only updates the count if the insert returns a new ID. Both writes belong to the same transaction, so a rollback removes both.\n\nThere is a separate concurrency problem when two different sales affect the same item. Both movements are valid. A row lock makes their count updates wait for each other, so one cannot overwrite the other's subtraction.\n\nThe product rules still need care. Pending online checkouts hold stock before payment finishes. Partial refunds leave stock out. Full refunds restore it, which is a limitation when the goods are damaged or never returned. The current model also assumes whole units.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/stock-movements-and-repeated-events",
-            "url": "https://nbaghiro.com/blogs/stock-movements-and-repeated-events",
-            "cover": "/img/posts/stock-movements-and-repeated-events-wide.webp",
-            "summary": "How Clientbridge combines a unique movement key, row locks, and transaction boundaries to handle repeated settlements, concurrent sales, and refunds, with the limits of each mechanism.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "invoice-arithmetic-down-to-the-cent",
-            "title": "Keeping invoice arithmetic consistent down to the cent",
-            "products": ["Clientbridge"],
-            "text": "In Clientbridge, an invoice needs to show the same amount on its lines, payment page, and receipt, even after a business changes its settings.\n\nWe store money in integer cents, but that only solves part of the problem. A rate of 9.975% needs more precision than whole basis points. The backend keeps the decimal rate and uses rational arithmetic for the calculation, then rounds each tax component on each line.\n\nThe rounding point matters. Two five-cent lines at an illustrative 10% rate produce one cent of tax each. Combining the lines before rounding produces one cent in total. The invoice needs to follow one policy throughout its lines, payment page, and receipt.\n\nDiscounts need an allocation rule too. A one-cent discount across three equal lines cannot be divided evenly in cents. We allocate the whole-cent shares, then distribute the remainder in a stable order before calculating tax.\n\nOnce an invoice is issued, its stored line tax is used in later views. Changing a business setting should not change what that invoice says the client owes. Drafts and open estimates have different rules, and repricing checks again after acquiring a lock so it can notice a payment that started while it waited.\n\nThere is still a tradeoff in the current model: we store each line's tax total and reconstruct its jurisdiction breakdown from historical rates. Storing the full calculation at issue time would make that history more independent of later rate-table changes.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/invoice-arithmetic-down-to-the-cent",
-            "url": "https://nbaghiro.com/blogs/invoice-arithmetic-down-to-the-cent",
-            "cover": "/img/posts/invoice-arithmetic-down-to-the-cent-wide.webp",
-            "summary": "Exact rates, per-line rounding, discount allocation, and the point when an invoice's numbers become fixed, with examples from Clientbridge's backend.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "serving-pages-on-customer-domains",
-            "title": "Serving pages on customer domains",
-            "products": ["Tondo"],
-            "text": "Adding custom domains to Tondo meant deciding which parts of the application should exist on someone else's hostname.\n\nA request to maya.example.com can show that person's page, follow its tracked links, and load public photos. It cannot reach /app, /login, account APIs, or another person's page.\n\nThe hostname check runs before the application router. New application endpoints stay unavailable on customer domains unless we explicitly allow them there.\n\nOwnership is a separate check. Pointing DNS at shared hosting does not tell us which account owns the domain. We ask for a TXT value tied to the page ID and hostname, then check the hosting provider before marking the domain verified.\n\nThe database allows several pending requests for one domain, but a partial unique index permits only one verified holder. Asking first does not reserve a name.\n\nThere are tradeoffs. A verified domain still needs a published page and an eligible plan. Cached data can delay changes reaching another server process. DNS can break after verification. Transferring a domain also crosses DNS, hosting, and database state, so a successful first check does not settle every failure case.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/serving-pages-on-customer-domains",
-            "url": "https://nbaghiro.com/blogs/serving-pages-on-customer-domains",
-            "cover": "/img/posts/serving-pages-on-customer-domains-wide.webp",
-            "summary": "How Tondo separates customer pages from application routes, verifies domain ownership, and handles the gaps between DNS, hosting, database state, and cached permissions.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "sharing-datasets-between-backtests",
-            "title": "Sharing datasets between backtests",
-            "products": ["LlamaTrade"],
-            "text": "Two backtests can use different strategies and still need exactly the same historical prices. I added a preparation layer in LlamaTrade so those runs can reuse the input data.\n\nThe cache key includes the symbols, interval, warm-up start, end date, price adjustment, and a version for recent data. Symbol order does not matter. A longer warm-up period or a different adjustment does.\n\nOn a cache miss, a worker can acquire a Redis lease and prepare the dataset while other workers wait. It writes compressed Parquet to a temporary file, then replaces the final path once the write is complete. Readers do not need to open a file that is still being written.\n\nThere are important limits. Workers need access to the same storage; sharing Redis does not make their local disks shared. The lease can expire, and a waiting worker eventually prepares its own copy, so duplicate work is possible.\n\nThe key also describes the requested data, not the bytes returned by the provider. Historical revisions mean that repeatable research needs a record of the exact snapshot used, beyond a cache key and freshness policy.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/sharing-datasets-between-backtests",
-            "url": "https://nbaghiro.com/blogs/sharing-datasets-between-backtests",
-            "cover": "/img/posts/sharing-datasets-between-backtests-wide.webp",
-            "summary": "How LlamaTrade identifies reusable market-data snapshots, coordinates preparation through Redis, and publishes Parquet files, with the limits of leases, local storage, and historical data revisions.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "mux-videojs-and-the-cost-of-video",
-            "title": "Mux, Video.js, and the cost of video",
-            "products": ["General engineering"],
-            "text": "Mux is one of the best APIs I’ve worked with. It makes a fairly involved video pipeline easy to reason about.\n\nThe backend creates an upload URL, the browser sends the file directly to Mux, and a webhook tells the application when the asset is ready. Video.js handles playback in the browser. The application server never needs to carry the video bytes.\n\nThe details still matter. Upload complete does not mean playback ready. Webhooks can arrive more than once, so processing needs to be safe to repeat. A public playback ID is accessible outside your app; private content needs signed playback tied to your own permission checks.\n\nThe pricing tradeoff is less obvious from the integration code. You pay for the library you retain and the video you deliver, with rates that vary by resolution and quality. Buffered video counts as delivery even if the viewer leaves before watching it.\n\nFor example, 100,000 sessions averaging three delivered minutes produce 300,000 minutes of delivery. At the current Basic rate up to 720p, that is $160 in delivery after the first 100,000 free minutes, before credits and storage. If those billable minutes were all delivered at 4K, it would be $640.\n\nThat makes player behavior part of the product economics. Loading offscreen videos, keeping unnecessary MP4 copies, or allowing every preview to stream at full resolution can add costs. Loading less in advance can save delivery, but also makes startup slower.\n\nI still think the managed pipeline is a strong tradeoff. I would just model viewing and storage alongside the subscription price, then check the real usage as the product grows.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/mux-videojs-and-the-cost-of-video",
-            "url": "https://nbaghiro.com/blogs/mux-videojs-and-the-cost-of-video",
-            "cover": "/img/posts/mux-videojs-and-the-cost-of-video-wide.webp",
-            "summary": "Direct uploads, asynchronous processing, signed playback, and Video.js, with a concrete cost model for storage, delivery, and the player choices that affect both.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Not needed for this general topic",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "making-stripe-subscriptions-repeatable",
-            "title": "Making Stripe subscriptions repeatable",
-            "products": ["General engineering"],
-            "text": "Adding Stripe subscriptions to a new product usually brings back the same work: plans, prices, checkout, renewals, cancellations, and keeping access in sync with billing.\n\nI’ve automated much of that repeated work and am shaping it into standalone billing tooling, separate from the individual product repositories.\n\nThe setup script reads a product’s plan catalog and configures Stripe products, prices, the customer portal, and the webhook endpoint. It can preview changes and check for differences without writing anything.\n\nThe application handles another part of the repetition. Retrying a checkout can reuse the same purchase attempt. Webhook receipts are saved in the same transaction as their billing changes. Credits are granted once per paid period, even when several events report it.\n\nThere are limits to what should carry over unchanged. Moving a lookup key to a new price does not migrate existing subscribers. Grace periods, upgrade timing, and cancellation rules still need to fit each product.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/making-stripe-subscriptions-repeatable",
-            "url": "https://nbaghiro.com/blogs/making-stripe-subscriptions-repeatable",
-            "cover": "/img/posts/making-stripe-subscriptions-repeatable-v2-wide.webp",
-            "summary": "How I automate Stripe catalog setup and reuse subscription patterns, with examples of price changes, checkout retries, webhook transactions, and product access rules.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Not needed for this general topic",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "terraform-and-pulumi",
-            "title": "Terraform and Pulumi across three projects",
-            "products": ["Clientbridge", "FlowMaestro", "LlamaTrade"],
-            "text": "I use Terraform for LlamaTrade and Pulumi for Clientbridge and FlowMaestro. Working with both has made me pay more attention to how the infrastructure settings and application settings are checked together.\n\nOne example is database connections. The database needs enough capacity for the application’s connection pools, including the overlap when old and new instances run during a deployment.\n\nIn Clientbridge, the Pulumi code and a Python test use shared settings to check that total. In LlamaTrade, Terraform and the Kubernetes configuration are separate, so checking the same requirement needs values from both.\n\nBoth tools can support that check. The difference in these projects is how the configuration is organized and what tests are in place.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/terraform-and-pulumi",
-            "url": "https://nbaghiro.com/blogs/terraform-and-pulumi",
-            "cover": "/img/posts/terraform-and-pulumi-wide.webp",
-            "summary": "A technical comparison of Terraform and Pulumi in three projects: database connection calculations, tests across configuration layers, preview limitations, secrets in state, and resource changes.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "the-cost-of-switching",
-            "title": "The cost of switching",
-            "products": ["Clientbridge"],
-            "text": "One challenge with building Clientbridge (clientbridge.ca) is that a business can like the product and still have good reasons not to switch.\n\nThe setup looks different from one business to the next. It might be Clover for payments, a separate booking tool, and spreadsheets or messages to keep track of the rest. Much of the process is manual, but it’s familiar and they know how to manage it. Switching means changing those routines while keeping the business running.\n\nI also see something encouraging in that. These are important, recurring needs. Once a business trusts you with its daily work, there is an opportunity to help with more of it, from booking through to payment, without making them manage everything in separate tools.\n\nThat gives me confidence in the direction. The part we still have to earn is making the move worthwhile and continuing to deliver value afterwards.\n\nI wrote more about the implementation and tradeoffs. The article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/the-cost-of-switching",
-            "url": "https://nbaghiro.com/blogs/the-cost-of-switching",
-            "cover": "/img/posts/the-cost-of-switching-wide.webp",
-            "summary": "How switching costs change customer acquisition: choosing a market, connecting marketing to sales, proving a migration can work, and measuring adoption beyond the first payment.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Needs product visual",
-            "source": "Founder posts",
-            "media": [],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "one-layout-engine",
-            "title": "One layout engine for decks, documents and websites",
-            "products": ["Galleo"],
-            "text": "In Galleo, a change to the text, font or available width can affect the size and position of the surrounding content. The layout engine recalculates those relationships for the deck, document and website views.\n\nFor example, a paragraph beside an image may need more lines when its column becomes narrower. If the containing box is sized to its content, it needs more height, and the content below it moves. Changing the font can also change the line breaks and the height the paragraph needs.\n\nThe engine calculates widths first, then measures the text at those widths. It uses the resulting heights to size the containers before calculating positions and alignment. Each box has sizing rules that determine whether it follows its content, shares available space or uses a specified size.\n\nThe same process runs with different layout profiles for each format. A deck uses a page frame, a document uses a reading column, and a website takes its width from the viewport. The content stays together while its layout is calculated for each view.\n\nThe article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/one-layout-engine",
-            "url": "https://nbaghiro.com/blogs/one-layout-engine",
-            "cover": "/img/posts/layout-engine-wide.webp",
-            "summary": "Galleo shares layout geometry between its editor and exports. How the solver works, why text measurement matters, and where the output formats still differ.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Existing carousel to review",
-            "source": "Founder series",
-            "media": [
-                {
-                    "project": "founder-series",
-                    "file": "pages/s02-galleo-engine-combo/01.png",
-                    "label": "Existing carousel · page 1"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s02-galleo-engine-combo/02.png",
-                    "label": "Existing carousel · page 2"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s02-galleo-engine-combo/03.png",
-                    "label": "Existing carousel · page 3"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s02-galleo-engine-combo/04.png",
-                    "label": "Existing carousel · page 4"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s02-galleo-engine-combo/05.png",
-                    "label": "Existing carousel · page 5"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s02-galleo-engine-combo/06.png",
-                    "label": "Existing carousel · page 6"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s02-galleo-engine-combo/07.png",
-                    "label": "Existing carousel · page 7"
-                }
-            ],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "map-on-one-canvas",
-            "title": "Moving Lumischool's map to WebGL",
-            "products": ["LumiSchool"],
-            "text": "In Lumischool, children explore lessons through an illustrated map. Moving that map to WebGL2 was mostly a decision about memory.\n\nThe earlier renderer placed SVG drawings in the DOM and scaled them with the camera. During the recorded iPhone investigation, one compositing layer reached 540 MB. The page also had thousands of elements and a large JavaScript heap, and was being killed shortly after opening. Zooming out could increase layer memory even though the map looked smaller.\n\nThe current renderer draws the artwork into a canvas. Terrain comes from tiles at different resolutions, with fine details such as coastlines and rivers drawn separately.\n\nThe illustrations still come from the existing drawing code. The renderer can reuse retained pixels, load matching prebuilt artwork or ask workers to rasterize a drawing. Textures are then drawn by the GPU, with smaller drawings sharing atlas pages.\n\nWhile the camera moves, the renderer reuses available textures and schedules sharper versions as the view settles. Memory budgets limit the caches, and animated parts can move without rasterizing the whole illustration again.\n\nText and controls remain in the DOM, where ordinary keyboard and accessibility behavior can be maintained and tested.\n\nThe investigation needed both JavaScript memory measurements and the browser’s layer tree. Historical Mac/Chrome tests showed improved frame times. The reviewed report does not include a completed follow-up iPhone result, so those desktop measurements do not establish the phone result.\n\nThe article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/map-on-one-canvas",
-            "url": "https://nbaghiro.com/blogs/map-on-one-canvas",
-            "cover": "/img/posts/map-on-one-canvas-wide.webp",
-            "summary": "The map's earlier SVG and DOM renderer ran into memory limits on an iPhone. The current renderer uses tiles, cached artwork and WebGL, while keeping text and controls in the DOM.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Existing carousel to review",
-            "source": "Founder series",
-            "media": [
-                {
-                    "project": "founder-series",
-                    "file": "pages/s03-lumischool-map/01.png",
-                    "label": "Existing carousel · page 1"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s03-lumischool-map/02.png",
-                    "label": "Existing carousel · page 2"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s03-lumischool-map/03.png",
-                    "label": "Existing carousel · page 3"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s03-lumischool-map/04.png",
-                    "label": "Existing carousel · page 4"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s03-lumischool-map/05.png",
-                    "label": "Existing carousel · page 5"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s03-lumischool-map/06.png",
-                    "label": "Existing carousel · page 6"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s03-lumischool-map/07.png",
-                    "label": "Existing carousel · page 7"
-                }
-            ],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "every-version-checked",
-            "title": "Checking generated exercises before publication",
-            "products": ["LumiSchool"],
-            "text": "Lumischool generates questions from templates with parameters. Changing a number can change the answer, the drawing and whether a hint is appropriate, so reviewing the template alone can miss mistakes.\n\nThe verifier builds the allowed versions and checks their answers, drawing capacity and layout. For items exceeding its 10,000-version limit, it checks a fixed sample of 400 instead.\n\nOne check looks for feedback that also matches a correct answer. An exercise asks how many apples Mia needs to reach ten. Its hint handles a child answering with the number already shown, using the rule answer == n.\n\nWhen n is 5, that is also the correct answer. The verifier reports the rule and the parameter value, so the author can revise the feedback or the allowed range.\n\nThe recorded run on 16 October covered 5,622 items and checked 186,272 versions. It sampled 21 items and reported two warnings, both involving hints that matched correct answers at n = 5.\n\nErrors block the lesson-pack build. Warnings require review but do not block it, and sampling leaves other combinations unchecked. These checks help find content defects; teaching quality still needs human review.\n\nThe article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/every-version-checked",
-            "url": "https://nbaghiro.com/blogs/every-version-checked",
-            "cover": "/img/posts/every-version-checked-wide.webp",
-            "summary": "Lumischool generates questions from parameterized templates. Its verifier checks the resulting answers, layouts and feedback, using a fixed sample when the number of combinations exceeds its limit.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Existing carousel to review",
-            "source": "Founder series",
-            "media": [
-                {
-                    "project": "founder-series",
-                    "file": "pages/s08-lumischool-verifier/01.png",
-                    "label": "Existing carousel · page 1"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s08-lumischool-verifier/02.png",
-                    "label": "Existing carousel · page 2"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s08-lumischool-verifier/03.png",
-                    "label": "Existing carousel · page 3"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s08-lumischool-verifier/04.png",
-                    "label": "Existing carousel · page 4"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s08-lumischool-verifier/05.png",
-                    "label": "Existing carousel · page 5"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s08-lumischool-verifier/06.png",
-                    "label": "Existing carousel · page 6"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s08-lumischool-verifier/07.png",
-                    "label": "Existing carousel · page 7"
-                }
-            ],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "a-comment-that-moves",
-            "title": "Keeping comments attached as text changes",
-            "products": ["Galleo"],
-            "text": "Galleo lets people comment on an element or a range of text. Those comments need to remain understandable as the content changes.\n\nThe thread is stored separately from the content tree. A text comment uses an invisible mark to identify its range. The mark does not affect layout or exports, and undoing a content edit does not delete the discussion.\n\nThe editor reads visible text and formatting from the DOM after an edit. Because the comment mark is invisible, it must be recovered from stored data and adjusted for the text change.\n\nThe adjustment uses a diff that identifies one replaced span. Inserting text before a range shifts it. Typing inside it extends it. Deleting part of the range preserves the remaining marked text. Deleting the whole range removes the mark.\n\nThe thread remains. If its text mark is gone, it falls back to the element. If that element is also gone, the thread becomes unattached. A stored quote preserves the original context in the sidebar.\n\nThis approach has limits: the diff treats separate edits as one replacement span, and a rewrite using new element ids can break the attachment. The interface keeps the discussion and shows when it no longer points to the current content.\n\nThe article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/a-comment-that-moves",
-            "url": "https://nbaghiro.com/blogs/a-comment-that-moves",
-            "cover": "/img/posts/a-comment-that-moves-wide.webp",
-            "summary": "Galleo keeps comment threads outside the content tree and joins a text thread to its range with an invisible mark. How that mark survives editing, and what the thread falls back to when it does not.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Existing carousel to review",
-            "source": "Founder series",
-            "media": [
-                {
-                    "project": "founder-series",
-                    "file": "pages/s10-galleo-anchors/01.png",
-                    "label": "Existing carousel · page 1"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s10-galleo-anchors/02.png",
-                    "label": "Existing carousel · page 2"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s10-galleo-anchors/03.png",
-                    "label": "Existing carousel · page 3"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s10-galleo-anchors/04.png",
-                    "label": "Existing carousel · page 4"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s10-galleo-anchors/05.png",
-                    "label": "Existing carousel · page 5"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s10-galleo-anchors/06.png",
-                    "label": "Existing carousel · page 6"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s10-galleo-anchors/07.png",
-                    "label": "Existing carousel · page 7"
-                }
-            ],
-            "status": "Ready with article visual"
-        },
-        {
-            "id": "one-engine-every-game",
-            "title": "Rendering and testing Lumischool’s games",
-            "products": ["LumiSchool"],
-            "text": "Lumischool separates game logic from rendering. Games describe their state and what should be drawn; a shared WebGL2 view turns that description into the frame on screen.\n\nThat separation also lets tests run the game logic in Node without opening a browser. Action games advance from inputs at a fixed simulation rate. Turn-based games expose positions and legal moves.\n\nThe renderer uses drawings from the same illustration library as the lessons. Matching drawing configurations share cached textures, which are packed into atlas pages and drawn by the GPU. Text and controls remain in the DOM.\n\nThe tests establish different things for different games. Turn-based mechanics are checked by searching their position graphs for wins, dead ends and solutions within the move budget. A search that reaches its position limit fails verification rather than treating the partial result as complete.\n\nThe recorded 17 October run searched 34 graphs and 7,332 positions. Those graphs covered activity variants and five turn-based levels, not all 344 levels in the game catalogue.\n\nTwenty games also declare a round for use inside a lesson. Game-specific input drivers play those rounds in Node, checking that each can be won within its declared duration, reports the win once and settles afterwards.\n\nA scripted run shows that the tested input sequence works. It does not cover every possible interaction or every level. Keeping that distinction clear helps identify where more testing is needed.\n\nThe article is linked in the first comment.",
-            "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/one-engine-every-game",
-            "url": "https://nbaghiro.com/blogs/one-engine-every-game",
-            "cover": "/img/posts/one-engine-every-game-wide.webp",
-            "summary": "Lumischool separates game logic from rendering. A shared WebGL2 view draws the games, while tests check turn-based levels through graph searches and lesson rounds through scripted play.",
-            "mediaStatus": "Article visual ready",
-            "productMediaStatus": "Existing carousel to review",
-            "source": "Founder series",
-            "media": [
-                {
-                    "project": "founder-series",
-                    "file": "pages/s11-lumischool-games/01.png",
-                    "label": "Existing carousel · page 1"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s11-lumischool-games/02.png",
-                    "label": "Existing carousel · page 2"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s11-lumischool-games/03.png",
-                    "label": "Existing carousel · page 3"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s11-lumischool-games/04.png",
-                    "label": "Existing carousel · page 4"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s11-lumischool-games/05.png",
-                    "label": "Existing carousel · page 5"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s11-lumischool-games/06.png",
-                    "label": "Existing carousel · page 6"
-                },
-                {
-                    "project": "founder-series",
-                    "file": "pages/s11-lumischool-games/07.png",
-                    "label": "Existing carousel · page 7"
-                }
-            ],
-            "status": "Ready with article visual"
+          "project": "founder-series",
+          "file": "pages/s02-galleo-engine-combo/07.png",
+          "label": "Existing carousel · page 7"
         }
-    ]
+      ],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/one-layout-engine.png",
+        "label": "One document, three views",
+        "brand": "galleo"
+      }
+    },
+    {
+      "id": "map-on-one-canvas",
+      "title": "Moving Lumischool's map to WebGL",
+      "products": [
+        "LumiSchool"
+      ],
+      "text": "In Lumischool, children explore lessons through an illustrated map. Moving that map to WebGL2 was mostly a decision about memory.\n\nThe earlier renderer placed SVG drawings in the DOM and scaled them with the camera. During the recorded iPhone investigation, one compositing layer reached 540 MB. The page also had thousands of elements and a large JavaScript heap, and was being killed shortly after opening. Zooming out could increase layer memory even though the map looked smaller.\n\nThe current renderer draws the artwork into a canvas. Terrain comes from tiles at different resolutions, with fine details such as coastlines and rivers drawn separately.\n\nThe illustrations still come from the existing drawing code. The renderer can reuse retained pixels, load matching prebuilt artwork or ask workers to rasterize a drawing. Textures are then drawn by the GPU, with smaller drawings sharing atlas pages.\n\nWhile the camera moves, the renderer reuses available textures and schedules sharper versions as the view settles. Memory budgets limit the caches, and animated parts can move without rasterizing the whole illustration again.\n\nText and controls remain in the DOM, where ordinary keyboard and accessibility behavior can be maintained and tested.\n\nThe investigation needed both JavaScript memory measurements and the browser’s layer tree. Historical Mac/Chrome tests showed improved frame times. The reviewed report does not include a completed follow-up iPhone result, so those desktop measurements do not establish the phone result.\n\nThe article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/map-on-one-canvas",
+      "url": "https://nbaghiro.com/blogs/map-on-one-canvas",
+      "cover": "/img/posts/map-on-one-canvas-wide.webp",
+      "summary": "The map's earlier SVG and DOM renderer ran into memory limits on an iPhone. The current renderer uses tiles, cached artwork and WebGL, while keeping text and controls in the DOM.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder series",
+      "media": [
+        {
+          "project": "founder-series",
+          "file": "pages/s03-lumischool-map/01.png",
+          "label": "Existing carousel · page 1"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s03-lumischool-map/02.png",
+          "label": "Existing carousel · page 2"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s03-lumischool-map/03.png",
+          "label": "Existing carousel · page 3"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s03-lumischool-map/04.png",
+          "label": "Existing carousel · page 4"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s03-lumischool-map/05.png",
+          "label": "Existing carousel · page 5"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s03-lumischool-map/06.png",
+          "label": "Existing carousel · page 6"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s03-lumischool-map/07.png",
+          "label": "Existing carousel · page 7"
+        }
+      ],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/map-on-one-canvas.png",
+        "label": "Drawing the learning map",
+        "brand": "lumi"
+      }
+    },
+    {
+      "id": "every-version-checked",
+      "title": "Checking generated exercises before publication",
+      "products": [
+        "LumiSchool"
+      ],
+      "text": "Lumischool generates questions from templates with parameters. Changing a number can change the answer, the drawing and whether a hint is appropriate, so reviewing the template alone can miss mistakes.\n\nThe verifier builds the allowed versions and checks their answers, drawing capacity and layout. For items exceeding its 10,000-version limit, it checks a fixed sample of 400 instead.\n\nOne check looks for feedback that also matches a correct answer. An exercise asks how many apples Mia needs to reach ten. Its hint handles a child answering with the number already shown, using the rule answer == n.\n\nWhen n is 5, that is also the correct answer. The verifier reports the rule and the parameter value, so the author can revise the feedback or the allowed range.\n\nThe recorded run on 16 October covered 5,622 items and checked 186,272 versions. It sampled 21 items and reported two warnings, both involving hints that matched correct answers at n = 5.\n\nErrors block the lesson-pack build. Warnings require review but do not block it, and sampling leaves other combinations unchecked. These checks help find content defects; teaching quality still needs human review.\n\nThe article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/every-version-checked",
+      "url": "https://nbaghiro.com/blogs/every-version-checked",
+      "cover": "/img/posts/every-version-checked-wide.webp",
+      "summary": "Lumischool generates questions from parameterized templates. Its verifier checks the resulting answers, layouts and feedback, using a fixed sample when the number of combinations exceeds its limit.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder series",
+      "media": [
+        {
+          "project": "founder-series",
+          "file": "pages/s08-lumischool-verifier/01.png",
+          "label": "Existing carousel · page 1"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s08-lumischool-verifier/02.png",
+          "label": "Existing carousel · page 2"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s08-lumischool-verifier/03.png",
+          "label": "Existing carousel · page 3"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s08-lumischool-verifier/04.png",
+          "label": "Existing carousel · page 4"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s08-lumischool-verifier/05.png",
+          "label": "Existing carousel · page 5"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s08-lumischool-verifier/06.png",
+          "label": "Existing carousel · page 6"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s08-lumischool-verifier/07.png",
+          "label": "Existing carousel · page 7"
+        }
+      ],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/every-version-checked.png",
+        "label": "Checking generated questions",
+        "brand": "lumi"
+      }
+    },
+    {
+      "id": "a-comment-that-moves",
+      "title": "Keeping comments attached as text changes",
+      "products": [
+        "Galleo"
+      ],
+      "text": "Galleo lets people comment on an element or a range of text. Those comments need to remain understandable as the content changes.\n\nThe thread is stored separately from the content tree. A text comment uses an invisible mark to identify its range. The mark does not affect layout or exports, and undoing a content edit does not delete the discussion.\n\nThe editor reads visible text and formatting from the DOM after an edit. Because the comment mark is invisible, it must be recovered from stored data and adjusted for the text change.\n\nThe adjustment uses a diff that identifies one replaced span. Inserting text before a range shifts it. Typing inside it extends it. Deleting part of the range preserves the remaining marked text. Deleting the whole range removes the mark.\n\nThe thread remains. If its text mark is gone, it falls back to the element. If that element is also gone, the thread becomes unattached. A stored quote preserves the original context in the sidebar.\n\nThis approach has limits: the diff treats separate edits as one replacement span, and a rewrite using new element ids can break the attachment. The interface keeps the discussion and shows when it no longer points to the current content.\n\nThe article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/a-comment-that-moves",
+      "url": "https://nbaghiro.com/blogs/a-comment-that-moves",
+      "cover": "/img/posts/a-comment-that-moves-wide.webp",
+      "summary": "Galleo keeps comment threads outside the content tree and joins a text thread to its range with an invisible mark. How that mark survives editing, and what the thread falls back to when it does not.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder series",
+      "media": [
+        {
+          "project": "founder-series",
+          "file": "pages/s10-galleo-anchors/01.png",
+          "label": "Existing carousel · page 1"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s10-galleo-anchors/02.png",
+          "label": "Existing carousel · page 2"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s10-galleo-anchors/03.png",
+          "label": "Existing carousel · page 3"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s10-galleo-anchors/04.png",
+          "label": "Existing carousel · page 4"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s10-galleo-anchors/05.png",
+          "label": "Existing carousel · page 5"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s10-galleo-anchors/06.png",
+          "label": "Existing carousel · page 6"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s10-galleo-anchors/07.png",
+          "label": "Existing carousel · page 7"
+        }
+      ],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/a-comment-that-moves.png",
+        "label": "Keeping a comment with its text",
+        "brand": "galleo"
+      }
+    },
+    {
+      "id": "one-engine-every-game",
+      "title": "Rendering and testing Lumischool’s games",
+      "products": [
+        "LumiSchool"
+      ],
+      "text": "Lumischool separates game logic from rendering. Games describe their state and what should be drawn; a shared WebGL2 view turns that description into the frame on screen.\n\nThat separation also lets tests run the game logic in Node without opening a browser. Action games advance from inputs at a fixed simulation rate. Turn-based games expose positions and legal moves.\n\nThe renderer uses drawings from the same illustration library as the lessons. Matching drawing configurations share cached textures, which are packed into atlas pages and drawn by the GPU. Text and controls remain in the DOM.\n\nThe tests establish different things for different games. Turn-based mechanics are checked by searching their position graphs for wins, dead ends and solutions within the move budget. A search that reaches its position limit fails verification rather than treating the partial result as complete.\n\nThe recorded 17 October run searched 34 graphs and 7,332 positions. Those graphs covered activity variants and five turn-based levels, not all 344 levels in the game catalogue.\n\nTwenty games also declare a round for use inside a lesson. Game-specific input drivers play those rounds in Node, checking that each can be won within its declared duration, reports the win once and settles afterwards.\n\nA scripted run shows that the tested input sequence works. It does not cover every possible interaction or every level. Keeping that distinction clear helps identify where more testing is needed.\n\nThe article is linked in the first comment.",
+      "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/one-engine-every-game",
+      "url": "https://nbaghiro.com/blogs/one-engine-every-game",
+      "cover": "/img/posts/one-engine-every-game-wide.webp",
+      "summary": "Lumischool separates game logic from rendering. A shared WebGL2 view draws the games, while tests check turn-based levels through graph searches and lesson rounds through scripted play.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder series",
+      "media": [
+        {
+          "project": "founder-series",
+          "file": "pages/s11-lumischool-games/01.png",
+          "label": "Existing carousel · page 1"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s11-lumischool-games/02.png",
+          "label": "Existing carousel · page 2"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s11-lumischool-games/03.png",
+          "label": "Existing carousel · page 3"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s11-lumischool-games/04.png",
+          "label": "Existing carousel · page 4"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s11-lumischool-games/05.png",
+          "label": "Existing carousel · page 5"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s11-lumischool-games/06.png",
+          "label": "Existing carousel · page 6"
+        },
+        {
+          "project": "founder-series",
+          "file": "pages/s11-lumischool-games/07.png",
+          "label": "Existing carousel · page 7"
+        }
+      ],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "technical-posts",
+        "file": "product-visuals/2026-11-11/one-engine-every-game.png",
+        "label": "Shared rules across the games",
+        "brand": "lumi"
+      }
+    }
+  ]
 }

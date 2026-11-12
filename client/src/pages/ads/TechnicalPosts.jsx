@@ -36,7 +36,9 @@ export function TechnicalPosts({ root }) {
                     .toLowerCase()
                     .includes(query.toLowerCase()))
     );
-    const mediaUrl = (m) => `${root}/${m.project}/${m.file}`;
+    const mediaUrl = (m) => `${root}/${m.project}/${m.file}?v=${encodeURIComponent(data?.publishedAt || "")}`;
+    const leadUrl = (post) => post.productVisual ? mediaUrl(post.productVisual) : post.cover;
+    const leadName = (post) => `${post.id}.${post.productVisual ? "png" : "webp"}`;
     return (
         <>
             <header className="topbar">
@@ -48,9 +50,9 @@ export function TechnicalPosts({ root }) {
             </header>
             <main className="body technical-library">
                 <p className="lede">
-                    Personal LinkedIn posts, article links, and visuals, grouped
-                    by product. Each post has an article visual ready to use.
-                    Product carousels are kept separately for review before use.
+                    Technical posts paired with real product views in each product’s
+                    own style. Copy the post, download its image, and use the
+                    article link in the first comment.
                 </p>
                 {error && <p className="error">{error}</p>}
                 {!data && !error && <p className="meta">Loading posts…</p>}
@@ -105,9 +107,9 @@ export function TechnicalPosts({ root }) {
                                     setLightbox({
                                         items: [
                                             {
-                                                url: post.cover,
+                                                url: leadUrl(post),
                                                 alt: post.title,
-                                                name: `${post.id}.webp`,
+                                                name: leadName(post),
                                             },
                                         ],
                                         index: 0,
@@ -115,19 +117,19 @@ export function TechnicalPosts({ root }) {
                                 }
                             >
                                 <img
-                                    src={post.cover}
+                                    src={leadUrl(post)}
                                     alt={post.title}
                                     loading="lazy"
                                 />
                             </button>
                             <p className="meta">
-                                Article visual · Ready to use
+                                {post.productVisual ? "Product views · Ready to use" : "General engineering · Article diagram"}
                             </p>
                             <div className="actions">
                                 <DownloadButton
-                                    url={post.cover}
-                                    name={`${post.id}.webp`}
-                                    label="Download article visual"
+                                    url={leadUrl(post)}
+                                    name={leadName(post)}
+                                    label={post.productVisual ? "Download product image" : "Download article visual"}
                                 />
                                 <a
                                     className="btn"
@@ -141,14 +143,10 @@ export function TechnicalPosts({ root }) {
                                     Link to this post
                                 </a>
                             </div>
-                            <p className="technical-media-state">
-                                Product media:{" "}
-                                {post.productMediaStatus.toLowerCase()}
-                            </p>
                             {!!post.media?.length && (
                                 <details>
                                     <summary>
-                                        Review existing product carousel ·{" "}
+                                        Earlier carousel ·{" "}
                                         {post.media.length} pages
                                     </summary>
                                     <p className="meta">
