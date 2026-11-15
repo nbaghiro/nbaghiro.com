@@ -1,5 +1,5 @@
 title: Where software factories are useful
-date: 2026-11-10
+date: 2026-11-08
 about: Engineering
 category: Industry & practice
 cover: /img/posts/when-software-factories-help-wide.webp
