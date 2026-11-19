@@ -1,3 +1,4 @@
+import { SEARCH_PERMISSION_FIGURES } from "./figures/search-results-and-changing-permissions";
 import { PARITY_FIGURES } from "./figures/what-a-backtest-predicts";
 import { NOTATION_FIGURES } from "./figures/measuring-a-notation-against-json";
 import { FACTORY_FIGURES } from "./figures/when-software-factories-help";
@@ -2583,6 +2584,7 @@ export const FIGURES = {
     ...CREDIT_RECOVERY_FIGURES,
     ...TENANT_ISOLATION_FIGURES,
     ...EXPORT_PERMISSION_FIGURES,
+    ...SEARCH_PERMISSION_FIGURES,
     ...CALENDAR_SYNC_FIGURES,
     ...COLLAB_ORDER_FIGURES,
     ...URL_FETCH_FIGURES,

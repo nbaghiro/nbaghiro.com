@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Search results after access changes</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+            }
+            body {
+                background: #e9ecea;
+            }
+            .sheet {
+                position: relative;
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+                background: #e5eae7;
+            }
+            .land {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0.23;
+                filter: grayscale(1);
+            }
+            .wash {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(110deg, #e9eceaf0, #e9ecea55);
+            }
+            svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            text {
+                font-family: "Instrument Sans", sans-serif;
+                fill: #253b35;
+                font-size: 19px;
+            }
+            .serif {
+                font-family: Newsreader, Georgia, serif;
+            }
+            .mono {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 13px;
+                letter-spacing: 1px;
+            }
+            .quiet {
+                fill: #687d75;
+            }
+            .line {
+                stroke: #718a80;
+                fill: none;
+                stroke-width: 1;
+            }
+            .accent {
+                stroke: #4e7872;
+                fill: none;
+                stroke-width: 2;
+            }
+            .card {
+                fill: #f5f7f2aa;
+                stroke: #82968c;
+                stroke-width: 1;
+            }
+            .small {
+                font-size: 15px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sheet">
+            <img class="land" src="ph-callers.jpg" alt="" />
+            <div class="wash"></div>
+            <svg id="plate"></svg>
+        </div>
+        <script>
+            const square = innerHeight > innerWidth * 0.7;
+            const svg = document.querySelector("svg");
+            svg.setAttribute(
+                "viewBox",
+                square ? "0 0 1000 1000" : "0 0 1600 615"
+            );
+            const rowY = square ? 290 : 200,
+                left = square ? 80 : 100,
+                cw = square ? 248 : 380,
+                gap = square ? 48 : 70;
+            let out = `<path class="line" d="M${left} 55h-20v20M${square ? 920 : 1500} 55h20v20M${left} ${square ? 945 : 560}h-20v-20M${square ? 920 : 1500} ${square ? 945 : 560}h20v-20"/>`;
+            out += `<text class="mono quiet" x="${left}" y="${square ? 110 : 90}">SEARCH / ACCESS / DELIVERY</text><text class="serif" style="font-size:${square ? 54 : 52}px" x="${left}" y="${square ? 180 : 150}">Search results after access changes</text>`;
+            if (square)
+                out += `<text class="quiet" x="${left}" y="223">One query. A current decision for every result.</text>`;
+            ["A", "B", "C"].forEach((id, i) => {
+                let x = left + i * (cw + gap);
+                out += `<g opacity="${i === 1 ? 0.53 : 1}"><rect class="card" x="${x}" y="${rowY}" width="${cw}" height="${square ? 300 : 205}" rx="4"/><text class="mono quiet" x="${x + 24}" y="${rowY + 35}">DOCUMENT ${id}</text><text class="serif" style="font-size:30px" x="${x + 24}" y="${rowY + 82}">${i === 1 ? "Access removed" : "Access retained"}</text>`;
+                for (let j = 0; j < 3; j++)
+                    out += `<path class="line" d="M${x + 24} ${rowY + 110 + j * 18}h${cw - 48 - (j === 2 ? 50 : 0)}"/>`;
+                out += `<text class="small" x="${x + 24}" y="${rowY + (square ? 260 : 181)}">${i === 1 ? "Exclude title + snippet" : "Include title + snippet"}</text></g>`;
+            });
+            const y = square ? 680 : 470;
+            out += `<path class="accent" d="M${left} ${y - 25}H${square ? 920 : 1500}"/><text class="serif" style="font-size:${square ? 42 : 30}px" x="${left}" y="${y + 20}">Return A + C</text><text class="quiet" x="${square ? left : 470}" y="${square ? y + 75 : y + 20}">Check access before content leaves the service.</text><text class="mono quiet" x="${left}" y="${square ? 875 : 545}">NBAGHIRO.COM · ENGINEERING NOTES</text>`;
+            svg.innerHTML = out;
+        </script>
+    </body>
+</html>

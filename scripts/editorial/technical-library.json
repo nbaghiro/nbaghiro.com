@@ -1,6 +1,23 @@
 {
   "posts": [
     {
+      "id": "search-results-and-changing-permissions",
+      "title": "Search results after access changes",
+      "text": "A search result can reveal part of a document before anyone opens it. The title, preview and matching sentence all need the same care as the document itself.\n\nIn Galleo, we use PostgreSQL full-text search for the document library. The query applies document visibility rules before returning results and snippets. A document can stay indexed for the people who still have access.\n\nA separate search service or embedding store adds another timing problem. Someone can lose access while the index still contains the old permissions.\n\nThe design we’d use is to retrieve candidate matches, check access against the application’s current permission data, and only then return the permitted content. The index can catch up in the background without its stale permissions deciding what someone receives.\n\nCached results need that check too. A recent match may still be relevant even though the person can no longer read it.\n\nFor an AI assistant, the check belongs before retrieved text enters the prompt. A cached answer also needs a record of its sources. If access to one changes, removing the citation does not remove what that source contributed to the answer.\n\nThere are limits: revoking access cannot recall text already delivered to a browser or sent to a model. In-flight requests, conversation history and browser caches need an explicit policy.\n\nWe wrote up Galleo’s current search approach and a proposed design for separate indexes, with diagrams covering permission changes, caching and AI retrieval:\nhttps://nbaghiro.com/blogs/search-results-and-changing-permissions",
+      "url": "https://nbaghiro.com/blogs/search-results-and-changing-permissions",
+      "products": [
+        "Galleo"
+      ],
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/search-results-and-changing-permissions",
+      "cover": "/img/posts/search-results-and-changing-permissions-wide.webp",
+      "summary": "Document permissions across search snippets, asynchronous indexes, cached results and AI answers.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Needs product visual",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
       "id": "when-software-factories-help",
       "title": "Where software factories are useful",
       "products": [
