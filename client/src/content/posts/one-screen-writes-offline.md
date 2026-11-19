@@ -32,7 +32,7 @@ A booking can conflict with staff availability, opening hours, other visits, cla
 
 A device can help someone choose a time using its replica, but cannot confirm that another device has not reserved it in the meantime. Two disconnected devices may both see the same opening.
 
-A merge strategy alone does not decide which booking the business should honor. That is a product and consistency decision. In Clientbridge, the server decides whether the booking can be accepted; the resulting records then return through replication.
+The server decides whether to accept a booking, then its records return through replication.
 
 The same principle applies to other server-owned constraints, including financial operations, uniqueness and cross-business actions. Their commands do not directly edit the client replica and hope to reconcile later.
 
@@ -42,9 +42,9 @@ The working-week editor can save a local proposal when it cannot reach the serve
 
 An uploader sends it as a typed command. The server checks authorization, takes the relevant locks, and compares the current revision with the one the device expected. If another change has already advanced the revision, the command rejects the proposal for review rather than merging it silently.
 
-Suppose two devices start from hours revision 12. Device A saves a Monday edit offline; device B changes the week online and advances it to revision 13. When A reconnects, its proposal still expects 12 and is rejected for review. The user needs to compare the proposed week with the accepted week, then revise or discard the proposal. Silently applying A would erase the decision made on B.
+Suppose two devices start from hours revision 12. Device A saves a Monday edit offline; device B changes the week online and advances it to revision 13. When A reconnects, its proposal still expects 12 and is rejected for review. The user needs to compare the proposed week with the accepted week, then revise or discard the proposal. Applying A without review would overwrite B’s accepted hours.
 
-Until acceptance, the interface is showing an edit saved on this device, not confirmed business hours.
+Until the server accepts it, the interface identifies the edit as locally saved and awaiting confirmation.
 
 ## Retries need a stable identity
 
@@ -68,12 +68,12 @@ It does not automatically cancel those bookings. The editor can show the affecte
 
 The command also rejects a week containing split-day hours that this replacement operation cannot safely represent. That avoids silently flattening two working periods into one.
 
-These checks make the proposal more than a delayed update. The server validates both whether it can apply the change and what existing work needs attention afterward.
+The server checks whether it can apply the proposal and identifies existing bookings that need review.
 
-## The boundary matters more than the queue
+## Queue and local-data lifecycle
 
 The queue needs ordering, stable payloads, retry identities, revision checks and a clear rule for confirmation. It also needs a usable response when the server refuses an edit.
 
 The outbox is durable local data, not a second server backup. Closing the app differs from explicitly clearing its replica: the lifecycle has a discard path that removes local data. A sign-out flow must therefore distinguish disconnecting from discarding pending proposals and tell the user before unsent work is lost. Browser storage removal can also remove a proposal that never reached the server.
 
-Other offline actions need their own acceptance rules, conflict behavior and local-data lifecycle. Reusing the queue alone does not supply those decisions.
+Each additional offline action needs defined acceptance rules, conflict handling and local-data lifecycle behavior.

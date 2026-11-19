@@ -6,7 +6,7 @@ cover: /img/posts/when-a-slot-is-free-wide.webp
 card: /img/posts/when-a-slot-is-free-card.webp
 summary: Clientbridge checks working hours, time off, buffers, capacity and resources before accepting a booking. Locks and database constraints protect against conflicting writes.
 
-Clientbridge books visits for service businesses: a groomer with two rooms, a salon with five stylists, a cleaner working alone. Every booking starts with the same question, which is whether a given member is free at a given time.
+Clientbridge books visits for service businesses: a groomer with two rooms, a salon with five stylists, a cleaner working alone. Before accepting a booking, we check whether the staff member and required resources are available.
 
 Availability depends on several conditions, checked in a fixed order. A booking also needs protection against another request taking the same time between the check and the write.
 
@@ -28,15 +28,15 @@ The incoming window grows by the new service's buffers. The existing slots are j
 
 The query also handles classes. A class is one slot with a capacity, so a second booking for the same service at the same start is a seat rather than a conflict. The query treats a slot as blocking only when it is full, or for a different service, or at a different time. Seats are counted as live bookings on the slot, which excludes cancelled and waitlisted ones.
 
-## The same rule, written twice
+## Listing available start times
 
 The check above evaluates one window. A booking page needs a list of available start times for a date.
 
 `open_starts` produces that list. It reads hours, closures, time off and live slots once for the span, then walks the day's open windows on a step grid and applies the same predicate in memory. It is intended to return the start times that `slot_problem` would accept. The grid step is the business's configured interval, or the service's full length including buffers when no interval is set.
 
-Two implementations of one rule have to be kept in agreement, and they already differ in one place. When a member has no hours configured for a weekday, the listing returns no times at all, while the window check treats that day as open. A business whose working week is not set up yet offers nothing online, and the same time booked by hand from the business side is accepted.
+The listing and single-window checks currently differ when working hours are missing. When a member has no hours configured for a weekday, the listing returns no times at all, while the window check treats that day as open. A business whose working week is not set up yet offers nothing online, and the same time booked by hand from the business side is accepted.
 
-## Checking and writing are two statements
+## Locking before the availability check
 
 Every path that creates a visit goes through `create_booking_core`: the staff calendar, the recurrence expander and the public booking page. It takes a Postgres advisory lock on the member for the transaction. That prevents another booking using the same lock from changing availability between the check and insert.
 
@@ -50,9 +50,9 @@ The current implementation adds resource locks before selecting a room or piece 
 
 The `slots` table also carries two GiST exclusion constraints as a database backstop. One refuses a second live slot for the same business and member over an overlapping time range, the other does the same for a resource, and both ignore cancelled slots. The insert catches an integrity error and translates a recognized constraint violation into the corresponding booking conflict.
 
-The constraints cover fewer conditions than the application checks. They compare the stored start and end of a slot, which means they know nothing about buffers, hours, time off or class capacity. A fifteen minute cleanup overlapping the next visit is caught by the buffer-aware application check under the resource lock, not by the stored-range constraint.
+The constraints cover fewer conditions than the application checks. They compare the stored start and end of a slot, without checking buffers, hours, time off or class capacity. A fifteen minute cleanup overlapping the next visit is caught by the buffer-aware application check under the resource lock, not by the stored-range constraint.
 
-So the two layers do different jobs. The checks decide whether a booking should be allowed and produce the message a person reads. The constraints make the overlap itself impossible to store, whatever path tried to write it, including a future one that forgets to take the lock.
+The application checks booking eligibility and supplies the explanation shown to the user. The database constraints independently reject overlapping stored ranges, including writes that bypass the application locks.
 
 ## Protecting the write
 

@@ -25,7 +25,7 @@ ON inventory (line_id, reason)
 WHERE line_id IS NOT NULL;
 ```
 
-The condition matters. Restocks and count corrections do not belong to a sale line. They need to remain separate movements, including two legitimate deliveries of the same quantity on different days. Their retry protection lives at the command boundary, which I will come back to.
+The condition matters. Restocks and count corrections do not belong to a sale line. They need to remain separate movements, including two legitimate deliveries of the same quantity on different days. Their retry protection is handled by the command layer, described below.
 
 A line can therefore have one sale movement and one refund movement under this model. It cannot have two sale movements. This is a domain rule enforced by the database, so every caller that writes through this table has the same constraint.
 
@@ -84,7 +84,7 @@ For an online order, the requested quantity must fit within that available amoun
 
 The test for this uses two separate database sessions. The first locks and checks the item, pauses briefly, creates a pending payment, and commits. The second attempts checkout while the first is still running. After it can acquire the item lock, it sees the hold and receives `out_of_stock`.
 
-There is a deliberately conservative detail in the current query: `failed` payments count as holds alongside `pending` and `succeeded` payments, while lines already represented by sale movements are excluded. A canceled payment releases its hold. That makes the payment lifecycle part of inventory availability. A failed attempt cannot simply be forgotten if its row continues to reserve stock.
+In the current query, `failed` payments count as holds alongside `pending` and `succeeded` payments, while lines already represented by sale movements are excluded. A canceled payment releases its hold. That makes the payment lifecycle part of inventory availability. A failed payment row can therefore continue to reserve stock.
 
 The policy also differs by channel. Online orders enforce the stock limit. A staff sale can go below zero when there are no competing holds; an existing test explicitly allows selling three units when one is recorded on hand. That can support a business whose recorded count is behind its physical shelf, but it means a negative number is a valid operational state to explain and correct.
 
@@ -112,12 +112,12 @@ The restock test starts at two units, adds six, then repeats the request with th
 
 The key is optional at the service boundary. Without it, two restock requests are two separate changes. A caller that wants safe retries has to preserve and resend the same key for the same operation. A new key means a new operation.
 
-## What the tests establish, and what I would add
+## Test coverage and further checks
 
 The existing tests cover repeated settlement, full and partial refunds, restock retries, stock corrections, and two connections competing for the last online unit. They also document policies that might otherwise be surprising, including negative stock for a staff sale.
 
-I would add direct fault-injection tests around the movement and count writes: fail after the insert but before the count flush, roll back, then retry. I would also race two different paid lines for the same item and verify that both movement quantities are reflected in the final count.
+We would add direct fault-injection tests around the movement and count writes: fail after the insert but before the count flush, roll back, then retry. We would also race two different paid lines for the same item and verify that both movement quantities are reflected in the final count.
 
-For reconciliation, a useful check would compare the current count with an explicit opening balance plus subsequent movements. That requires knowing where the history starts; a directly seeded starting count cannot be reconstructed from later movements alone. I would treat reconciliation as an additional check to build, not an existing guarantee of this service.
+For reconciliation, a useful check would compare the current count with an explicit opening balance plus subsequent movements. That requires knowing where the history starts; a directly seeded starting count cannot be reconstructed from later movements alone. We would treat reconciliation as an additional check to build, not an existing guarantee of this service.
 
-The useful property of this design is that each mechanism has a small job. The movement key identifies an effect that has already happened. The item lock coordinates different effects on the same count. The transaction keeps the explanation and the count together. Availability and returns remain product rules that have to be defined around those mechanisms.
+The movement key prevents a repeated stock effect, the item lock coordinates concurrent updates, and the transaction keeps the movement and count together. Reservation and return policies determine when those changes apply.

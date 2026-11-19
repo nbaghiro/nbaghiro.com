@@ -9,7 +9,7 @@ An invoice needs to agree with several other records. Its lines must add up to i
 
 In [Clientbridge](https://clientbridge.ca), those requirements reach beyond the function that multiplies a price by a tax rate. They affect discount allocation, document states, and what happens when payment and repricing run at the same time.
 
-This is how the backend handles those boundaries today. The rates below are inputs to arithmetic examples and test fixtures. The useful part is the calculation and the lifecycle around it, rather than a guide to which tax a particular business should charge.
+The rates below are arithmetic examples and test fixtures. This article describes the calculation and document lifecycle, not which taxes a business should charge.
 
 ## Store the amount and the rate at their own precision
 
@@ -29,7 +29,7 @@ Clientbridge calculates each applicable tax component on each line, rounds it to
 
 Consider two five-cent lines and one illustrative 10% component. Each line produces half a cent of tax. With the engine's rounding rule, each becomes one cent, so the invoice collects two cents. Combining the lines first gives a ten-cent base, whose tax is one cent.
 
-Both calculations are easy to write. Only one can describe the document consistently. The backend chooses the per-line result, and its invoice total is the sum of those rounded line amounts. A receipt renderer must preserve that choice instead of independently applying a rate to the subtotal.
+The backend uses per-line rounding and sums the rounded line amounts for the invoice total. A receipt renderer must preserve that choice instead of independently applying a rate to the subtotal.
 
 ![Rounding each line gives two cents; rounding the combined base gives one cent. The engine follows the line calculation.](figure:invoice-rounding-boundary)
 
@@ -40,7 +40,7 @@ whole = floor(abs(value) + Fraction(1, 2))
 return whole if value >= 0 else -whole
 ```
 
-A positive half-cent becomes one cent. A negative half-cent becomes negative one cent. This is an explicit tie rule, rather than an accidental consequence of a language's default rounding function. The helper's treatment of negative values does not, by itself, define the whole refund process; that still needs its own document and accounting rules.
+A positive half-cent becomes one cent. A negative half-cent becomes negative one cent. The helper defines how values exactly halfway between cents are rounded. The helper's treatment of negative values does not, by itself, define the whole refund process; that still needs its own document and accounting rules.
 
 With the two components used in the backend's $9.99 test, 5% produces 49.95 cents and 7% produces 69.93 cents. The stored results are 50 and 70 cents. The line tax is 120 cents, and the final amount is 1,119 cents.
 
@@ -66,7 +66,7 @@ With a gross amount of 11,200 cents and illustrative rates of 5% and 7%, the div
 
 The choice of applicable components happens before that division. An exempt line has none. A `federal_only` line filters the components by code. Using the combined rate from the whole business for every line would be wrong for an invoice with mixed classes.
 
-There is a useful implementation limit here: the engine adds the applicable rates against a common base. It does not model arbitrary compound taxes where one component applies to another component. A new tax system with different calculation rules would need more than another entry in the rate table.
+The implementation has a limit: the engine adds the applicable rates against a common base. It does not model arbitrary compound taxes where one component applies to another component. A new tax system with different calculation rules would need more than another entry in the rate table.
 
 ## Fix the amount at a document boundary
 
@@ -90,7 +90,7 @@ The current storage model keeps each line's total tax, rather than a complete im
 
 If the normal calculation matches the stored total, the engine uses that breakdown. If it does not, the engine divides the fixed total in proportion to the rates, rounds those shares, and assigns any remaining difference to the last component.
 
-A test supplies a fixed tax of 1,300 cents with component weights of 5 and 7. The proportional shares become 542 and 758 cents. Their sum remains 1,300. This is a reconstruction rule for a stored amount; it does not pretend that 1,300 was the original result of applying 12% to a 10,000-cent base.
+A test supplies a fixed tax of 1,300 cents with component weights of 5 and 7. The proportional shares become 542 and 758 cents. Their sum remains 1,300. This is a reconstruction rule for a stored amount; it preserves 1,300 rather than recalculating it as 12% of a 10,000-cent base.
 
 The benefit is that a later display can preserve the charged total. The tradeoff is that reconstruction still depends on historical rate data and context. The application restricts province changes after documents have charged tax, but that is not equivalent to storing every original input. A stronger historical record would persist the jurisdiction amounts, exact rates, date context, and calculation version at issue time. That would make later rate-table corrections less dependent on reconstruction.
 
@@ -110,6 +110,6 @@ The pure engine tests cover precise rates, small amounts, inclusive prices, regi
 
 The integration tests cover a different set of failures: a payment page changing after issue, a receipt disagreeing with settlement, a draft failing to follow new settings, or repricing overwriting an amount while payment starts. Historical rate selection uses the business's local calendar date, so a UTC timestamp near midnight also has a dedicated test.
 
-These tests are useful together. A correct multiplication function cannot protect a receipt that recomputes from current settings. A well-controlled document lifecycle cannot repair a rate that lost precision before calculation.
+Both layers need coverage: calculation tests check precision, while integration tests check how those amounts are stored and displayed.
 
-For this code, the most useful invariants are straightforward: allocated cents must add up, invoice totals must equal their stored lines, and later views of an issued document must preserve what was charged. Each one has a specific place in the implementation and a failure case the tests can reproduce.
+The checks require allocated cents to add up, invoice totals to equal their stored lines, and later views to preserve the issued amounts.
