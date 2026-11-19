@@ -47,7 +47,7 @@ General sales pipelines distinguish qualification, meetings, proposals, commitme
 
 ![A proposed sales pipeline with evidence required at each stage. A completed demo alone does not establish fit, and a signed customer still needs a separate onboarding process.](figure:switching-sales)
 
-**Qualified problem.** The owner can name a recurring difficulty and its consequence. we know the current tools, who uses them, who decides, and whether there is a plausible time to change. A business that is merely curious can stay in a follow-up list without being counted as an active opportunity.
+**Qualified problem.** The owner can name a recurring difficulty and its consequence. We know the current tools, who uses them, who decides, and whether there is a plausible time to change. A business that is merely curious can stay in a follow-up list without being counted as an active opportunity.
 
 **Workflow fit.** We walk through a representative job using their services and rules. For an appointment business, that might include booking, a deposit, a reschedule, and the final payment. We record any requirement the product cannot currently support. Missing capabilities need to be recorded before a business commits to the workflow.
 
