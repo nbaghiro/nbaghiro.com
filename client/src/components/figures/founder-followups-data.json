@@ -1,0 +1,318 @@
+[
+    {
+        "id": "cancel-states",
+        "title": "From request to confirmed outcome",
+        "sub": "Proposed cancellation contract",
+        "flow": true,
+        "cards": [
+            ["Stop requested", "Record the request", "Show stopping"],
+            [
+                "Worker acknowledges",
+                "Stop scheduling new steps",
+                "Handle in-flight work"
+            ],
+            [
+                "Outcome recorded",
+                "Preserve completed effects",
+                "Settle known usage"
+            ]
+        ],
+        "note": "Acknowledging a request does not confirm every effect has stopped."
+    },
+    {
+        "id": "cancel-effects",
+        "title": "One run, three different outcomes",
+        "sub": "Inspect each step at the cancellation boundary",
+        "flow": false,
+        "cards": [
+            [
+                "Research completed",
+                "Keep the useful notes",
+                "Label partial output"
+            ],
+            [
+                "Document submitted",
+                "Result may be unknown",
+                "Reconcile by request ID"
+            ],
+            [
+                "Message not started",
+                "Do not schedule the send",
+                "Record it as skipped"
+            ]
+        ],
+        "note": "A completed external action needs its own corrective policy."
+    },
+    {
+        "id": "undo-new-command",
+        "title": "Returning to Tuesday is a new change",
+        "sub": "Proposed booking-correction flow",
+        "flow": true,
+        "cards": [
+            [
+                "Thursday confirmed",
+                "Keep the original history",
+                "Read the current revision"
+            ],
+            [
+                "Tuesday requested",
+                "Check current availability",
+                "Check the expected revision"
+            ],
+            [
+                "Correction accepted",
+                "Write a new revision",
+                "Queue external updates"
+            ]
+        ],
+        "note": "The original slot may have been taken since the first move."
+    },
+    {
+        "id": "undo-effect-policy",
+        "title": "Correct each effect on its own terms",
+        "sub": "A database change has several external consequences",
+        "flow": false,
+        "cards": [
+            [
+                "Calendar event",
+                "Update the existing event",
+                "Reconcile stale deliveries"
+            ],
+            [
+                "Unsent reminder",
+                "Cancel or replace the job",
+                "Check for an in-flight send"
+            ],
+            [
+                "Delivered message",
+                "Send a correction if needed",
+                "Keep both actions recorded"
+            ]
+        ],
+        "note": "One status should not conceal different outcomes across services."
+    },
+    {
+        "id": "deploy-compatibility",
+        "title": "Readers before new writers",
+        "sub": "Proposed rollout for a versioned job payload",
+        "flow": true,
+        "cards": [
+            ["Release 1", "Workers read v1 and v2", "Producers still write v1"],
+            ["Release 2", "Enable v2 producers", "Route to compatible workers"],
+            [
+                "Later release",
+                "Account for old retries",
+                "Retire v1 deliberately"
+            ]
+        ],
+        "note": "An empty queue does not account for every future replay."
+    },
+    {
+        "id": "deploy-boundaries",
+        "title": "Three compatibility checks",
+        "sub": "Each boundary needs its own evidence",
+        "flow": false,
+        "cards": [
+            [
+                "Queued payload",
+                "Can the worker decode it?",
+                "Are its defaults correct?"
+            ],
+            [
+                "Shared database",
+                "Can both builds use it?",
+                "Is the migration compatible?"
+            ],
+            [
+                "Workflow history",
+                "Can execution replay?",
+                "Is version routing correct?"
+            ]
+        ],
+        "note": "Pinning worker code does not preserve a removed database field."
+    },
+    {
+        "id": "model-comparison",
+        "title": "Keep the comparison identifiable",
+        "sub": "Proposed process around Galleo’s evaluation tooling",
+        "flow": false,
+        "cards": [
+            [
+                "Fixed task set",
+                "Same inputs and fixtures",
+                "Record prompt and tools"
+            ],
+            [
+                "Baseline + candidate",
+                "Repeat important cases",
+                "Keep failed runs too"
+            ],
+            [
+                "Inspect the results",
+                "Check the artifact and trace",
+                "Review rendered output"
+            ]
+        ],
+        "note": "A prompt adaptation is a separate experiment from changing the model."
+    },
+    {
+        "id": "model-release-gates",
+        "title": "Keep the outcomes separate",
+        "sub": "Review critical failures before aggregate scores",
+        "flow": false,
+        "cards": [
+            [
+                "Structure + scope",
+                "Valid content and tools",
+                "Unrelated content preserved"
+            ],
+            [
+                "Task + quality",
+                "Requested result achieved",
+                "Supported, useful content"
+            ],
+            [
+                "Latency + cost",
+                "Whole task including retries",
+                "Timeouts stay in the report"
+            ]
+        ],
+        "note": "A better average does not resolve a critical editing regression."
+    },
+    {
+        "id": "design-token-roles",
+        "title": "Appearance and meaning have distinct roles",
+        "sub": "Building from LlamaTrade’s appearance definitions",
+        "flow": false,
+        "cards": [
+            ["Surfaces", "Canvas, panel and borders", "Light and dark choices"],
+            ["Accent", "Text, fill and text-on-fill", "Selection and controls"],
+            [
+                "Financial meaning",
+                "Gain, loss and warning",
+                "Keep the roles consistent"
+            ]
+        ],
+        "note": "Labels and signs carry information alongside color."
+    },
+    {
+        "id": "design-review-matrix",
+        "title": "Data checks and rendered review",
+        "sub": "Proposed coverage for future appearance changes",
+        "flow": false,
+        "cards": [
+            [
+                "Resolve every option",
+                "Required tokens exist",
+                "Check actual color pairs"
+            ],
+            [
+                "Render difficult states",
+                "Focus, loss and warning",
+                "Long values and errors"
+            ],
+            [
+                "Compare platforms",
+                "Shared semantic roles",
+                "Deliberate layout differences"
+            ]
+        ],
+        "note": "A launch screenshot covers only one state of a component."
+    },
+    {
+        "id": "deletion-ownership",
+        "title": "Start with ownership",
+        "sub": "Galleo’s current lifecycle policy distinguishes these groups",
+        "flow": false,
+        "cards": [
+            [
+                "Personal records",
+                "Credentials and memberships",
+                "The person’s private chats"
+            ],
+            [
+                "Solo workspace",
+                "Can go with its owner",
+                "Check active work first"
+            ],
+            [
+                "Shared team work",
+                "Preserve the team’s content",
+                "Transfer ownership if needed"
+            ]
+        ],
+        "note": "Clearing an author ID does not remove names from document text."
+    },
+    {
+        "id": "deletion-workflow",
+        "title": "Coordinate the remaining copies",
+        "sub": "Proposed lifecycle beyond the initial inventory",
+        "flow": true,
+        "cards": [
+            [
+                "Establish the cutoff",
+                "Block new work",
+                "Revalidate the deletion plan"
+            ],
+            [
+                "Remove and reconcile",
+                "Database + derived copies",
+                "Track external cleanup"
+            ],
+            [
+                "Verify recovery",
+                "Reject delayed job output",
+                "Reapply deletions on restore"
+            ]
+        ],
+        "note": "Report completed, pending and intentionally retained work separately."
+    },
+    {
+        "id": "shared-tool-boundary",
+        "title": "Share behavior; keep policy explicit",
+        "sub": "Proposed boundary for repeated setup work",
+        "flow": true,
+        "cards": [
+            [
+                "Product input",
+                "Catalog and ownership scope",
+                "Approved business rules"
+            ],
+            [
+                "Shared core",
+                "Compare observed state",
+                "Produce a reviewable plan"
+            ],
+            [
+                "Provider adapter",
+                "Apply supported operations",
+                "Return explicit outcomes"
+            ]
+        ],
+        "note": "A product name in every branch can signal that the boundary is too broad."
+    },
+    {
+        "id": "shared-tool-release",
+        "title": "Test a release with its consumers",
+        "sub": "Compatibility includes behavior as well as function signatures",
+        "flow": true,
+        "cards": [
+            [
+                "Core tests",
+                "Planning and stable identity",
+                "Incomplete-state handling"
+            ],
+            [
+                "Adapter checks",
+                "Pagination and error mapping",
+                "Ambiguous write outcomes"
+            ],
+            [
+                "Consumer fixtures",
+                "Fresh, unchanged and partial",
+                "Pinned upgrades and fallback"
+            ]
+        ],
+        "note": "A version number needs a defined public contract behind it."
+    }
+]

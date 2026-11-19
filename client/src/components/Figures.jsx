@@ -1,3 +1,4 @@
+import { FOUNDER_FOLLOWUP_FIGURES } from "./figures/founder-followups";
 import { SEARCH_PERMISSION_FIGURES } from "./figures/search-results-and-changing-permissions";
 import { PARITY_FIGURES } from "./figures/what-a-backtest-predicts";
 import { NOTATION_FIGURES } from "./figures/measuring-a-notation-against-json";
@@ -2585,6 +2586,7 @@ export const FIGURES = {
     ...TENANT_ISOLATION_FIGURES,
     ...EXPORT_PERMISSION_FIGURES,
     ...SEARCH_PERMISSION_FIGURES,
+    ...FOUNDER_FOLLOWUP_FIGURES,
     ...CALENDAR_SYNC_FIGURES,
     ...COLLAB_ORDER_FIGURES,
     ...URL_FETCH_FIGURES,
