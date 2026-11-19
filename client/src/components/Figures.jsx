@@ -1,4 +1,5 @@
 import { PARITY_FIGURES } from "./figures/what-a-backtest-predicts";
+import { NOTATION_FIGURES } from "./figures/measuring-a-notation-against-json";
 import { FACTORY_FIGURES } from "./figures/when-software-factories-help";
 import { URL_FETCH_FIGURES } from "./figures/fetching-user-provided-urls";
 import { COLLAB_ORDER_FIGURES } from "./figures/ordering-collaborative-edits";
@@ -2577,6 +2578,7 @@ export function OutboxWeek() {
 
 export const FIGURES = {
     ...PARITY_FIGURES,
+    ...NOTATION_FIGURES,
     ...SSE_RESUME_FIGURES,
     ...CREDIT_RECOVERY_FIGURES,
     ...TENANT_ISOLATION_FIGURES,
