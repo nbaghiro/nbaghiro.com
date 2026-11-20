@@ -52,12 +52,18 @@
     position: relative;
     overflow: hidden;
     margin-top: 68px; /* clears the fixed bar */
-    background: #efece6;
+    background: #dfe4e2;
+    /* a band, not a screen: shown whole on a wide display the cover is most of the first
+       view and the heading falls below the fold */
+    height: clamp(200px, 34vh, 380px);
 }
 .cover-bg {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
+    /* the line sits at the foot of the cover, so the crop is taken off the top */
+    object-position: center bottom;
 }
 /* The wide cover's type is drawn for a wide frame, so at phone width it would come out at a
    few pixels. The phone gets the cover drawn for its own shape instead. */
@@ -65,6 +71,9 @@
     display: none;
 }
 @media (max-width: 719px) {
+    .post-cover {
+        height: auto;
+    }
     .cover-bg {
         display: none;
     }
