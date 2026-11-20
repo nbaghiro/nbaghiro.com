@@ -259,6 +259,77 @@ export const PROJECTS = [
             "How are people-data providers integrated?",
         ],
     },
+    {
+        id: "tondo",
+        name: "Tondo",
+        x: 970,
+        y: 108,
+        color: "#7FD3C8",
+        variant: "orbit",
+        status: "live",
+        liveUrl: "https://tondo.page",
+        updated: "Nov 2026",
+        summary:
+            "One address, like tondo.page/maya, for a page of links, photos, a shop or a menu in a look you choose.",
+        details:
+            "A page is a document of blocks plus one field naming its look, so changing the look leaves every block where it is. The same renderer draws the builder's preview and the published page, and what it publishes is HTML with the stylesheet inlined and no JavaScript.",
+        highlights: [
+            "One renderer behind the builder preview and the live page",
+            "A look is one field on the page, not a change to its blocks",
+            "Published pages carry no JavaScript",
+            "Every look is held to 4.5:1 contrast in each colour mode",
+        ],
+        stack: [
+            "TypeScript",
+            "SolidJS",
+            "Astro",
+            "Hono",
+            "Postgres + Drizzle",
+            "Stripe",
+        ],
+        structure:
+            "apps (editor, marketing, server), packages (brand, contract, db, page, render)",
+        questions: [
+            "How does a page keep its blocks when the look changes?",
+            "What does a published page actually ship?",
+            "How are the looks checked for contrast?",
+        ],
+    },
+    {
+        id: "lingercam",
+        name: "LingerCam",
+        x: 470,
+        y: 108,
+        color: "#D8A7E8",
+        variant: "lens",
+        status: "in development",
+        liveUrl: "https://lingercam.app",
+        updated: "Nov 2026",
+        summary:
+            "A shared camera for events: guests join from a QR code, shoot a set number of photos, and see nothing until the reveal.",
+        details:
+            "One Expo codebase serves the host on iOS and Android and the guest in a browser, over a Hono API with Postgres, S3 storage and a job queue that runs the reveal and the notifications. What a guest may see, and how many shots are left, is decided in a package both ends import.",
+        highlights: [
+            "Nothing is visible to anyone until the reveal",
+            "One Expo codebase for iOS, Android and the guest web app",
+            "Shot limits and visibility rules live in one shared package",
+            "Background jobs run the reveal and the push notifications",
+        ],
+        stack: [
+            "TypeScript",
+            "Expo",
+            "React Native",
+            "Hono",
+            "Postgres + Drizzle",
+            "S3",
+        ],
+        structure: "apps (api, app, site), packages (core)",
+        questions: [
+            "How does a guest join without installing anything?",
+            "What happens at the reveal?",
+            "Where do the shot limits live?",
+        ],
+    },
 ];
 
 export function repoUrl(project) {

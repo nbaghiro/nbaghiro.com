@@ -11,6 +11,8 @@ export const PROJECTS = {
     clientbridge: { name: "Clientbridge", repo: "nbaghiro/clientbridge" },
     sourcewell: { name: "Sourcewell", repo: "nbaghiro/sourcewell" },
     branchpad: { name: "BranchPad", repo: "nbaghiro/branchpad" },
+    tondo: { name: "Tondo", repo: "nbaghiro/tondo" },
+    lingercam: { name: "LingerCam", repo: "nbaghiro/lingercam" },
 };
 
 export function getProject(id) {

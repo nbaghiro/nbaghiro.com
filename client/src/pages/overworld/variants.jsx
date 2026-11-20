@@ -118,9 +118,13 @@ function Currents({ places, home }) {
 /* ---------- v1 River: home upstream on the left, projects downstream ---------- */
 
 const RIVER_HOME = { x: 190, y: 390 };
-const RIVER_ORDER = ["galleo", "branchpad", "flowmaestro", "lumischool", "llamatrade", "clientbridge", "sourcewell"];
+// Downstream in the order the data lists them, spread over the same 840px however many there are
+const RIVER_SPAN = 840;
 const riverLayout = Object.fromEntries(
-    RIVER_ORDER.map((id, i) => [id, { x: 450 + i * 140, y: i % 2 ? 560 : 230 + (i === 6 ? 30 : 0) }])
+    PROJECTS.map((p, i, all) => [
+        p.id,
+        { x: 450 + i * (RIVER_SPAN / Math.max(1, all.length - 1)), y: i % 2 ? 560 : 230 + (i === 6 ? 30 : 0) },
+    ])
 );
 
 function River({ places, home }) {
@@ -136,7 +140,7 @@ function River({ places, home }) {
 
 const vortexLayout = Object.fromEntries(
     PROJECTS.map((p, i) => {
-        const r = 250 + 44 * i;
+        const r = 250 + (264 / Math.max(1, PROJECTS.length - 1)) * i;
         const t = ((-130 + i * 137.5) * Math.PI) / 180;
         return [p.id, { x: HOME.x + r * 1.25 * Math.cos(t), y: HOME.y + r * 0.74 * Math.sin(t) - 20 }];
     })
@@ -203,9 +207,9 @@ const FIELD_HOME = { x: 300, y: HOME.y };
 // A fan in two staggered columns, bowing out toward the middle
 const fieldLayout = Object.fromEntries(
     PROJECTS.map((p, i) => {
-        const fromMiddle = Math.abs(i - 3);
+        const fromMiddle = Math.abs(i - Math.floor((PROJECTS.length - 1) / 2));
         const x = i % 2 === 0 ? 1180 - fromMiddle * 70 : 880 - fromMiddle * 50;
-        return [p.id, { x, y: 90 + i * 100 }];
+        return [p.id, { x, y: 90 + i * (600 / Math.max(1, PROJECTS.length - 1)) }];
     })
 );
 

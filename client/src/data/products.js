@@ -21,6 +21,14 @@ export const PRODUCTS = [
         detail: "A shared layout engine supports the editor and exports.",
     },
     {
+        id: "tondo",
+        name: "Tondo",
+        url: "https://tondo.page",
+        state: "Live",
+        note: "One address for a page of links, photos, a shop or a menu, in a look you choose.",
+        detail: "Free to build, from $5 a month to put it online.",
+    },
+    {
         id: "lumischool",
         name: "Lumischool",
         url: "https://lumischool.ai",
@@ -44,9 +52,33 @@ export const PRODUCTS = [
         note: "Define trading strategies, backtest them on historical data and run them through a broker.",
         detail: "Built for my own trading research and use.",
     },
+    {
+        id: "lingercam",
+        name: "LingerCam",
+        url: "https://lingercam.app",
+        state: "Live",
+        note: "A shared camera for events: guests join from a QR code and nothing is visible until the reveal.",
+        detail: "The iPhone and Android app is not on the stores yet.",
+    },
+    {
+        id: "oncesaid",
+        name: "Oncesaid",
+        url: "https://oncesaid.app",
+        state: "Live",
+        note: "A voice journal you can ask: record a moment, then hear it back in your own voice.",
+        detail: "Recording, transcription and search run on the phone.",
+    },
+    {
+        id: "readaloud",
+        name: "ReadAloud",
+        url: "https://readaloud.live",
+        state: "Live",
+        note: "An iPhone app that reads arXiv papers aloud, with the text kept in sync as it speaks.",
+        detail: "ReadAloud is a working name, and readaloud.live is still a holding page.",
+    },
 ];
 
-/** Built earlier and still running, kept off the public posts but not hidden. */
+/** No link to open yet: a desktop app and a waitlist. */
 export const ALSO = [
     {
         id: "branchpad",
