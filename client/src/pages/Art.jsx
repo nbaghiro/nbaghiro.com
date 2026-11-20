@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { COMPOSITIONS, PLATES, compositionsFor } from "../art/plates";
 import PlateArt from "../art/PlateArt";
-import { POSTS } from "../data/writing";
-import { coverFor } from "../art/covers-table";
 import "./Art.css";
 
 /**
@@ -14,7 +12,7 @@ import "./Art.css";
 const W = 600;
 const H = 400;
 
-function Frame({ comp, label, used }) {
+function Frame({ comp, label }) {
     const id = `clip-${comp.id}`;
     return (
         <li>
@@ -36,19 +34,12 @@ function Frame({ comp, label, used }) {
                     .filter(Boolean)
                     .join(" · ") || "as drawn"}
             </p>
-            {used.length > 0 && <p className="used">{used.length} piece{used.length > 1 ? "s" : ""}</p>}
         </li>
     );
 }
 
 export default function Art() {
     const [plate, setPlate] = useState("all");
-    const usage = {};
-    for (const post of POSTS) {
-        const c = coverFor(post);
-        const key = c.composition ?? c.plate;
-        (usage[key] ||= []).push(post.slug);
-    }
     const shown = plate === "all" ? COMPOSITIONS : compositionsFor(plate);
     return (
         <main className="art">
@@ -63,7 +54,7 @@ export default function Art() {
                     behind it, and whether it is shown whole or as a detail.
                 </p>
                 <p className="note">
-                    Used on article covers and headers. <Link to="/blogs">The index that uses them</Link>.
+                    The site's own drawings, used in the page margins. <Link to="/images">The photographs</Link>.
                 </p>
                 <div className="switch">
                     <button type="button" aria-pressed={plate === "all"} onClick={() => setPlate("all")}>
@@ -101,7 +92,7 @@ export default function Art() {
                 </p>
                 <ul className="grid">
                     {shown.map((c) => (
-                        <Frame key={c.id} comp={c} label={`${c.plate}, ${c.id}`} used={usage[c.id] ?? []} />
+                        <Frame key={c.id} comp={c} label={`${c.plate}, ${c.id}`} />
                     ))}
                 </ul>
             </section>

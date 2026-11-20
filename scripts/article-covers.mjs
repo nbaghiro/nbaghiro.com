@@ -1,13 +1,16 @@
 // Every article's cover, rendered from the component the index draws with.
 //
 // Two files per piece: the wide one the article header shows, and the 3:2 card the index and
-// the phone header use. Both are photographs of client/src/pages/Shot.jsx at an exact size, so
-// the drawing in the file and the drawing in the page can never drift apart.
+// the phone header use. Both are screenshots of client/src/pages/Shot.jsx at an exact size, so
+// the cover in the file and the cover in the page cannot drift apart.
+//
+// The crop is the point: the photograph fills the frame at whichever shape is asked for, so the
+// wide header and the 3:2 card are two crops of one picture rather than one letterboxed.
 //
 // The dev server must be running (pnpm dev in client/).
 //
-//   node scripts/plate-covers.mjs            every piece
-//   node scripts/plate-covers.mjs <slug>…    just these
+//   node scripts/article-covers.mjs            every piece
+//   node scripts/article-covers.mjs <slug>…    just these
 import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { chromium } from "/Users/naib/Documents/code/galleo/node_modules/playwright/index.mjs";
 import sharp from "sharp";

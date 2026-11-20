@@ -1,9 +1,9 @@
 import { useSearchParams } from "react-router-dom";
 import { POSTS } from "../data/writing";
-import PlateCover from "../art/PlateCover";
+import PhotoCover from "../art/PhotoCover";
 
 /**
- * One cover, alone on the page at an exact pixel size, for scripts/plate-covers.mjs to
+ * One cover, alone on the page at an exact pixel size, for scripts/article-covers.mjs to
  * photograph. Build tooling rather than a page: nothing links to it, and it is the reason the
  * cover in the index and the cover in the file are the same drawing.
  */
@@ -16,7 +16,7 @@ export default function Shot() {
     if (!post) return <main data-shot="missing" />;
     return (
         <main data-shot="ready" style={{ width: `${w}px`, height: `${h}px`, overflow: "hidden" }}>
-            <PlateCover post={post} w={w} h={h} />
+            <PhotoCover post={post} w={w} h={h} />
         </main>
     );
 }

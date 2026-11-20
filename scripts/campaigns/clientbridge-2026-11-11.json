@@ -265,8 +265,8 @@
     },
     {
         "id": "android",
-        "title": "Clientbridge on Android",
-        "subtitle": "Your day, your schedule, and your client list on an Android phone.",
+        "title": "Your business, on mobile",
+        "subtitle": "Your daily overview, team schedule, and clients in the owner’s mobile app.",
         "surface": "Phone",
         "screens": [
             [
@@ -282,9 +282,9 @@
                 "Clients"
             ]
         ],
-        "text": "Clientbridge runs on Android as well as iPhone.\n\nThe Today screen shows what is booked, what is still to come, and anything that needs you, like an unpaid deposit or an overdue invoice. The schedule shows the day across your team, and the client list holds everyone you work with.\n\nThese screens show a demo business.\n\nYou’ll find the link to learn more in the first comment.",
+        "text": "Clientbridge’s mobile app gives business owners a view of their day, team schedule, and clients.\n\nThe Today screen shows upcoming bookings and items that need attention, such as unpaid deposits or overdue invoices. The schedule brings your team’s appointments together, and the client list keeps client details close at hand.\n\nThese screens show a demo business.\n\nYou’ll find the link to learn more in the first comment.",
         "file": "campaigns/2026-11-11/android.png",
         "firstComment": "Learn more at https://clientbridge.ca",
-        "repost": "Clientbridge on Android. The Today screen keeps what still needs doing in view, the schedule shows the day across the team, and the client list is there when you need it."
+        "repost": "A look at the owner’s mobile app in Clientbridge: upcoming bookings, payments that need attention, the team schedule, and client details, all from your phone."
     }
 ]
