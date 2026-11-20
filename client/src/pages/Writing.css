@@ -22,15 +22,54 @@
     }
 }
 .post-card {
+    position: relative;
+    display: block;
     width: 100%;
     aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--mist);
+}
+.post-card img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
-    background: var(--mist);
+}
+/* the line over a cover is text in the page, not drawn into the file: it has to align to
+   something and be sized for the screen, and the card is shown at a fifth of its own width */
+.card-line {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 8px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+    color: #f4f7f6;
+    text-shadow:
+        0 1px 2px rgba(8, 20, 18, 0.95),
+        0 0 8px rgba(8, 20, 18, 0.85);
+}
+.post-card::after {
+    content: "";
+    position: absolute;
+    inset: 34% 0 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(13, 26, 24, 0) 0%,
+        rgba(13, 26, 24, 0.5) 52%,
+        rgba(13, 26, 24, 0.92) 100%
+    );
+}
+.post-card .card-line {
+    z-index: 1;
 }
 .post-list h2 {
     font-size: clamp(24px, 3vw, 34px);
-    max-width: 22ch;
+    /* wide enough that a title of about average length holds one line, since the column beside
+       the card is nearly twice this; longer ones still break at a measure that reads */
+    max-width: 30ch;
 }
 .post-summary {
     margin-top: 8px;
@@ -70,6 +109,47 @@
 .cover-card {
     display: none;
 }
+/* aligned to the article's own column, so it sits under the heading rather than out in the
+   margin, and held near the foot of the band whatever the crop does above it */
+.cover-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* above .post-cover::after, which is later in paint order and would otherwise lay the
+       scrim over the line instead of under it */
+    z-index: 1;
+    bottom: clamp(14px, 2vw, 22px);
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+}
+.cover-line span {
+    width: var(--page);
+    font-family: var(--font-mono);
+    font-size: clamp(15px, 1.9vw, 26px);
+    letter-spacing: 0.01em;
+    color: #f4f7f6;
+    /* a tight halo as well as the soft one: the soft shadow alone disappears against a
+       bright trunk, which several of these covers have right where the line sits */
+    text-shadow:
+        0 1px 2px rgba(8, 20, 18, 0.95),
+        0 0 10px rgba(8, 20, 18, 0.9),
+        0 0 26px rgba(8, 20, 18, 0.55);
+}
+/* strong enough for the palest covers: a few are bright birch or fog, where a light scrim
+   left the line barely readable */
+.post-cover::after {
+    content: "";
+    position: absolute;
+    inset: 30% 0 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(13, 26, 24, 0) 0%,
+        rgba(13, 26, 24, 0.46) 52%,
+        rgba(13, 26, 24, 0.92) 100%
+    );
+    pointer-events: none;
+}
 @media (max-width: 719px) {
     .post-cover {
         height: auto;
@@ -88,7 +168,9 @@
     padding-top: clamp(40px, 6vw, 76px);
 }
 .post .page-head h1 {
-    max-width: 17ch;
+    /* 29ch resolves to about 1025px against an 1100px column, so a title of average length
+       holds one line with air left at the right, and the longest still break at two */
+    max-width: 29ch;
     font-size: clamp(36px, 5.4vw, 60px);
 }
 .post .post-meta {

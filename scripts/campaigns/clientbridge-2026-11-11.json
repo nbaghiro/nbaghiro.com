@@ -222,19 +222,19 @@
         "surface": "Phone",
         "screens": [
             [
-                "connect-landing-cedar-phone",
-                "Pet care"
+                "connect-landing-fieldnote-phone",
+                "Photography"
             ],
             [
-                "cmp-landing-lakeside-phone",
-                "Tutoring"
+                "connect-landing-harbourside-phone",
+                "Massage and wellness"
             ],
             [
-                "cmp-landing-northlight-phone",
-                "Security"
+                "connect-landing-maplemain-phone",
+                "Hair studio"
             ]
         ],
-        "text": "Clientbridge gives every business a public page in its own colours.\n\nClients can read what the business does, see who works there, and book an appointment from the same page. A business that sells products can link its shop from there too.\n\nThese examples show a pet care service, a tutoring studio, and a security installer from our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
+        "text": "Clientbridge gives every business a public page in its own colours.\n\nClients can read what the business does, see who works there, and book an appointment from the same page. A business that sells products can link its shop from there too.\n\nThese examples show a photography studio, a massage and wellness clinic, and a hair studio from our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
         "file": "campaigns/2026-11-11/business-pages.png",
         "firstComment": "Learn more at https://clientbridge.ca",
         "repost": "A few examples of business pages in Clientbridge. Each one carries the business’s own colours and description, with a link for clients to book."

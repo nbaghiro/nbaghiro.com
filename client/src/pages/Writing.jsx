@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { POSTS, readableDate } from "../data/writing";
+import { COVER_WORDS } from "../art/cover-words";
 import PageArt from "../components/PageArt";
 import "./Writing.css";
 
@@ -51,12 +52,14 @@ function Writing() {
                     <li key={post.slug}>
                         <Link to={`/blogs/${post.slug}`}>
                             {post.card && (
-                                <img
-                                    className="post-card"
-                                    src={post.card}
-                                    alt=""
-                                    loading="lazy"
-                                />
+                                <span className="post-card">
+                                    <img src={post.card} alt="" loading="lazy" />
+                                    {COVER_WORDS[post.slug] && (
+                                        <span className="card-line">
+                                            {COVER_WORDS[post.slug]}
+                                        </span>
+                                    )}
+                                </span>
                             )}
                             <div>
                                 <h2>{post.title}</h2>

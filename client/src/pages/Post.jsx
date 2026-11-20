@@ -3,6 +3,7 @@ import { postBySlug, readableDate } from "../data/writing";
 import { bodyFor } from "../data/post-body";
 import Prose from "../components/Prose";
 import PageArt from "../components/PageArt";
+import { COVER_WORDS } from "../art/cover-words";
 import "./Writing.css";
 
 /**
@@ -38,6 +39,11 @@ function Post() {
                     />
                     {post.card && (
                         <img className="cover-card" src={post.card} alt="" />
+                    )}
+                    {COVER_WORDS[post.slug] && (
+                        <figcaption className="cover-line">
+                            <span>{COVER_WORDS[post.slug]}</span>
+                        </figcaption>
                     )}
                 </figure>
             )}
