@@ -120,11 +120,13 @@ a {
 }
 
 /* A link in a page header gets the same mark the article prose uses, so the way out of a
-   not-found page reads as a link rather than as more of the sentence. */
-.page-head > p a {
+   not-found page reads as a link rather than as more of the sentence. Prose links only:
+   a link that carries a class is a component with its own colour, and this rule outranks it
+   (it once repainted the résumé's download button its own text colour on its own fill). */
+.page-head > p a:not([class]) {
     border-bottom: 1px solid var(--mist);
     color: var(--water);
 }
-.page-head > p a:hover {
+.page-head > p a:not([class]):hover {
     border-bottom-color: var(--water);
 }
