@@ -1,8 +1,8 @@
 title: Making Stripe subscriptions repeatable
 date: 2026-11-07
 about: Engineering
-cover: /img/posts/making-stripe-subscriptions-repeatable-v2-wide.webp
-card: /img/posts/making-stripe-subscriptions-repeatable-v2-card.webp
+cover: /img/posts/making-stripe-subscriptions-repeatable-wide.webp
+card: /img/posts/making-stripe-subscriptions-repeatable-card.webp
 summary: How I automate Stripe catalog setup and reuse subscription patterns, with examples of price changes, checkout retries, webhook transactions, and product access rules.
 
 Adding subscriptions to a new product brings back a familiar set of tasks. Define plans, create prices, connect customers to accounts, open checkout, handle renewals, and decide what access someone has when their payment status changes.

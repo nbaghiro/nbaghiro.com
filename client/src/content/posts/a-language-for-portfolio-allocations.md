@@ -96,9 +96,9 @@ combined[symbol] = sum(A_i[symbol] * s_i / 100)
 result[symbol]   = combined[symbol] * 100 / sum(combined)
 ```
 
-The normalisation step also explains some less apparent behaviour. If two branches allocate to the same symbol, their contributions are added. If a conditional child returns an empty allocation, it contributes nothing and the remaining contributions are normalised to 100%.
+Normalisation affects repeated symbols and empty branches. If two branches allocate to the same symbol, their contributions are added. If a conditional child returns an empty allocation, it contributes nothing and the remaining contributions are normalised to 100%.
 
-There are three different outcomes to keep separate:
+Empty allocations are handled at three levels:
 
 - An empty child contributes no weight; the remaining children are normalised to 100%.
 - An entirely empty allocation makes `StrategySession` return no intended orders, leaving existing holdings untouched by that evaluation.
@@ -151,6 +151,6 @@ The current importer handles comparisons and crossovers, but not Python's compou
 
 The tests need to cover several different contracts. Parser tests check accepted and rejected syntax. Validator tests check combinations the runtime supports. Round-trip tests check preservation of fields. Composition tests check the allocation produced by nested blocks.
 
-For this review, 438 Python cases passed across the DSL suite and the selected composition, session and condition-evaluation suites. The two selected TypeScript suites also passed 99 cases using the available test runner. That is evidence for those tested behaviours. It does not make the editor importer a complete implementation of the backend grammar, or establish that a valid strategy is economically useful.
+For this review, 438 Python cases passed across the DSL suite and the selected composition, session and condition-evaluation suites. The two selected TypeScript suites also passed 99 cases using the available test runner. These results cover the tested behaviours, including supported conversions. They do not establish full editor support or strategy performance.
 
-A group receives a share from its parent, a child subdivides it, and a filter preserves the selected symbols' relative weights. A session then turns the final allocation into intended orders. Those are the contracts the language tests need to preserve.
+The tests check allocation composition, filter weighting and the conversion from target allocations to intended orders.

@@ -2,8 +2,8 @@ title: One layout engine for decks, documents and websites
 date: 2026-09-04
 updated: 2026-11-03
 about: Galleo
-cover: /img/posts/layout-engine-wide.webp
-card: /img/posts/layout-engine-card.webp
+cover: /img/posts/one-layout-engine-wide.webp
+card: /img/posts/one-layout-engine-card.webp
 summary: Galleo shares layout geometry between its editor and exports. How the solver works, why text measurement matters, and where the output formats still differ.
 
 Galleo creates decks, documents and websites from shared content. Each format needs a different layout, but the editor and exported files need to agree about where that content belongs.

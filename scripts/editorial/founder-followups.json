@@ -1,0 +1,422 @@
+[
+  {
+    "slug": "cancelling-an-ai-task",
+    "title": "What happens when an AI task is cancelled",
+    "product": "FlowMaestro",
+    "coverTitle": [
+      "When an AI task",
+      "is cancelled"
+    ],
+    "figures": [
+      {
+        "id": "cancel-states",
+        "title": "From request to confirmed outcome",
+        "sub": "Proposed cancellation contract",
+        "flow": true,
+        "cards": [
+          [
+            "Stop requested",
+            "Record the request",
+            "Show stopping"
+          ],
+          [
+            "Worker acknowledges",
+            "Stop scheduling new steps",
+            "Handle in-flight work"
+          ],
+          [
+            "Outcome recorded",
+            "Preserve completed effects",
+            "Settle known usage"
+          ]
+        ],
+        "note": "Acknowledging a request does not confirm every effect has stopped."
+      },
+      {
+        "id": "cancel-effects",
+        "title": "One run, three different outcomes",
+        "sub": "Inspect each step at the cancellation boundary",
+        "flow": false,
+        "cards": [
+          [
+            "Research completed",
+            "Keep the useful notes",
+            "Label partial output"
+          ],
+          [
+            "Document submitted",
+            "Result may be unknown",
+            "Reconcile by request ID"
+          ],
+          [
+            "Message not started",
+            "Do not schedule the send",
+            "Record it as skipped"
+          ]
+        ],
+        "note": "A completed external action needs its own corrective policy."
+      }
+    ],
+    "post": "In FlowMaestro, a cancellation request has to reach the workflow and the work it is running. Stopping the updates in the browser is only one part of that process.\n\nA tool call may already have completed, or an external service may have accepted a request before the response was lost. The run needs to preserve what happened and reconcile anything still uncertain.\n\nThe design we’d use records the stop request, waits for the worker’s outcome and prevents new steps from starting. Completed work stays visible, and usage settlement follows the same guarded path as normal completion.\n\nThat gives the interface a useful distinction between “Stopping” and a confirmed result. It also avoids treating cancellation as proof that nothing happened or no usage was incurred.\n\nThe article covers the current cancellation mechanisms and a proposed approach to external effects, partial results and recovery:"
+  },
+  {
+    "slug": "undoing-a-change-across-services",
+    "title": "Undoing a change across services",
+    "product": "Clientbridge",
+    "coverTitle": [
+      "Undoing a change",
+      "across services"
+    ],
+    "figures": [
+      {
+        "id": "undo-new-command",
+        "title": "Returning to Tuesday is a new change",
+        "sub": "Proposed booking-correction flow",
+        "flow": true,
+        "cards": [
+          [
+            "Thursday confirmed",
+            "Keep the original history",
+            "Read the current revision"
+          ],
+          [
+            "Tuesday requested",
+            "Check current availability",
+            "Check the expected revision"
+          ],
+          [
+            "Correction accepted",
+            "Write a new revision",
+            "Queue external updates"
+          ]
+        ],
+        "note": "The original slot may have been taken since the first move."
+      },
+      {
+        "id": "undo-effect-policy",
+        "title": "Correct each effect on its own terms",
+        "sub": "A database change has several external consequences",
+        "flow": false,
+        "cards": [
+          [
+            "Calendar event",
+            "Update the existing event",
+            "Reconcile stale deliveries"
+          ],
+          [
+            "Unsent reminder",
+            "Cancel or replace the job",
+            "Check for an in-flight send"
+          ],
+          [
+            "Delivered message",
+            "Send a correction if needed",
+            "Keep both actions recorded"
+          ]
+        ],
+        "note": "One status should not conceal different outcomes across services."
+      }
+    ],
+    "post": "Moving a booking can update a calendar, replace a reminder and send a confirmation. Putting it back later needs to account for each of those effects.\n\nFor a product like Clientbridge, we’d treat the correction as a new command. The server checks the current booking revision and whether the original slot is still available, then records the accepted change and its follow-up work.\n\nEach external effect needs its own handling. A calendar event can be updated. An unsent reminder can be replaced. A confirmation already delivered may need a correction message.\n\nRetries and ordering matter too. An older calendar update arriving late should not leave the calendar showing a time that the business has already changed again.\n\nThe article develops this proposed workflow, including operation identities, concurrent edits and clear status when only part of the correction has finished:"
+  },
+  {
+    "slug": "deploying-with-background-jobs-running",
+    "title": "Deploying while background jobs are running",
+    "product": "FlowMaestro",
+    "coverTitle": [
+      "Deploying while",
+      "jobs are running"
+    ],
+    "figures": [
+      {
+        "id": "deploy-compatibility",
+        "title": "Readers before new writers",
+        "sub": "Proposed rollout for a versioned job payload",
+        "flow": true,
+        "cards": [
+          [
+            "Release 1",
+            "Workers read v1 and v2",
+            "Producers still write v1"
+          ],
+          [
+            "Release 2",
+            "Enable v2 producers",
+            "Route to compatible workers"
+          ],
+          [
+            "Later release",
+            "Account for old retries",
+            "Retire v1 deliberately"
+          ]
+        ],
+        "note": "An empty queue does not account for every future replay."
+      },
+      {
+        "id": "deploy-boundaries",
+        "title": "Three compatibility checks",
+        "sub": "Each boundary needs its own evidence",
+        "flow": false,
+        "cards": [
+          [
+            "Queued payload",
+            "Can the worker decode it?",
+            "Are its defaults correct?"
+          ],
+          [
+            "Shared database",
+            "Can both builds use it?",
+            "Is the migration compatible?"
+          ],
+          [
+            "Workflow history",
+            "Can execution replay?",
+            "Is version routing correct?"
+          ]
+        ],
+        "note": "Pinning worker code does not preserve a removed database field."
+      }
+    ],
+    "post": "A background job can be created before a deployment and start after it. The producer and worker may be running different versions of the application.\n\nWe’d handle that with an explicit payload contract and a staged rollout. First deploy workers that understand both formats. Then enable the new producer, with routing that keeps new jobs away from incompatible workers.\n\nOld-format support stays until pending work, delayed retries and supported replay paths no longer need it.\n\nThe database has a separate compatibility requirement. Old and new processes may share it during deployment. Durable workflows add another check: whether existing execution history remains compatible with the code that resumes it.\n\nThe article walks through a proposed export-job rollout, including migrations, stable operation identities and which build remains safe to roll back to:"
+  },
+  {
+    "slug": "checking-a-model-change",
+    "title": "What we check before changing an AI model",
+    "product": "Galleo",
+    "coverTitle": [
+      "Before changing",
+      "an AI model"
+    ],
+    "figures": [
+      {
+        "id": "model-comparison",
+        "title": "Keep the comparison identifiable",
+        "sub": "Proposed process around Galleo’s evaluation tooling",
+        "flow": false,
+        "cards": [
+          [
+            "Fixed task set",
+            "Same inputs and fixtures",
+            "Record prompt and tools"
+          ],
+          [
+            "Baseline + candidate",
+            "Repeat important cases",
+            "Keep failed runs too"
+          ],
+          [
+            "Inspect the results",
+            "Check the artifact and trace",
+            "Review rendered output"
+          ]
+        ],
+        "note": "A prompt adaptation is a separate experiment from changing the model."
+      },
+      {
+        "id": "model-release-gates",
+        "title": "Keep the outcomes separate",
+        "sub": "Review critical failures before aggregate scores",
+        "flow": false,
+        "cards": [
+          [
+            "Structure + scope",
+            "Valid content and tools",
+            "Unrelated content preserved"
+          ],
+          [
+            "Task + quality",
+            "Requested result achieved",
+            "Supported, useful content"
+          ],
+          [
+            "Latency + cost",
+            "Whole task including retries",
+            "Timeouts stay in the report"
+          ]
+        ],
+        "note": "A better average does not resolve a critical editing regression."
+      }
+    ],
+    "post": "A model can produce a better first draft and still be less reliable at editing an existing document. We want to see both before changing what a product uses by default.\n\nIn Galleo, we have evaluation tooling for agent behavior and content generation, with deterministic checks alongside model-based judging.\n\nThe comparison we’d build around it uses fixed tasks, repeated runs and separate results for structure, task completion, unintended changes, visual quality, latency and cost.\n\nFor an editing task, we’d inspect the document and tool operations as well as the final response. Saying “Done” does not establish that the requested change happened or that unrelated content stayed intact.\n\nThe article covers the existing tooling and a proposed evaluation and rollout process, including how to preserve failed runs and keep a tested fallback:"
+  },
+  {
+    "slug": "maintaining-a-design-refresh",
+    "title": "Making a design refresh easier to maintain",
+    "product": "LlamaTrade",
+    "coverTitle": [
+      "Maintaining",
+      "a design refresh"
+    ],
+    "figures": [
+      {
+        "id": "design-token-roles",
+        "title": "Appearance and meaning have distinct roles",
+        "sub": "Building from LlamaTrade’s appearance definitions",
+        "flow": false,
+        "cards": [
+          [
+            "Surfaces",
+            "Canvas, panel and borders",
+            "Light and dark choices"
+          ],
+          [
+            "Accent",
+            "Text, fill and text-on-fill",
+            "Selection and controls"
+          ],
+          [
+            "Financial meaning",
+            "Gain, loss and warning",
+            "Keep the roles consistent"
+          ]
+        ],
+        "note": "Labels and signs carry information alongside color."
+      },
+      {
+        "id": "design-review-matrix",
+        "title": "Data checks and rendered review",
+        "sub": "Proposed coverage for future appearance changes",
+        "flow": false,
+        "cards": [
+          [
+            "Resolve every option",
+            "Required tokens exist",
+            "Check actual color pairs"
+          ],
+          [
+            "Render difficult states",
+            "Focus, loss and warning",
+            "Long values and errors"
+          ],
+          [
+            "Compare platforms",
+            "Shared semantic roles",
+            "Deliberate layout differences"
+          ]
+        ],
+        "note": "A launch screenshot covers only one state of a component."
+      }
+    ],
+    "post": "We’re pleased with how LlamaTrade’s design cleanup came together. Revisiting the earlier look helped us make the screens more consistent and clarify the choices behind them.\n\nOne useful distinction is between appearance and meaning. People can choose an accent or surface while gains, losses and warnings keep their own roles. Button fills and the text on them also need separate choices.\n\nOn the web, saved preferences are applied before the application starts. The native app has its own palette resolver. Keeping those paths aligned takes more than giving their tokens the same names.\n\nThe article looks at the implementation and the checks we’d use as the design grows: theme combinations, focus states, long values, empty screens and cross-platform differences.\n\nThose are the details that help the next screen fit the design as well as the current ones:"
+  },
+  {
+    "slug": "what-account-deletion-needs-to-cover",
+    "title": "What account deletion needs to cover",
+    "product": "Galleo",
+    "coverTitle": [
+      "What account deletion",
+      "needs to cover"
+    ],
+    "figures": [
+      {
+        "id": "deletion-ownership",
+        "title": "Start with ownership",
+        "sub": "Galleo’s current lifecycle policy distinguishes these groups",
+        "flow": false,
+        "cards": [
+          [
+            "Personal records",
+            "Credentials and memberships",
+            "The person’s private chats"
+          ],
+          [
+            "Solo workspace",
+            "Can go with its owner",
+            "Check active work first"
+          ],
+          [
+            "Shared team work",
+            "Preserve the team’s content",
+            "Transfer ownership if needed"
+          ]
+        ],
+        "note": "Clearing an author ID does not remove names from document text."
+      },
+      {
+        "id": "deletion-workflow",
+        "title": "Coordinate the remaining copies",
+        "sub": "Proposed lifecycle beyond the initial inventory",
+        "flow": true,
+        "cards": [
+          [
+            "Establish the cutoff",
+            "Block new work",
+            "Revalidate the deletion plan"
+          ],
+          [
+            "Remove and reconcile",
+            "Database + derived copies",
+            "Track external cleanup"
+          ],
+          [
+            "Verify recovery",
+            "Reject delayed job output",
+            "Reapply deletions on restore"
+          ]
+        ],
+        "note": "Report completed, pending and intentionally retained work separately."
+      }
+    ],
+    "post": "Deleting an account in a collaborative product needs an ownership policy. A person’s private conversations and the documents their team still uses do not necessarily follow the same rules.\n\nIn Galleo, the deletion tooling builds a plan first. It distinguishes solo workspaces from shared work and checks for blockers such as active credit holds. The current process is operator-assisted.\n\nThe wider design also needs to cover derived files, external systems and delayed jobs that could recreate data after deletion begins. Backups need a restoration policy so an older snapshot does not quietly bring deleted content back.\n\nThere is an important limit to clearing authorship references: removing an author ID does not remove personal information written inside a document.\n\nThe article explains the current implementation and the additional coordination we’d build around it, with a clear account of what was removed, retained or still needs follow-up:"
+  },
+  {
+    "slug": "when-shared-code-becomes-a-tool",
+    "title": "When shared code should become a separate tool",
+    "product": "General engineering",
+    "coverTitle": [
+      "When shared code",
+      "becomes a tool"
+    ],
+    "figures": [
+      {
+        "id": "shared-tool-boundary",
+        "title": "Share behavior; keep policy explicit",
+        "sub": "Proposed boundary for repeated setup work",
+        "flow": true,
+        "cards": [
+          [
+            "Product input",
+            "Catalog and ownership scope",
+            "Approved business rules"
+          ],
+          [
+            "Shared core",
+            "Compare observed state",
+            "Produce a reviewable plan"
+          ],
+          [
+            "Provider adapter",
+            "Apply supported operations",
+            "Return explicit outcomes"
+          ]
+        ],
+        "note": "A product name in every branch can signal that the boundary is too broad."
+      },
+      {
+        "id": "shared-tool-release",
+        "title": "Test a release with its consumers",
+        "sub": "Compatibility includes behavior as well as function signatures",
+        "flow": true,
+        "cards": [
+          [
+            "Core tests",
+            "Planning and stable identity",
+            "Incomplete-state handling"
+          ],
+          [
+            "Adapter checks",
+            "Pagination and error mapping",
+            "Ambiguous write outcomes"
+          ],
+          [
+            "Consumer fixtures",
+            "Fresh, unchanged and partial",
+            "Pinned upgrades and fallback"
+          ]
+        ],
+        "note": "A version number needs a defined public contract behind it."
+      }
+    ],
+    "post": "Repeated code across products can be a good starting point for a shared tool. The useful question is which behavior is actually the same.\n\nGalleo and Clientbridge both have setup scripts, but their product policies differ. We’d consider sharing stable mechanics such as identifying managed objects, comparing desired and observed state, and producing a reviewable plan.\n\nPlan limits, migration decisions and other business rules would remain explicit inputs or stay in the product.\n\nA separate tool also creates maintenance work: versioned behavior, adapter updates and tests against each consumer. Passing its own unit tests is not enough to show that an upgrade is safe for both products.\n\nThe article develops this proposed boundary, including dry runs, partial failures, stable identities and deciding when extraction is worth the extra release process:"
+  }
+]

@@ -5,9 +5,18 @@
         "subtitle": "Check today’s appointments and see who is coming next.",
         "surface": "Phone + tablet",
         "screens": [
-            ["tablet:tablet-schedule", "Team schedule"],
-            ["ios/schedule", "On your phone"],
-            ["ios/today", "Today"]
+            [
+                "tablet:tablet-schedule",
+                "Team schedule"
+            ],
+            [
+                "ios/schedule",
+                "On your phone"
+            ],
+            [
+                "ios/today",
+                "Today"
+            ]
         ],
         "text": "Clientbridge keeps your schedule available on your phone and tablet.\n\nUse the tablet view to see the team’s appointments across the day. On your phone, check your schedule and see who is coming next.\n\nThese screens show examples from our demo accounts.\n\nYou’ll find the link to learn more in the first comment.",
         "file": "campaigns/2026-11-11/schedule.png",
@@ -20,9 +29,18 @@
         "subtitle": "Find a client, open their record, and check the details before their visit.",
         "surface": "Phone + tablet",
         "screens": [
-            ["tablet:tablet-clients", "Client list and record"],
-            ["ios/clients", "Find a client"],
-            ["ios/client-record", "Client details"]
+            [
+                "tablet:tablet-clients",
+                "Client list and record"
+            ],
+            [
+                "ios/clients",
+                "Find a client"
+            ],
+            [
+                "ios/client-record",
+                "Client details"
+            ]
         ],
         "text": "Clientbridge brings your client list and client records together.\n\nOn a tablet, you can keep the list open beside the selected client’s details. On your phone, find a client and open their record while you’re away from your desk.\n\nThe screens show demo client records.\n\nYou’ll find the link to learn more in the first comment.",
         "file": "campaigns/2026-11-11/clients.png",
@@ -35,9 +53,18 @@
         "subtitle": "Review invoices in the app and let clients pay through a link.",
         "surface": "Phone + desktop",
         "screens": [
-            ["web-invoices", "Business invoices"],
-            ["ios/invoices", "On your phone"],
-            ["connect-pay-lakeside-phone", "Client payment page"]
+            [
+                "web-invoices",
+                "Business invoices"
+            ],
+            [
+                "ios/invoices",
+                "On your phone"
+            ],
+            [
+                "connect-pay-lakeside-phone",
+                "Client payment page"
+            ]
         ],
         "text": "With Clientbridge, you can review invoices on your computer or phone and send clients a link to pay.\n\nThe client’s page shows what the invoice is for and the amount due, with card payment on the same page.\n\nThese examples show the business view and a client payment page from our demo accounts.\n\nYou’ll find the link to learn more in the first comment.",
         "file": "campaigns/2026-11-11/invoices.png",
@@ -50,9 +77,18 @@
         "subtitle": "Clients can fill out a form, sign an agreement, and review their booking from a link.",
         "surface": "Phone",
         "screens": [
-            ["connect-form-northlight-phone", "Form"],
-            ["connect-contract-fieldnote-phone", "Agreement"],
-            ["connect-manage-lakeside-phone", "Booking details"]
+            [
+                "connect-form-northlight-phone",
+                "Form"
+            ],
+            [
+                "connect-contract-fieldnote-phone",
+                "Agreement"
+            ],
+            [
+                "connect-manage-lakeside-phone",
+                "Booking details"
+            ]
         ],
         "text": "Clientbridge gives clients a way to handle the details before their visit.\n\nThey can fill out a form, sign an agreement, or review their booking through a link. They can also move or cancel a booking within the business’s policy.\n\nThese screens show separate examples from our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
         "file": "campaigns/2026-11-11/visit.png",
@@ -65,9 +101,18 @@
         "subtitle": "Clients can review their invoice and pay by card on their phone.",
         "surface": "Phone",
         "screens": [
-            ["connect-pay-birchbark-phone", "Birchbark"],
-            ["connect-pay-fieldnote-phone", "Fieldnote"],
-            ["connect-pay-lakeside-phone", "Lakeside"]
+            [
+                "connect-pay-birchbark-phone",
+                "Birchbark"
+            ],
+            [
+                "connect-pay-fieldnote-phone",
+                "Fieldnote"
+            ],
+            [
+                "connect-pay-lakeside-phone",
+                "Lakeside"
+            ]
         ],
         "text": "Clientbridge lets clients pay an invoice from a link on their phone.\n\nThe page carries your business’s branding and shows the invoice details and amount due. Clients can pay by card without installing an app or creating an account.\n\nHere are examples from three of our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
         "file": "campaigns/2026-11-11/payments.png",
@@ -80,9 +125,18 @@
         "subtitle": "Clients can browse products and place an order through your business’s page.",
         "surface": "Phone + desktop",
         "screens": [
-            ["connect-shop-desk", "Desktop shop"],
-            ["connect-shop-phone", "Mobile shop"],
-            ["connect-order-phone", "Order page"]
+            [
+                "connect-shop-desk",
+                "Desktop shop"
+            ],
+            [
+                "connect-shop-phone",
+                "Mobile shop"
+            ],
+            [
+                "connect-order-phone",
+                "Order page"
+            ]
         ],
         "text": "Clientbridge gives your business an online shop that clients can use on their computer or phone.\n\nThey can browse your products, check prices, and place an order for pickup. The shop sits alongside your booking page.\n\nThese screens show examples from a demo business.\n\nYou’ll find the link to learn more in the first comment.",
         "file": "campaigns/2026-11-11/shop.png",
@@ -94,9 +148,18 @@
         "title": "Booking with your business",
         "subtitle": "Your services, prices, and appointment lengths, ready for clients to choose.",
         "screens": [
-            ["connect-book-fieldnote-phone", "Photography"],
-            ["connect-book-harbourside-phone", "Massage and wellness"],
-            ["connect-book-maplemain-phone", "Hair studio"]
+            [
+                "connect-book-fieldnote-phone",
+                "Photography"
+            ],
+            [
+                "connect-book-harbourside-phone",
+                "Massage and wellness"
+            ],
+            [
+                "connect-book-maplemain-phone",
+                "Hair studio"
+            ]
         ],
         "text": "Clientbridge gives clients a booking page with your services, prices, and appointment lengths.\n\nThey can see which services require a deposit and read your cancellation notice before choosing a visit.\n\nThese examples show a photographer, a massage clinic, and a hair studio from our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
         "repost": "A few examples of booking pages in Clientbridge. Each business has its own services, prices, deposits, and cancellation notice.",
@@ -109,9 +172,18 @@
         "title": "A shop for the products you sell",
         "subtitle": "Clients can browse your products and order for pickup from their phone.",
         "screens": [
-            ["connect-shop-brightwater-phone", "Home supplies"],
-            ["connect-shop-inkwell-phone", "Tattoo aftercare"],
-            ["connect-shop-maplemain-phone", "Hair care"]
+            [
+                "connect-shop-brightwater-phone",
+                "Home supplies"
+            ],
+            [
+                "connect-shop-inkwell-phone",
+                "Tattoo aftercare"
+            ],
+            [
+                "connect-shop-maplemain-phone",
+                "Hair care"
+            ]
         ],
         "text": "Clientbridge lets clients shop for products through your business’s page.\n\nYour products appear with their photos, prices, and categories. Clients can add items to an order and arrange pickup.\n\nThese examples show home supplies, tattoo aftercare, and hair care from three demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
         "repost": "Here’s how different product ranges look in Clientbridge’s mobile shop. Clients can browse what a business sells and place an order for pickup.",
@@ -124,14 +196,95 @@
         "title": "Estimates, payments, and receipts",
         "subtitle": "Clear details clients can open from a link on their phone.",
         "screens": [
-            ["connect-estimate-northlight-phone", "Estimate"],
-            ["connect-pay-northlight-phone", "Payment"],
-            ["connect-receipt-northlight-phone", "Receipt"]
+            [
+                "connect-estimate-northlight-phone",
+                "Estimate"
+            ],
+            [
+                "connect-pay-northlight-phone",
+                "Payment"
+            ],
+            [
+                "connect-receipt-northlight-phone",
+                "Receipt"
+            ]
         ],
         "text": "Clientbridge gives clients pages for reviewing an estimate, paying an invoice, and viewing a receipt.\n\nThey can check the work and costs on the estimate, pay by card on the invoice page, and see what was paid on the receipt.\n\nThese are separate examples from Northlight Security, one of our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
         "repost": "A closer look at Clientbridge’s estimate, payment, and receipt pages. Each gives the client the details they need through a link on their phone.",
         "surface": "Phone",
         "file": "campaigns/2026-11-11/estimate-payment-receipt.png",
         "firstComment": "Learn more at https://clientbridge.ca"
+    },
+    {
+        "id": "business-pages",
+        "title": "A public page for your business",
+        "subtitle": "Who you are, what you offer, and a way to book, on one page.",
+        "surface": "Phone",
+        "screens": [
+            [
+                "connect-landing-cedar-phone",
+                "Pet care"
+            ],
+            [
+                "cmp-landing-lakeside-phone",
+                "Tutoring"
+            ],
+            [
+                "cmp-landing-northlight-phone",
+                "Security"
+            ]
+        ],
+        "text": "Clientbridge gives every business a public page in its own colours.\n\nClients can read what the business does, see who works there, and book an appointment from the same page. A business that sells products can link its shop from there too.\n\nThese examples show a pet care service, a tutoring studio, and a security installer from our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
+        "file": "campaigns/2026-11-11/business-pages.png",
+        "firstComment": "Learn more at https://clientbridge.ca",
+        "repost": "A few examples of business pages in Clientbridge. Each one carries the business’s own colours and description, with a link for clients to book."
+    },
+    {
+        "id": "catalogue",
+        "title": "Your services and products, set up once",
+        "subtitle": "What you add to your catalogue appears on your booking page and in your shop.",
+        "surface": "Phone + desktop",
+        "screens": [
+            [
+                "web-setup-services",
+                "Your catalogue"
+            ],
+            [
+                "connect-book-phone",
+                "Booking page"
+            ],
+            [
+                "connect-shop-birchbark-phone",
+                "Shop"
+            ]
+        ],
+        "text": "Clientbridge keeps your services and products in one catalogue.\n\nEach item carries its price, how long it takes, and whether clients can book it online. Services appear on your booking page with any deposit they ask for, and products appear in your shop for clients to order.\n\nThese screens all show Birchbark Pet Studio, one of our demo businesses.\n\nYou’ll find the link to learn more in the first comment.",
+        "file": "campaigns/2026-11-11/catalogue.png",
+        "firstComment": "Learn more at https://clientbridge.ca",
+        "repost": "Services and products in Clientbridge live in one catalogue. What you add there is what clients see on your booking page and in your shop."
+    },
+    {
+        "id": "android",
+        "title": "Clientbridge on Android",
+        "subtitle": "Your day, your schedule, and your client list on an Android phone.",
+        "surface": "Phone",
+        "screens": [
+            [
+                "android/today",
+                "Today"
+            ],
+            [
+                "android/schedule",
+                "Schedule"
+            ],
+            [
+                "android/clients",
+                "Clients"
+            ]
+        ],
+        "text": "Clientbridge runs on Android as well as iPhone.\n\nThe Today screen shows what is booked, what is still to come, and anything that needs you, like an unpaid deposit or an overdue invoice. The schedule shows the day across your team, and the client list holds everyone you work with.\n\nThese screens show a demo business.\n\nYou’ll find the link to learn more in the first comment.",
+        "file": "campaigns/2026-11-11/android.png",
+        "firstComment": "Learn more at https://clientbridge.ca",
+        "repost": "Clientbridge on Android. The Today screen keeps what still needs doing in view, the schedule shows the day across the team, and the client list is there when you need it."
     }
 ]

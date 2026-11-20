@@ -9,7 +9,7 @@ Two backtests can use different allocation rules while needing the same historic
 
 In [LlamaTrade](https://llamatrade.ai), a dataset preparation step sits between compiling a strategy and running it. It gathers the required bars, fills certain gaps, and can save the result for reuse. The simulator receives the prepared data rather than fetching prices during each step.
 
-Making that useful involves several separate decisions: what makes two requests equivalent, where the result is stored, how concurrent requests wait for it, and what happens when preparation fails. Those decisions matter when moving from one process to several workers.
+Reuse depends on request identity, shared storage, coordination and failure handling.
 
 ## Identify the data the simulation actually needs
 
@@ -50,7 +50,7 @@ The service also labels daily data as split-adjusted and other configured interv
 
 For data ending within a configurable recent window, ten days by default, `data_version` is the current UTC date. A request made tomorrow therefore gets a different key. Older ranges keep an empty version and a stable key.
 
-This is a practical freshness policy, not a full record of historical revisions. An older correction can outlive the window, and two downloads within the same date tag can still see different upstream values. For reproducible research, I would retain an immutable snapshot identifier or content digest with each run, plus a preparation-format version. That would make the exact input to a result retrievable even after the cache's freshness policy changes.
+This is a practical freshness policy, not a full record of historical revisions. An older correction can outlive the window, and two downloads within the same date tag can still see different upstream values. For reproducible research, we would retain an immutable snapshot identifier or content digest with each run, plus a preparation-format version. That would make the exact input to a result retrievable even after the cache's freshness policy changes.
 
 ## Check the snapshot before coordinating work
 
@@ -94,11 +94,11 @@ Writing directly to the final filename would expose an incomplete file to worker
 
 Keeping the temporary file in the same directory avoids that cross-filesystem problem. If writing fails, the temporary file is removed and the final snapshot is not published.
 
-This addresses partial visibility. The code does not explicitly synchronize the file and directory to durable storage, so I would not describe it as a power-loss durability guarantee. A network filesystem would also need its own operational validation. The store interface alone cannot establish the guarantees of every storage system behind it.
+This addresses partial visibility. The code does not explicitly synchronize the file and directory to durable storage, so we would not describe it as a power-loss durability guarantee. A network filesystem would also need its own operational validation. The store interface alone cannot establish the guarantees of every storage system behind it.
 
 ## Redis and storage must describe the same group of workers
 
-The most important deployment detail is where the snapshot lives.
+Workers can reuse a snapshot only if they can read its storage location.
 
 `BACKTEST_DATASET_DIR` selects the local Parquet store. Every worker expected to share a result must see that same storage location. Two containers can have identical directory names while using separate disks. Sharing Redis does not make the file written in one container visible in the other.
 
@@ -106,7 +106,7 @@ Without that environment variable, the factory creates a fresh in-memory store. 
 
 The repository provides the local and in-memory implementations. The store protocol leaves room for an object-store implementation, but that is additional work. The checked-in deployment configuration does not establish a shared dataset volume, so cross-worker reuse should be treated as something to configure and verify rather than an automatic property of enabling Redis.
 
-For several machines, I would choose storage all of them can read, define how a complete object becomes visible, and test those semantics together with the coordinator. A worker should never spend five minutes waiting for a file on another worker's private disk.
+For several machines, we would choose storage all of them can read, define how a complete object becomes visible, and test those semantics together with the coordinator. Otherwise, a worker can wait for a file it cannot access.
 
 ## Recover from bad snapshots without hiding bad inputs
 
@@ -124,8 +124,8 @@ The cleanup job removes snapshots according to file modification time. Reads do 
 
 The dataset tests cover stable keys, changed adjustment and version fields, Parquet round trips, missing values, corrupt snapshots, failed writes, gap repair, and a waiting worker reading a published result. Another test confirms that a waiter eventually fetches for itself when no result appears.
 
-The coordination tests use a fake Redis implementation without real expiry. They exercise the control flow but cannot establish behavior when the lease expires during a slow fetch. I would add that case, delayed-producer release, Redis interruption, and workers with genuinely shared storage before relying on the coordination at larger scale.
+The coordination tests use a fake Redis implementation without real expiry. They exercise the control flow but cannot establish behavior when the lease expires during a slow fetch. we would add that case, delayed-producer release, Redis interruption, and workers with genuinely shared storage before relying on the coordination at larger scale.
 
 Useful operational measures would include cache hits, preparation time, time spent waiting, fallback preparations, and corrupt-file rebuilds. A high wait time with few shared reads could indicate a storage configuration problem. Frequent fallbacks could mean preparation regularly exceeds the lease.
 
-The implementation already separates dataset identity, preparation, storage, and simulation. That makes the next changes reasonably focused. Better coordination can reduce repeated work; stronger snapshot versioning can improve reproducibility; shared storage can extend reuse across workers. Each improvement solves a different requirement and needs a test that matches it.
+The next changes are ownership-safe leases, immutable snapshot references and verified shared storage. Each needs tests for the failure cases it addresses.

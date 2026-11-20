@@ -1,6 +1,142 @@
 {
   "posts": [
     {
+      "id": "cancelling-an-ai-task",
+      "title": "What happens when an AI task is cancelled",
+      "products": [
+        "FlowMaestro"
+      ],
+      "text": "In FlowMaestro, a cancellation request has to reach the workflow and the work it is running. Stopping the updates in the browser is only one part of that process.\n\nA tool call may already have completed, or an external service may have accepted a request before the response was lost. The run needs to preserve what happened and reconcile anything still uncertain.\n\nThe design we’d use records the stop request, waits for the worker’s outcome and prevents new steps from starting. Completed work stays visible, and usage settlement follows the same guarded path as normal completion.\n\nThat gives the interface a useful distinction between “Stopping” and a confirmed result. It also avoids treating cancellation as proof that nothing happened or no usage was incurred.\n\nThe article covers the current cancellation mechanisms and a proposed approach to external effects, partial results and recovery:\nhttps://nbaghiro.com/blogs/cancelling-an-ai-task",
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/cancelling-an-ai-task",
+      "url": "https://nbaghiro.com/blogs/cancelling-an-ai-task",
+      "cover": "/img/posts/cancelling-an-ai-task-wide.webp",
+      "summary": "Following a cancellation request through the interface, worker, external tools and usage records, with a proposed state model for work that may already have happened.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Needs product visual",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "undoing-a-change-across-services",
+      "title": "Undoing a change across services",
+      "products": [
+        "Clientbridge"
+      ],
+      "text": "Moving a booking can update a calendar, replace a reminder and send a confirmation. Putting it back later needs to account for each of those effects.\n\nFor a product like Clientbridge, we’d treat the correction as a new command. The server checks the current booking revision and whether the original slot is still available, then records the accepted change and its follow-up work.\n\nEach external effect needs its own handling. A calendar event can be updated. An unsent reminder can be replaced. A confirmation already delivered may need a correction message.\n\nRetries and ordering matter too. An older calendar update arriving late should not leave the calendar showing a time that the business has already changed again.\n\nThe article develops this proposed workflow, including operation identities, concurrent edits and clear status when only part of the correction has finished:\nhttps://nbaghiro.com/blogs/undoing-a-change-across-services",
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/undoing-a-change-across-services",
+      "url": "https://nbaghiro.com/blogs/undoing-a-change-across-services",
+      "cover": "/img/posts/undoing-a-change-across-services-wide.webp",
+      "summary": "A proposed booking-change workflow that distinguishes database rollback from corrective actions in calendars, reminders and payments, including retries and concurrent edits.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Needs product visual",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "deploying-with-background-jobs-running",
+      "title": "Deploying while background jobs are running",
+      "products": [
+        "FlowMaestro"
+      ],
+      "text": "A background job can be created before a deployment and start after it. The producer and worker may be running different versions of the application.\n\nWe’d handle that with an explicit payload contract and a staged rollout. First deploy workers that understand both formats. Then enable the new producer, with routing that keeps new jobs away from incompatible workers.\n\nOld-format support stays until pending work, delayed retries and supported replay paths no longer need it.\n\nThe database has a separate compatibility requirement. Old and new processes may share it during deployment. Durable workflows add another check: whether existing execution history remains compatible with the code that resumes it.\n\nThe article walks through a proposed export-job rollout, including migrations, stable operation identities and which build remains safe to roll back to:\nhttps://nbaghiro.com/blogs/deploying-with-background-jobs-running",
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/deploying-with-background-jobs-running",
+      "url": "https://nbaghiro.com/blogs/deploying-with-background-jobs-running",
+      "cover": "/img/posts/deploying-with-background-jobs-running-wide.webp",
+      "summary": "A proposed rollout for changing a queued export job, covering payload versions, worker compatibility, database migrations, retries and the limits of rollback.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Needs product visual",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "checking-a-model-change",
+      "title": "What we check before changing an AI model",
+      "products": [
+        "Galleo"
+      ],
+      "text": "A model can produce a better first draft and still be less reliable at editing an existing document. We want to see both before changing what a product uses by default.\n\nIn Galleo, we have evaluation tooling for agent behavior and content generation, with deterministic checks alongside model-based judging.\n\nThe comparison we’d build around it uses fixed tasks, repeated runs and separate results for structure, task completion, unintended changes, visual quality, latency and cost.\n\nFor an editing task, we’d inspect the document and tool operations as well as the final response. Saying “Done” does not establish that the requested change happened or that unrelated content stayed intact.\n\nThe article covers the existing tooling and a proposed evaluation and rollout process, including how to preserve failed runs and keep a tested fallback:\nhttps://nbaghiro.com/blogs/checking-a-model-change",
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/checking-a-model-change",
+      "url": "https://nbaghiro.com/blogs/checking-a-model-change",
+      "cover": "/img/posts/checking-a-model-change-wide.webp",
+      "summary": "Building a product-specific model comparison from fixed tasks, deterministic checks, repeated runs and visual review, with a proposed rollout policy rather than an invented benchmark result.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Needs product visual",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "maintaining-a-design-refresh",
+      "title": "Making a design refresh easier to maintain",
+      "products": [
+        "LlamaTrade"
+      ],
+      "text": "We’re pleased with how LlamaTrade’s design cleanup came together. Revisiting the earlier look helped us make the screens more consistent and clarify the choices behind them.\n\nOne useful distinction is between appearance and meaning. People can choose an accent or surface while gains, losses and warnings keep their own roles. Button fills and the text on them also need separate choices.\n\nOn the web, saved preferences are applied before the application starts. The native app has its own palette resolver. Keeping those paths aligned takes more than giving their tokens the same names.\n\nThe article looks at the implementation and the checks we’d use as the design grows: theme combinations, focus states, long values, empty screens and cross-platform differences.\n\nThose are the details that help the next screen fit the design as well as the current ones:\nhttps://nbaghiro.com/blogs/maintaining-a-design-refresh",
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/maintaining-a-design-refresh",
+      "url": "https://nbaghiro.com/blogs/maintaining-a-design-refresh",
+      "cover": "/img/posts/maintaining-a-design-refresh-wide.webp",
+      "summary": "The implementation choices behind LlamaTrade’s appearance cleanup, from semantic colors and first-paint preferences to cross-platform checks and realistic screen states.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Needs product visual",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "what-account-deletion-needs-to-cover",
+      "title": "What account deletion needs to cover",
+      "products": [
+        "Galleo"
+      ],
+      "text": "Deleting an account in a collaborative product needs an ownership policy. A person’s private conversations and the documents their team still uses do not necessarily follow the same rules.\n\nIn Galleo, the deletion tooling builds a plan first. It distinguishes solo workspaces from shared work and checks for blockers such as active credit holds. The current process is operator-assisted.\n\nThe wider design also needs to cover derived files, external systems and delayed jobs that could recreate data after deletion begins. Backups need a restoration policy so an older snapshot does not quietly bring deleted content back.\n\nThere is an important limit to clearing authorship references: removing an author ID does not remove personal information written inside a document.\n\nThe article explains the current implementation and the additional coordination we’d build around it, with a clear account of what was removed, retained or still needs follow-up:\nhttps://nbaghiro.com/blogs/what-account-deletion-needs-to-cover",
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/what-account-deletion-needs-to-cover",
+      "url": "https://nbaghiro.com/blogs/what-account-deletion-needs-to-cover",
+      "cover": "/img/posts/what-account-deletion-needs-to-cover-wide.webp",
+      "summary": "Following account deletion through ownership, active jobs, shared work, derived copies and recovery, using Galleo’s operator tooling as a starting point and distinguishing completed work from proposed safeguards.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Needs product visual",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "when-shared-code-becomes-a-tool",
+      "title": "When shared code should become a separate tool",
+      "products": [
+        "General engineering"
+      ],
+      "text": "Repeated code across products can be a good starting point for a shared tool. The useful question is which behavior is actually the same.\n\nGalleo and Clientbridge both have setup scripts, but their product policies differ. We’d consider sharing stable mechanics such as identifying managed objects, comparing desired and observed state, and producing a reviewable plan.\n\nPlan limits, migration decisions and other business rules would remain explicit inputs or stay in the product.\n\nA separate tool also creates maintenance work: versioned behavior, adapter updates and tests against each consumer. Passing its own unit tests is not enough to show that an upgrade is safe for both products.\n\nThe article develops this proposed boundary, including dry runs, partial failures, stable identities and deciding when extraction is worth the extra release process:\nhttps://nbaghiro.com/blogs/when-shared-code-becomes-a-tool",
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/when-shared-code-becomes-a-tool",
+      "url": "https://nbaghiro.com/blogs/when-shared-code-becomes-a-tool",
+      "cover": "/img/posts/when-shared-code-becomes-a-tool-wide.webp",
+      "summary": "Deciding what to extract from repeated product code, with a proposed plan-and-apply tool boundary, explicit product policy, compatibility tests and a maintenance plan.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Needs product visual",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
+      "id": "search-results-and-changing-permissions",
+      "title": "Search results after access changes",
+      "text": "A search result can reveal part of a document before anyone opens it. The title, preview and matching sentence all need the same care as the document itself.\n\nIn Galleo, we use PostgreSQL full-text search for the document library. The query applies document visibility rules before returning results and snippets. A document can stay indexed for the people who still have access.\n\nA separate search service or embedding store adds another timing problem. Someone can lose access while the index still contains the old permissions.\n\nThe design we’d use is to retrieve candidate matches, check access against the application’s current permission data, and only then return the permitted content. The index can catch up in the background without its stale permissions deciding what someone receives.\n\nCached results need that check too. A recent match may still be relevant even though the person can no longer read it.\n\nFor an AI assistant, the check belongs before retrieved text enters the prompt. A cached answer also needs a record of its sources. If access to one changes, removing the citation does not remove what that source contributed to the answer.\n\nThere are limits: revoking access cannot recall text already delivered to a browser or sent to a model. In-flight requests, conversation history and browser caches need an explicit policy.\n\nWe wrote up Galleo’s current search approach and a proposed design for separate indexes, with diagrams covering permission changes, caching and AI retrieval:\nhttps://nbaghiro.com/blogs/search-results-and-changing-permissions",
+      "url": "https://nbaghiro.com/blogs/search-results-and-changing-permissions",
+      "products": [
+        "Galleo"
+      ],
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/search-results-and-changing-permissions",
+      "cover": "/img/posts/search-results-and-changing-permissions-wide.webp",
+      "summary": "Document permissions across search snippets, asynchronous indexes, cached results and AI answers.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Needs product visual",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
+    },
+    {
       "id": "when-software-factories-help",
       "title": "Where software factories are useful",
       "products": [
@@ -172,7 +308,7 @@
       "products": [
         "Clientbridge"
       ],
-      "text": "In Clientbridge, we record stock changes against individual sale lines. That lets us recognise a repeated payment notification without subtracting the same products again.\n\nIn Clientbridge, each stock movement is keyed by the sale line and its reason. Selling two bottles records a quantity of -2 with reason “sale”. A full refund can record +2 with reason “refund”. A unique database index prevents a second movement with the same pair.\n\nThe code inserts the movement with ON CONFLICT DO NOTHING and only updates the count if the insert returns a new ID. Both writes belong to the same transaction, so a rollback removes both.\n\nThere is a separate concurrency problem when two different sales affect the same item. Both movements are valid. A row lock makes their count updates wait for each other, so one cannot overwrite the other's subtraction.\n\nThe product rules still need care. Pending online checkouts hold stock before payment finishes. Partial refunds leave stock out. Full refunds restore it, which is a limitation when the goods are damaged or never returned. The current model also assumes whole units.\n\nThe article goes into more detail about the implementation and tradeoffs. The link is in the first comment.",
+      "text": "In Clientbridge, we record stock changes against individual sale lines so a repeated payment notification does not subtract the same products again.\n\nEach movement is identified by its sale line and reason. Selling two bottles records -2 with reason “sale”. A full refund can record +2 with reason “refund”. A unique index prevents another movement with the same pair.\n\nWe insert with ON CONFLICT DO NOTHING and update the count only when a new movement is created. Both writes share a transaction, so they roll back together.\n\nDifferent sales can still affect the same item concurrently. An item row lock coordinates those updates so one sale does not overwrite another’s subtraction.\n\nOnline checkouts reserve stock before payment completes. Partial refunds leave stock out; full refunds restore it, even when the goods may not have been returned in sellable condition. The model also assumes whole units.\n\nThe article covers retries, concurrent sales and the limits of the current returns policy:\nhttps://nbaghiro.com/blogs/stock-movements-and-repeated-events",
       "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/stock-movements-and-repeated-events",
       "url": "https://nbaghiro.com/blogs/stock-movements-and-repeated-events",
       "cover": "/img/posts/stock-movements-and-repeated-events-wide.webp",
@@ -195,7 +331,7 @@
       "products": [
         "Clientbridge"
       ],
-      "text": "In Clientbridge, we keep invoice amounts consistent across the invoice, payment page, and receipt. That includes preserving the issued amounts after a business changes its settings.\n\nWe store money in integer cents, but that only solves part of the problem. A rate of 9.975% needs more precision than whole basis points. The backend keeps the decimal rate and uses rational arithmetic for the calculation, then rounds each tax component on each line.\n\nThe rounding point matters. Two five-cent lines at an illustrative 10% rate produce one cent of tax each. Combining the lines before rounding produces one cent in total. The invoice needs to follow one policy throughout its lines, payment page, and receipt.\n\nDiscounts need an allocation rule too. A one-cent discount across three equal lines cannot be divided evenly in cents. We allocate the whole-cent shares, then distribute the remainder in a stable order before calculating tax.\n\nOnce an invoice is issued, its stored line tax is used in later views. Changing a business setting should not change what that invoice says the client owes. Drafts and open estimates have different rules, and repricing checks again after acquiring a lock so it can notice a payment that started while it waited.\n\nThere is still a tradeoff in the current model: we store each line's tax total and reconstruct its jurisdiction breakdown from historical rates. Storing the full calculation at issue time would make that history more independent of later rate-table changes.\n\nThe article goes into more detail about the implementation and tradeoffs. The link is in the first comment.",
+      "text": "In Clientbridge, we keep issued invoice amounts consistent across the invoice, payment page and receipt, including after a business changes its settings.\n\nMoney is stored in integer cents. Tax rates keep their decimal precision, and calculations use rational arithmetic before each tax component is rounded on each line.\n\nThe rounding point affects the total. With an illustrative 10% rate, two five-cent lines produce one cent of tax each. Combining the lines before rounding produces one cent in total. Every view needs to follow the same policy.\n\nDocument discounts are allocated across lines in whole cents, with the remainder distributed in a stable order before tax is calculated.\n\nIssued invoices retain their stored line tax. Drafts and open estimates have separate repricing rules, including a check after acquiring a lock to catch payments that started while repricing waited.\n\nThe current model reconstructs the tax breakdown from historical rates. Storing the full calculation at issue time would make that history less dependent on later rate-table changes.\n\nThe article explains the calculations and document lifecycle:\nhttps://nbaghiro.com/blogs/invoice-arithmetic-down-to-the-cent",
       "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/invoice-arithmetic-down-to-the-cent",
       "url": "https://nbaghiro.com/blogs/invoice-arithmetic-down-to-the-cent",
       "cover": "/img/posts/invoice-arithmetic-down-to-the-cent-wide.webp",
@@ -241,7 +377,7 @@
       "products": [
         "LlamaTrade"
       ],
-      "text": "In LlamaTrade, we prepare and cache historical price data so backtests using different strategies can share the same inputs. The cache needs to distinguish requests that look similar but need different data.\n\nThe cache key includes the symbols, interval, warm-up start, end date, price adjustment, and a version for recent data. Symbol order does not matter. A longer warm-up period or a different adjustment does.\n\nOn a cache miss, a worker can acquire a Redis lease and prepare the dataset while other workers wait. It writes compressed Parquet to a temporary file, then replaces the final path once the write is complete. Readers do not need to open a file that is still being written.\n\nThere are important limits. Workers need access to the same storage; sharing Redis does not make their local disks shared. The lease can expire, and a waiting worker eventually prepares its own copy, so duplicate work is possible.\n\nThe key also describes the requested data, not the bytes returned by the provider. Historical revisions mean that repeatable research needs a record of the exact snapshot used, beyond a cache key and freshness policy.\n\nThe article goes into more detail about the implementation and tradeoffs. The link is in the first comment.",
+      "text": "In LlamaTrade, we cache historical price data so backtests using different strategies can reuse the same dataset.\n\nThe cache key includes the symbols, interval, warm-up start, end date, price adjustment and a version for recent data. Symbol order does not affect the key, but a longer warm-up period or a different adjustment creates a separate entry.\n\nWhen a dataset is missing, a worker can acquire a Redis lease and prepare it while others wait. It writes compressed Parquet to a temporary file, then moves it to the final path once complete. That keeps readers from opening a partially written file.\n\nWorkers need access to the same storage; sharing Redis alone does not share their files. A lease can expire, and a waiting worker may eventually prepare its own copy, so duplicate work is still possible.\n\nThe cache key identifies the data requested. Historical prices can be revised, so reproducing a backtest also needs a record of the exact snapshot used.\n\nThe article covers the implementation, failure cases and what we’d change before expanding it to more workers:\nhttps://nbaghiro.com/blogs/sharing-datasets-between-backtests",
       "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/sharing-datasets-between-backtests",
       "url": "https://nbaghiro.com/blogs/sharing-datasets-between-backtests",
       "cover": "/img/posts/sharing-datasets-between-backtests-wide.webp",
@@ -323,7 +459,7 @@
       "products": [
         "Clientbridge"
       ],
-      "text": "When we talk about switching to Clientbridge (clientbridge.ca), the work involved matters as much as the features. A business may like the product and still need a practical way to move its records and routines.\n\nThe setup looks different from one business to the next. It might be Clover for payments, a separate booking tool, and spreadsheets or messages to keep track of the rest. Much of the process is manual, but it’s familiar and they know how to manage it. Switching means changing those routines while keeping the business running.\n\nThose recurring needs also give us a reason to keep building. Once a business trusts you with its daily work, there is an opportunity to help with more of it, from booking through to payment, without making them manage everything in separate tools.\n\nThat gives us confidence in the direction. The part we still have to earn is making the move worthwhile and continuing to deliver value afterwards.\n\nThe article goes into more detail about the implementation and tradeoffs. The link is in the first comment.",
+      "text": "A business can like Clientbridge and still need a practical way to move its records and routines.\n\nIts current setup may combine payments, booking software, spreadsheets and messages. Even when some of that work is manual, the team knows how to manage it. Switching means learning a new process while continuing to serve clients.\n\nWe need to show how the product fits their work and make the transition understandable: which records move, who checks them, how staff prepare and when the new system takes over.\n\nThat also affects how we measure adoption. A signed agreement or first payment is only one step. We need to know whether the business can complete its day-to-day workflow reliably and keep using it.\n\nThe article outlines a proposed approach to marketing, sales and onboarding. It separates those plans from customer results we have not yet established:\nhttps://nbaghiro.com/blogs/the-cost-of-switching",
       "firstComment": "The full article, with examples and diagrams: https://nbaghiro.com/blogs/the-cost-of-switching",
       "url": "https://nbaghiro.com/blogs/the-cost-of-switching",
       "cover": "/img/posts/the-cost-of-switching-wide.webp",
@@ -634,6 +770,56 @@
         "label": "Shared rules across the games",
         "brand": "lumi"
       }
+    },
+    {
+      "id": "what-a-backtest-predicts",
+      "title": "What a backtest predicts about a live run",
+      "products": [
+        "LlamaTrade"
+      ],
+      "text": "In LlamaTrade, we use the same strategy evaluation and order-sizing code for backtests and live sessions. That keeps the decision rules consistent while allowing each path to handle data and execution differently.\n\nA shared strategy session holds the compiled strategy and price history. It decides when to rebalance and calculates intended orders from target weights, holdings and available cash. Sells are sized before buys so their expected proceeds can fund purchases in the same batch.\n\nShared code does not guarantee identical results. A backtest can evaluate with the symbols available for a date, while the live runner waits for every subscribed symbol’s bar. Simulated fills complete immediately; broker orders may fill partially or at a different price. Live quantities are also rounded to tradable increments.\n\nBar resolution is another open issue: backtests use daily bars, while the live path extends daily warm-up history with an intraday stream. The same lookback can therefore cover different periods.\n\nWe compare the orders produced by the existing and shared runtime loops before changing the production default. The article explains that comparison and the remaining differences between simulation and live execution.\n\nhttps://nbaghiro.com/blogs/what-a-backtest-predicts",
+      "firstComment": "The full article, with diagrams: https://nbaghiro.com/blogs/what-a-backtest-predicts",
+      "url": "https://nbaghiro.com/blogs/what-a-backtest-predicts",
+      "cover": "/img/posts/what-a-backtest-predicts-wide.webp",
+      "summary": "LlamaTrade runs one evaluation and sizing core in both a backtest and a live session, so the two make the same decisions on the same days. This article separates that guarantee from the parts each path swaps, and from the differences that remain in fills, bar resolution and order quantization.",
+      "mediaStatus": "Product visual ready",
+      "productMediaStatus": "Product visual ready",
+      "source": "Founder posts",
+      "media": [
+        {
+          "project": "llamatrade",
+          "file": "technical/t2-parity-backtest.png",
+          "label": "Light frame · the backtests page"
+        },
+        {
+          "project": "llamatrade",
+          "file": "technical/t3-parity-session.png",
+          "label": "Light frame · a live session"
+        }
+      ],
+      "status": "Ready with product visual",
+      "productVisual": {
+        "project": "llamatrade",
+        "file": "technical/t2-parity-backtest.png",
+        "label": "The backtests page, in the light look"
+      }
+    },
+    {
+      "id": "measuring-a-notation-against-json",
+      "title": "Measuring a notation against JSON",
+      "products": [
+        "LumiSchool"
+      ],
+      "text": "Writing your own text format attracts opinions, so the honest way to settle it is to measure rather than argue.\n\nLumischool keeps its lessons in a small notation rather than in JSON. A file is a tree of nodes, one per line, and the syntax reads values into a handful of kinds: a number, a word, a quoted string, a block of prose, an expression, a size, a list, a setting. What a node means is not in the syntax at all. It sits in a separate vocabulary, where each node type declares its settings and their defaults, the anchors a label can attach to, and the box it occupies.\n\nThat split is a claim, so it is worth checking rather than asserting. The vocabulary declares 59 scene node types today. The syntax is 489 lines. Not one of those 59 names appears in those 489 lines, which is why adding a kind of drawing never touches the grammar.\n\nThe module is 13,112 lines excluding tests, so the syntax is under four per cent of it. A move to JSON would replace those 489 lines and leave the exact arithmetic, the vocabulary, the verifier, the layout and the renderers untouched, because none of them read characters. In the content it would escape 1,713 blocks of the prose a child reads and lose 10,496 comment lines.\n\nThe measurement turned out to be worth more than the decision it settled. It pointed at the real expense, which was a visual being declared in five places with its size copy-pasted between the drawing and the layout code, a cost identical under either format. That is where the work went instead.",
+      "firstComment": "The full article, with the measurements: https://nbaghiro.com/blogs/measuring-a-notation-against-json",
+      "url": "https://nbaghiro.com/blogs/measuring-a-notation-against-json",
+      "cover": "/img/posts/measuring-a-notation-against-json-wide.webp",
+      "summary": "Lumischool writes its lessons in a small notation rather than JSON. This separates the syntax from the vocabulary, measures what a swap to JSON would actually replace, counts what the content files would lose, and says what would change the decision.",
+      "mediaStatus": "Article visual ready",
+      "productMediaStatus": "Not product-specific",
+      "source": "Founder posts",
+      "media": [],
+      "status": "Ready with article diagram"
     }
   ]
 }

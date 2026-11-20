@@ -1,3 +1,5 @@
+import { FOUNDER_FOLLOWUP_FIGURES } from "./figures/founder-followups";
+import { SEARCH_PERMISSION_FIGURES } from "./figures/search-results-and-changing-permissions";
 import { FACTORY_FIGURES } from "./figures/when-software-factories-help";
 import { URL_FETCH_FIGURES } from "./figures/fetching-user-provided-urls";
 import { COLLAB_ORDER_FIGURES } from "./figures/ordering-collaborative-edits";
@@ -39,6 +41,8 @@ import { SANDBOX_FIGURES } from "./figures/code-execution-in-containers";
 import { ORDER_FIGURES } from "./figures/an-order-submitted-once";
 import { PLAN_FIGURES as WORKFLOW_PLAN_FIGURES } from "./figures/deciding-what-runs-next";
 import { CONNECT_FIGURES } from "./figures/running-clientbridge-on-stripe-connect";
+import { PARITY_FIGURES } from "./figures/what-a-backtest-predicts";
+import { NOTATION_FIGURES } from "./figures/measuring-a-notation-against-json";
 
 /**
  * The diagrams for the written pieces, drawn in one language: a plate with registration
@@ -2579,11 +2583,15 @@ export const FIGURES = {
     ...CREDIT_RECOVERY_FIGURES,
     ...TENANT_ISOLATION_FIGURES,
     ...EXPORT_PERMISSION_FIGURES,
+    ...SEARCH_PERMISSION_FIGURES,
+    ...FOUNDER_FOLLOWUP_FIGURES,
     ...CALENDAR_SYNC_FIGURES,
     ...COLLAB_ORDER_FIGURES,
     ...URL_FETCH_FIGURES,
     ...FACTORY_FIGURES,
     ...DATASET_FIGURES,
+    ...PARITY_FIGURES,
+    ...NOTATION_FIGURES,
     ...CUSTOMER_DOMAIN_FIGURES,
     ...INVOICE_ARITHMETIC_FIGURES,
     ...STOCK_MOVEMENT_FIGURES,

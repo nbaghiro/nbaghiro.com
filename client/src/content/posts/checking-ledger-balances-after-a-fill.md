@@ -30,7 +30,7 @@ Sum                          0
 
 The event balances. Its position posting adds shares and cost with the same sign. Both checks in the posting validator pass.
 
-Applying it to the sleeve produces a different question:
+Applying the fill produces this cash balance:
 
 ```
 Starting cash             1,000
@@ -93,7 +93,7 @@ In the worked example, the cash projection remains negative $200. Freezing the s
 
 The trading risk check reads the sleeve's status and rejects both buys and sells when it is frozen. It also rejects an order if it cannot retrieve the sleeve state. That is a check on subsequent order requests. The freeze handler itself does not cancel every outstanding broker order or reverse a completed trade.
 
-The handler attempts to dispatch an alert after recording the freeze. An alert-dispatch exception is logged and does not undo the freeze. In the current control flow, dispatch is attempted before the final database commit, so alert delivery should not be treated as confirmation that the transaction has committed. That ordering is a concrete point to consider when strengthening incident delivery.
+The handler attempts to dispatch an alert after recording the freeze. An alert-dispatch exception is logged and does not undo the freeze. In the current control flow, dispatch is attempted before the final database commit, so alert delivery should not be treated as confirmation that the transaction has committed. Moving alert dispatch after commit would make that relationship clearer.
 
 ## Handling a repeated fill
 
@@ -112,7 +112,7 @@ The handler also returns without adding another freeze if the sleeve is already 
 
 That identity rule covers a repeated event, not a correction to an existing one. The insert does not update the original payload. A corrected broker fact needs explicit handling rather than relying on redelivery to replace the stored record.
 
-There is also work before the append. For a sell without a supplied cost basis, ingestion resolves FIFO lots before it reaches the writer's duplicate check. The duplicate insert alone therefore does not establish that every replay follows the same path or that all preceding work is harmless. The tests and guarantees need to name the path they cover.
+There is also work before the append. For a sell without a supplied cost basis, ingestion resolves FIFO lots before it reaches the writer's duplicate check. The duplicate insert alone therefore does not establish that every replay follows the same path or that all preceding work is harmless. Replay tests need to cover this work as well as the duplicate insert.
 
 ## When the fill cannot be appended
 
@@ -138,4 +138,4 @@ The original article review passed 92 cases across four selected portfolio suite
 
 A recovery procedure should start by comparing the fill, open orders and broker balance with the ledger. The reviewer needs to identify the cause, record any correction as an explicit event, and rerun the balance checks before authorizing more trading. A broker order already in flight needs its own decision; freezing a sleeve does not cancel it.
 
-That is the operational procedure I would require around the current guard. The guard itself records the fill and freeze. It does not implement an automatic repair or establish that every discrepancy is safe to clear.
+This recovery procedure requires review. The current guard records the fill and freeze; it does not repair the balance or decide when trading can resume.

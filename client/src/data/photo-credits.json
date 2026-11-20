@@ -1,0 +1,380 @@
+{
+ "what-a-backtest-predicts": {
+  "id": "wyXdV4kveU4",
+  "by": "Jan Canty",
+  "byLink": "https://unsplash.com/@jcanty123",
+  "link": "https://unsplash.com/photos/green-trees-on-mountain-during-daytime-wyXdV4kveU4",
+  "group": "ridge"
+ },
+ "sharing-datasets-between-backtests": {
+  "id": "Rzdvq5qQHE4",
+  "by": "Dmytro Koplyk",
+  "byLink": "https://unsplash.com/@dkoplyk",
+  "link": "https://unsplash.com/photos/tall-trees-reflected-in-still-water-on-a-foggy-day-Rzdvq5qQHE4",
+  "group": "water"
+ },
+ "the-search-behind-a-backtest": {
+  "id": "MnxOmh3t1vM",
+  "by": "Annie Kramer",
+  "byLink": "https://unsplash.com/@annie_kramer74",
+  "link": "https://unsplash.com/photos/birch-trees-in-a-dense-misty-forest-MnxOmh3t1vM",
+  "group": "birch"
+ },
+ "an-order-submitted-once": {
+  "id": "5gY6Q-69tEM",
+  "by": "𝕡𝕒𝕨𝕤 𝕒𝕟𝕕 𝕡𝕣𝕚𝕟𝕥𝕤",
+  "byLink": "https://unsplash.com/@paws_and_prints",
+  "link": "https://unsplash.com/photos/buoy-in-the-calm-water-with-mountains-in-background-5gY6Q-69tEM",
+  "group": "water"
+ },
+ "a-language-for-portfolio-allocations": {
+  "id": "7jOwxu2fK1s",
+  "by": "Leslie Cross",
+  "byLink": "https://unsplash.com/@leslie_outofdoors",
+  "link": "https://unsplash.com/photos/green-pine-trees-under-white-sky-during-daytime-7jOwxu2fK1s",
+  "group": "pine"
+ },
+ "preserving-a-strategy-through-the-editor": {
+  "id": "4CRBKKNLxmQ",
+  "by": "Emily Hanson",
+  "byLink": "https://unsplash.com/@emilymhanson",
+  "link": "https://unsplash.com/photos/a-forest-filled-with-lots-of-tall-trees-4CRBKKNLxmQ",
+  "group": "birch"
+ },
+ "before-the-first-order": {
+  "id": "NdgaNplmhnM",
+  "by": "Dawid Zawiła",
+  "byLink": "https://unsplash.com/@davealmine",
+  "link": "https://unsplash.com/photos/bare-tree-in-a-foggy-landscape-NdgaNplmhnM",
+  "group": "snow"
+ },
+ "one-account-many-strategies": {
+  "id": "_HwTOhUO02c",
+  "by": "Matej Pribanic",
+  "byLink": "https://unsplash.com/@bukze",
+  "link": "https://unsplash.com/photos/a-field-of-tall-grass-_HwTOhUO02c",
+  "group": "reeds"
+ },
+ "checking-ledger-balances-after-a-fill": {
+  "id": "RDIrZ1UdU-w",
+  "by": "Julian Hochgesang",
+  "byLink": "https://unsplash.com/@julianhochgesang",
+  "link": "https://unsplash.com/photos/blue-body-of-water-during-daytime-RDIrZ1UdU-w",
+  "group": "water"
+ },
+ "maintaining-a-design-refresh": {
+  "id": "ALFL1XaTxqE",
+  "by": "Doga Dogan",
+  "byLink": "https://unsplash.com/@dogadogans",
+  "link": "https://unsplash.com/photos/a-group-of-trees-that-are-in-the-grass-ALFL1XaTxqE",
+  "group": "pine"
+ },
+ "a-comment-that-moves": {
+  "id": "PYx6yjAoVVs",
+  "by": "Jim Chesek",
+  "byLink": "https://unsplash.com/@hollow_movement",
+  "link": "https://unsplash.com/photos/a-body-of-water-surrounded-by-tall-grass-PYx6yjAoVVs",
+  "group": "reeds"
+ },
+ "one-layout-engine": {
+  "id": "Phe-EApLohs",
+  "by": "Dean Zhang",
+  "byLink": "https://unsplash.com/@startdig",
+  "link": "https://unsplash.com/photos/misty-mountains-with-layers-of-blue-haze-Phe-EApLohs",
+  "group": "ridge"
+ },
+ "ordering-collaborative-edits": {
+  "id": "gcMaCp5RrR8",
+  "by": "Jinomono Media",
+  "byLink": "https://unsplash.com/@jinomono",
+  "link": "https://unsplash.com/photos/a-body-of-water-surrounded-by-trees-and-fog-gcMaCp5RrR8",
+  "group": "river"
+ },
+ "recovering-ai-credit-reservations": {
+  "id": "nonEQfmJXOc",
+  "by": "heino eisner",
+  "byLink": "https://unsplash.com/@eisner",
+  "link": "https://unsplash.com/photos/bare-trees-in-a-foggy-winter-field-nonEQfmJXOc",
+  "group": "snow"
+ },
+ "cancelling-an-ai-task": {
+  "id": "2OwzuwEWHnM",
+  "by": "𝕡𝕒𝕨𝕤 𝕒𝕟𝕕 𝕡𝕣𝕚𝕟𝕥𝕤",
+  "byLink": "https://unsplash.com/@paws_and_prints",
+  "link": "https://unsplash.com/photos/misty-cliffs-overlook-the-choppy-ocean-waters-2OwzuwEWHnM",
+  "group": "coast"
+ },
+ "checking-a-model-change": {
+  "id": "_z4RGVKKuds",
+  "by": "David J. Boozer",
+  "byLink": "https://unsplash.com/@davidjboozer",
+  "link": "https://unsplash.com/photos/green-pine-trees-covered-with-fog-_z4RGVKKuds",
+  "group": "pine"
+ },
+ "what-account-deletion-needs-to-cover": {
+  "id": "e6tN41paZ4M",
+  "by": "Griffin Wooldridge",
+  "byLink": "https://unsplash.com/@dzngriffin",
+  "link": "https://unsplash.com/photos/misty-coastal-hills-and-rock-formations-at-sea-e6tN41paZ4M",
+  "group": "coast"
+ },
+ "search-results-and-changing-permissions": {
+  "id": "V87naFEYp2o",
+  "by": "Kylli Kittus",
+  "byLink": "https://unsplash.com/@kyllik",
+  "link": "https://unsplash.com/photos/a-dense-forest-of-white-birch-trees-V87naFEYp2o",
+  "group": "birch"
+ },
+ "when-a-slot-is-free": {
+  "id": "LffcrFZ_7xs",
+  "by": "Jan Haerer",
+  "byLink": "https://unsplash.com/@topazspirit",
+  "link": "https://unsplash.com/photos/boat-on-calm-water-near-dock-LffcrFZ_7xs",
+  "group": "water"
+ },
+ "recurring-appointments-and-clock-changes": {
+  "id": "dWT_nNJZOVc",
+  "by": "Barnabas Davoti",
+  "byLink": "https://unsplash.com/@davotibarna",
+  "link": "https://unsplash.com/photos/snowy-landscape-with-farm-buildings-and-trees-dWT_nNJZOVc",
+  "group": "snow"
+ },
+ "undoing-a-change-across-services": {
+  "id": "QFfK0nl3QKI",
+  "by": "Noah Ryll",
+  "byLink": "https://unsplash.com/@noahry",
+  "link": "https://unsplash.com/photos/a-rocky-riverbed-in-a-misty-mountain-valley-QFfK0nl3QKI",
+  "group": "river"
+ },
+ "invoice-arithmetic-down-to-the-cent": {
+  "id": "T_gAmymcQFs",
+  "by": "Mark Eder",
+  "byLink": "https://unsplash.com/@m______________e",
+  "link": "https://unsplash.com/photos/selective-photography-of-body-of-water-under-white-sky-at-daytime-T_gAmymcQFs",
+  "group": "water"
+ },
+ "what-a-refund-costs": {
+  "id": "dYVmHWeXr2E",
+  "by": "Petra Reid",
+  "byLink": "https://unsplash.com/@createinme_nz",
+  "link": "https://unsplash.com/photos/misty-coastline-with-steep-cliffs-dYVmHWeXr2E",
+  "group": "coast"
+ },
+ "when-a-payment-times-out": {
+  "id": "G-93FpHrGGA",
+  "by": "Rose Bahmani",
+  "byLink": "https://unsplash.com/@rose_lens",
+  "link": "https://unsplash.com/photos/a-landscape-obscured-by-thick-fog-G-93FpHrGGA",
+  "group": "water"
+ },
+ "running-clientbridge-on-stripe-connect": {
+  "id": "AoNkf6YKYXs",
+  "by": "Ars M",
+  "byLink": "https://unsplash.com/@arsenm",
+  "link": "https://unsplash.com/photos/misty-coastal-cliffs-overlooking-the-ocean-waves-AoNkf6YKYXs",
+  "group": "coast"
+ },
+ "one-screen-writes-offline": {
+  "id": "an1l2BFVphA",
+  "by": "Logan Hughes",
+  "byLink": "https://unsplash.com/@billyidyll",
+  "link": "https://unsplash.com/photos/a-foggy-path-leading-to-a-body-of-water-an1l2BFVphA",
+  "group": "reeds"
+ },
+ "stock-movements-and-repeated-events": {
+  "id": "xEBUlPSuyNk",
+  "by": "iuliu illes",
+  "byLink": "https://unsplash.com/@illes_cristi",
+  "link": "https://unsplash.com/photos/bare-trees-in-a-foggy-forest-during-autumn-xEBUlPSuyNk",
+  "group": "birch"
+ },
+ "the-cost-of-switching": {
+  "id": "iIveRGTwm8c",
+  "by": "Andrew Tom",
+  "byLink": "https://unsplash.com/@light_and_hope",
+  "link": "https://unsplash.com/photos/rocky-mountain-peaks-in-thick-clouds-iIveRGTwm8c",
+  "group": "ridge"
+ },
+ "every-version-checked": {
+  "id": "z0xQZ_7FQAI",
+  "by": "Marina Reich",
+  "byLink": "https://unsplash.com/@marinareich",
+  "link": "https://unsplash.com/photos/bare-birch-trees-in-a-misty-snow-dusted-forest-clearing-z0xQZ_7FQAI",
+  "group": "birch"
+ },
+ "measuring-a-notation-against-json": {
+  "id": "rr2EF3J5F2Y",
+  "by": "Dejan Zakic",
+  "byLink": "https://unsplash.com/@dejanzakic",
+  "link": "https://unsplash.com/photos/misty-evergreen-forest-with-tall-trees-shrouded-in-fog-rr2EF3J5F2Y",
+  "group": "pine"
+ },
+ "map-on-one-canvas": {
+  "id": "jNyowISGf_w",
+  "by": "Amanda Selby",
+  "byLink": "https://unsplash.com/@amandaselby",
+  "link": "https://unsplash.com/photos/misty-mountains-with-fog-covering-the-valleys-below-jNyowISGf_w",
+  "group": "ridge"
+ },
+ "one-engine-every-game": {
+  "id": "SrASYZZpyjw",
+  "by": "Kyle Glenn",
+  "byLink": "https://unsplash.com/@kylejglenn",
+  "link": "https://unsplash.com/photos/green-leafed-pine-trees-SrASYZZpyjw",
+  "group": "pine"
+ },
+ "tenant-isolation-in-postgresql": {
+  "id": "WLhO7dRsaAs",
+  "by": "Petra Reid",
+  "byLink": "https://unsplash.com/@createinme_nz",
+  "link": "https://unsplash.com/photos/misty-coastline-with-steep-cliffs-WLhO7dRsaAs",
+  "group": "coast"
+ },
+ "deciding-what-runs-next": {
+  "id": "fk5bhv3przg",
+  "by": "Aleksei Lebed",
+  "byLink": "https://unsplash.com/@rizla4i",
+  "link": "https://unsplash.com/photos/river-through-mossy-canyon-in-iceland-fk5bhv3przg",
+  "group": "river"
+ },
+ "code-execution-in-containers": {
+  "id": "nK4VdS1izPw",
+  "by": "Jack Prommel",
+  "byLink": "https://unsplash.com/@jpprommel",
+  "link": "https://unsplash.com/photos/green-trees-on-brown-field-during-daytime-nK4VdS1izPw",
+  "group": "pine"
+ },
+ "one-integration-two-callers": {
+  "id": "8CijaDUIBbo",
+  "by": "Dmytro Koplyk",
+  "byLink": "https://unsplash.com/@dkoplyk",
+  "link": "https://unsplash.com/photos/misty-island-with-trees-reflected-in-calm-water-8CijaDUIBbo",
+  "group": "water"
+ },
+ "resuming-an-ai-response": {
+  "id": "VMlMN9OkAbU",
+  "by": "Alexander Höhn",
+  "byLink": "https://unsplash.com/@allexander_h",
+  "link": "https://unsplash.com/photos/misty-morning-over-a-dark-calm-lake-and-marsh-VMlMN9OkAbU",
+  "group": "reeds"
+ },
+ "fetching-user-provided-urls": {
+  "id": "lWq2rMfY9yw",
+  "by": "Alex Lian",
+  "byLink": "https://unsplash.com/@alxlian",
+  "link": "https://unsplash.com/photos/foggy-coastal-cliff-with-evergreen-trees-overlooking-the-ocean-lWq2rMfY9yw",
+  "group": "coast"
+ },
+ "serving-pages-on-customer-domains": {
+  "id": "YL3t5SQDknM",
+  "by": "Dominique Hicks",
+  "byLink": "https://unsplash.com/@domsdigitals",
+  "link": "https://unsplash.com/photos/a-mountain-covered-in-fog-and-clouds-on-a-cloudy-day-YL3t5SQDknM",
+  "group": "ridge"
+ },
+ "calendar-membership-and-incremental-sync": {
+  "id": "e9S09qopCgE",
+  "by": "Phil Hearing",
+  "byLink": "https://unsplash.com/@philhearing",
+  "link": "https://unsplash.com/photos/frost-covered-field-with-bare-trees-e9S09qopCgE",
+  "group": "snow"
+ },
+ "checking-an-agents-results": {
+  "id": "2TcgjM-UiKQ",
+  "by": "Saulo Meza",
+  "byLink": "https://unsplash.com/@saulo_tana",
+  "link": "https://unsplash.com/photos/a-group-of-trees-that-are-standing-in-the-grass-2TcgjM-UiKQ",
+  "group": "pine"
+ },
+ "checking-pdf-reading-order": {
+  "id": "-uccXXVdF8A",
+  "by": "T",
+  "byLink": "https://unsplash.com/@tanyabarrow",
+  "link": "https://unsplash.com/photos/misty-forest-path-with-trees-on-either-side--uccXXVdF8A",
+  "group": "birch"
+ },
+ "choosing-an-export-for-the-next-person": {
+  "id": "Ba_u6EcFOm8",
+  "by": "Dmytro Koplyk",
+  "byLink": "https://unsplash.com/@dkoplyk",
+  "link": "https://unsplash.com/photos/misty-trees-on-a-foggy-morning-by-the-water-Ba_u6EcFOm8",
+  "group": "water"
+ },
+ "deploying-with-background-jobs-running": {
+  "id": "OnmIw16xfR4",
+  "by": "Andrew Tom",
+  "byLink": "https://unsplash.com/@light_and_hope",
+  "link": "https://unsplash.com/photos/rocky-mountain-peaks-in-clouds-OnmIw16xfR4",
+  "group": "ridge"
+ },
+ "learning-after-ai-help": {
+  "id": "ZX4po5vQy94",
+  "by": "Barnabas Davoti",
+  "byLink": "https://unsplash.com/@davotibarna",
+  "link": "https://unsplash.com/photos/misty-mountains-rise-above-a-frosty-meadow-ZX4po5vQy94",
+  "group": "snow"
+ },
+ "making-stripe-subscriptions-repeatable": {
+  "id": "AGwUN_rOWA0",
+  "by": "Roman Kraft",
+  "byLink": "https://unsplash.com/@iamromankraft",
+  "link": "https://unsplash.com/photos/brown-fountain-grass-under-fog-AGwUN_rOWA0",
+  "group": "reeds"
+ },
+ "mux-videojs-and-the-cost-of-video": {
+  "id": "36ZD4U97Xqk",
+  "by": "SOHAM BANERJEE",
+  "byLink": "https://unsplash.com/@soham1991",
+  "link": "https://unsplash.com/photos/misty-mountains-and-a-rocky-riverbed-at-dawn-36ZD4U97Xqk",
+  "group": "river"
+ },
+ "permissions-before-cached-exports": {
+  "id": "pFEbednM9j8",
+  "by": "Vijayalakshmi Nidugondi",
+  "byLink": "https://unsplash.com/@v_l_n",
+  "link": "https://unsplash.com/photos/misty-coastline-with-a-beach-and-ocean-waves-pFEbednM9j8",
+  "group": "coast"
+ },
+ "remembering-after-practice": {
+  "id": "c70rg_n5byk",
+  "by": "Merih Tasli",
+  "byLink": "https://unsplash.com/@merih82",
+  "link": "https://unsplash.com/photos/autumn-trees-in-dense-misty-forest-c70rg_n5byk",
+  "group": "birch"
+ },
+ "terraform-and-pulumi": {
+  "id": "5yWhyvqHfvw",
+  "by": "Nik Iurev",
+  "byLink": "https://unsplash.com/@lastoops",
+  "link": "https://unsplash.com/photos/misty-mountains-shrouded-in-fog-5yWhyvqHfvw",
+  "group": "ridge"
+ },
+ "what-an-agent-can-change": {
+  "id": "Vo_-BvO7qoA",
+  "by": "Ty Fiero",
+  "byLink": "https://unsplash.com/@tyfiero",
+  "link": "https://unsplash.com/photos/a-forest-of-trees-with-fog-Vo_-BvO7qoA",
+  "group": "pine"
+ },
+ "when-shared-code-becomes-a-tool": {
+  "id": "_-6sDZ5qJHM",
+  "by": "Jiraroad1",
+  "byLink": "https://unsplash.com/@jiraroad1",
+  "link": "https://unsplash.com/photos/foggy-river-valley-with-dark-hills-under-a-cloudy-sky-_-6sDZ5qJHM",
+  "group": "river"
+ },
+ "when-software-factories-help": {
+  "id": "Zol2-1_jn20",
+  "by": "Jason Krieger",
+  "byLink": "https://unsplash.com/@kriegs",
+  "link": "https://unsplash.com/photos/a-body-of-water-surrounded-by-a-forest-Zol2-1_jn20",
+  "group": "lake"
+ },
+ "why-i-stopped-pursuing-a-software-factory": {
+  "id": "5qIS6n-CWeA",
+  "by": "Amandine BATAILLE",
+  "byLink": "https://unsplash.com/@amandine_bataille_photo",
+  "link": "https://unsplash.com/photos/a-body-of-water-surrounded-by-trees-and-fog-5qIS6n-CWeA",
+  "group": "lake"
+ }
+}

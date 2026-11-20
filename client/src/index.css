@@ -100,3 +100,31 @@ a {
     font-family: var(--font-hand);
     font-weight: 600;
 }
+
+/* Shared by the inner pages: a header under the fixed site bar, then the content. The
+   column is also what the margin drawings are positioned against (see PageArt.css). */
+.page {
+    position: relative;
+    width: var(--page);
+    margin: 0 auto;
+    padding: calc(68px + clamp(44px, 7vw, 92px)) 0 clamp(60px, 9vw, 120px);
+}
+.page-head h1 {
+    font-size: clamp(38px, 6vw, 68px);
+    letter-spacing: -0.02em;
+}
+.page-head > p {
+    margin-top: 14px;
+    max-width: 52ch;
+    color: var(--ink-soft);
+}
+
+/* A link in a page header gets the same mark the article prose uses, so the way out of a
+   not-found page reads as a link rather than as more of the sentence. */
+.page-head > p a {
+    border-bottom: 1px solid var(--mist);
+    color: var(--water);
+}
+.page-head > p a:hover {
+    border-bottom-color: var(--water);
+}

@@ -8,7 +8,7 @@ summary: How Clientbridge uses Stripe Connect: an Accounts v2 account per busine
 
 Clientbridge takes payments for service businesses: a deposit when a client books, an invoice paid by card from a link, a membership that renews every month. The money belongs to the business. It should land in the business's bank account, appear under the business's name on the client's statement, and be refunded or disputed against the business's balance. Clientbridge takes a small fee on each payment and charges the business for its plan.
 
-Stripe calls this arrangement a platform, and Stripe Connect is its product for platforms. This article explains how Clientbridge is set up on Connect, which parts Stripe takes on, and which parts still need careful work on our side.
+Stripe calls this arrangement a platform, and Stripe Connect is its product for platforms. This article explains the account configuration, payment flow and application records we maintain.
 
 ## The platform account and the connected accounts
 
@@ -25,7 +25,7 @@ The same account is both. The business that collects a client's deposit is the s
 
 ## Deciding who is responsible for what
 
-The most important choices are made when the account is created, because Stripe fixes them at that point:
+The account is created with these responsibility settings:
 
 ```python
 defaults = {
@@ -46,7 +46,7 @@ params = {
 account = await client.v2.core.accounts.create_async(params, {"idempotency_key": key})
 ```
 
-Each of these fields assigns a piece of work to either Stripe or the platform.
+These fields configure fees, losses and dashboard access.
 
 `fees_collector: stripe` means Stripe takes its own processing fee directly from the business's account on each charge. Clientbridge does not collect Stripe's fee and pass it on.
 
@@ -164,4 +164,4 @@ Because each entry comes from the event that caused it, the business's books in 
 
 For this configuration, Stripe provides the payment infrastructure, verification process and assigned connected-account loss handling. Clientbridge decides when to request a charge, calculates the amount and sales tax, presents the invoice and receipt, and reconciles its records with Stripe.
 
-The boundary needs to remain visible during failures. An accepted payment can still need a local invoice update; a committed notification can still need delivery; a missed event can still need replay. The integration is complete only when those application states are recoverable as well.
+Recovery also covers application state. An accepted payment can still need a local invoice update, a queued notification can still need delivery, and a missed event can still need replay.

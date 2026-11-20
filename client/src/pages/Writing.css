@@ -46,37 +46,33 @@
     color: var(--water);
 }
 
-/* one piece. The cover is two layers: the photograph fills the band and may be cropped by
-   it, the drawing sits in the text column at its own proportions and is never cropped or
-   stretched. Baking them into one image would force the band to letterbox or distort. */
+/* one piece. The cover is one drawing, rendered wide, and the band crops it rather than
+   letterboxing. */
 .post-cover {
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     overflow: hidden;
     margin-top: 68px; /* clears the fixed bar */
-    background: #dfe4e2;
+    background: #efece6;
 }
 .cover-bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* the plate's subject sits in the upper third, so a wide band crops from the foot */
-    object-position: center 22%;
-}
-.cover-art {
-    position: relative;
     display: block;
-    width: var(--page);
-    max-width: 1100px;
+    width: 100%;
     height: auto;
 }
-/* a phone is too narrow for the wide plate's type, so it gets the plate drawn for its shape */
+/* The wide cover's type is drawn for a wide frame, so at phone width it would come out at a
+   few pixels. The phone gets the cover drawn for its own shape instead. */
 .cover-card {
     display: none;
+}
+@media (max-width: 719px) {
+    .cover-bg {
+        display: none;
+    }
+    .cover-card {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
 }
 
 .post .page {

@@ -15,9 +15,6 @@ export const POSTS = META.map((meta) => ({
     about: meta.about ?? "",
     category: meta.category ?? "Product notes",
     cover: meta.cover ?? "",
-    // the header shows the plate as two layers, named after the composed one
-    coverBg: (meta.cover ?? "").replace("-wide.", "-bg."),
-    coverArt: (meta.cover ?? "").replace("-wide.", "-art."),
     card: meta.card ?? "",
 })).sort((a, b) => (a.date < b.date ? 1 : -1));
 

@@ -46,7 +46,7 @@ A matching broker order is adopted. If it has reached a terminal state, recovery
 
 If the lookup returns no match, startup recovery marks the row rejected and records a reason. Unlike the retry path, it does not resubmit that row. If the lookup fails, the row remains pending and the failure is logged.
 
-The two recovery paths intentionally have different consequences:
+The recovery paths handle lookup results as follows:
 
 ```
 Broker lookup       Repeated strategy submission     Startup scan
@@ -71,8 +71,8 @@ Recovery and status synchronisation can publish a terminal fill record again. Th
 
 Manual submissions have no strategy signal timestamp and receive random ids. A repeated manual request can therefore create a new order. It does not have the same retry protection as a repeated strategy signal.
 
-The identity does not include quantity. If a signal first requests ten shares and a later caller supplies twenty with the same four identity inputs, it still resolves to the original order. Callers must retain the original payload for recovery and use an explicit amendment or new decision for a changed quantity. The stable id does not validate that intent on their behalf.
+The identity does not include quantity. If a signal first requests ten shares and a later caller supplies twenty with the same four identity inputs, it still resolves to the original order. Callers must retain the original payload for recovery and use an explicit amendment or new decision for a changed quantity. The stable ID alone does not detect a changed payload.
 
-The recovery tests cover the local branches with broker responses supplied by test doubles. They check how the application handles a known order, a no-match response and a lookup failure. They do not establish the outcome of every network failure or broker race. That is why this describes recovery and deduplication rather than an end-to-end exactly-once guarantee.
+The recovery tests cover the local branches with broker responses supplied by test doubles. They check how the application handles a known order, a no-match response and a lookup failure. They do not establish the outcome of every network failure or broker race. The implementation provides recovery and deduplication, with no end-to-end exactly-once guarantee.
 
 The related article [One brokerage account, several strategies](https://nbaghiro.com/blogs/one-account-many-strategies) explains how fills are attributed to the strategy that requested them.

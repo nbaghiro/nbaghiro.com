@@ -8,7 +8,7 @@ summary: LlamaTrade calculates a strategy's warm-up and retained history from it
 
 Before LlamaTrade evaluates a strategy, it needs enough price history for the indicators and conditions that strategy reads. A moving average with a period of 200 needs a different starting point from an ADX with a period of 14. The compiler calculates those requirements from the strategy.
 
-The result is used to decide when evaluation can begin and how much history to retain. Those are related decisions, but they answer different questions. Warm-up establishes whether the calculation has enough input. Retained history limits the data available to later calculations.
+The result is used to decide when evaluation can begin and how much history to retain. Warm-up determines when enough input is available. Retained history limits the data available to later calculations.
 
 ## Compiling the requirements
 
@@ -82,4 +82,4 @@ This changes the meaning of a full-history metric once older bars have been remo
 
 A warm-up count only makes sense alongside the data interval. Two hundred daily bars and two hundred minute bars cover different periods. The fetch, preload and live aggregation paths need to provide the interval the strategy expects.
 
-Counts alone also do not establish alignment. Two symbols can each have 200 bars while missing different trading sessions. A useful data check records the expected interval, timestamps and missing-bar policy before evaluating a cross-symbol condition. This belongs alongside the warm-up calculation, not inside a larger bar-count allowance.
+Counts alone also do not establish alignment. Two symbols can each have 200 bars while missing different trading sessions. A useful data check records the expected interval, timestamps and missing-bar policy before evaluating a cross-symbol condition. A larger bar allowance alone does not establish that alignment.

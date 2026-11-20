@@ -3,6 +3,7 @@ import { Navigate, Routes, Route, useParams } from "react-router-dom";
 import SiteLayout from "./components/SiteLayout";
 import DarkLayout from "./components/DarkLayout";
 import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
 
 /**
  * The landing page and the two layouts are in the first bundle; every other page is fetched
@@ -17,6 +18,16 @@ const Post = lazy(() => import("./pages/Post"));
 const Resume = lazy(() => import("./pages/Resume"));
 const Overworld = lazy(() => import("./pages/Overworld"));
 const Ads = lazy(() => import("./pages/ads/Ads"));
+
+/* Five design options for a new version of the site, unlinked from it. Each is a whole page
+   with its own chrome, so like the ad studios they sit outside the site layout. */
+const Art = lazy(() => import("./pages/Art"));
+const Shot = lazy(() => import("./pages/Shot"));
+const Images = lazy(() => import("./pages/Images"));
+
+function Option({ children }) {
+    return <Suspense fallback={null}>{children}</Suspense>;
+}
 
 function WritingRedirect() {
     const { slug } = useParams();
@@ -43,6 +54,8 @@ function App() {
                     path="about"
                     element={<Navigate to="/resume" replace />}
                 />
+                {/* anything else under the site's chrome, so a bad link lands somewhere */}
+                <Route path="*" element={<NotFound />} />
             </Route>
             {/* The first version of the site, kept for anyone who liked it; the ad studios
                 wear the same skin */}
@@ -56,6 +69,35 @@ function App() {
                     <Suspense fallback={null}>
                         <Ads />
                     </Suspense>
+                }
+            />
+            {/* every ground that can sit behind an article, internal */}
+            <Route
+                path="/images"
+                element={
+                    <Option>
+                        <Images />
+                    </Option>
+                }
+            />
+            {/* four covers built for the thumbnail, internal */}
+            {/* five cover styles that try to read as engineering, internal */}
+            {/* the plate catalogue, internal: nothing in the navigation points at it */}
+            <Route
+                path="/art"
+                element={
+                    <Option>
+                        <Art />
+                    </Option>
+                }
+            />
+            {/* tooling: one cover at an exact size, for scripts/plate-covers.mjs */}
+            <Route
+                path="/art/shot"
+                element={
+                    <Option>
+                        <Shot />
+                    </Option>
                 }
             />
         </Routes>

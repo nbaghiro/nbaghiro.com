@@ -10,7 +10,7 @@ LlamaTrade lets a strategy be represented as visual blocks or as text in a small
 
 Converting between them needs to preserve the strategy's structure and values. A group can still appear in the editor after its allocation has been lost. Exported text can still parse after its grouping has changed. Both changes can affect the weights the evaluator produces.
 
-One current limitation is important before using the visual editor: compound `and`, `or` and `not` conditions accepted by Python fall back to a default comparison during import. The editor can therefore emit valid text with changed meaning. The supported allocation examples below round-trip correctly; they do not cover the whole backend grammar. [A language for portfolio allocations](https://nbaghiro.com/blogs/a-language-for-portfolio-allocations) explains the wider language.
+The visual editor currently has a condition-support limitation: compound `and`, `or` and `not` conditions accepted by Python fall back to a default comparison during import. The editor can therefore emit valid text with changed meaning. The supported allocation examples below round-trip correctly; they do not cover the whole backend grammar. [A language for portfolio allocations](https://nbaghiro.com/blogs/a-language-for-portfolio-allocations) explains the wider language.
 
 ## Two representations of the same strategy
 
@@ -157,7 +157,7 @@ The condition support boundary is:
 
 The desired import policy is to preserve an expression losslessly or reject it with a specific explanation. Substituting a default condition should not count as a successful import.
 
-Implementing that policy requires either an explicit unsupported-expression error or an expanded visual condition model, followed by a regression test of the original expression after export. Neither improvement is claimed here as current behavior.
+Implementing that policy requires either an explicit unsupported-expression error or an expanded visual condition model, followed by a regression test of the original expression after export. Neither change is implemented in the version reviewed here.
 
 ## What was checked for this article
 
@@ -167,4 +167,4 @@ The complete example above was also imported and exported through the editor ser
 
 The source review followed the group's weight through import and export, the test projection into canonical JSON, and the unsupported-condition fallback. Those checks support the implementation described here. They do not establish full editor coverage or equivalence for every backend expression.
 
-The regression target is the strategy's meaning: the group retains its share, the weight block its method, and the condition its operands and operators.
+Regression tests check that groups retain their shares, weight blocks retain their methods, and conditions retain their operands and operators.

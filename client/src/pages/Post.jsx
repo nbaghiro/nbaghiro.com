@@ -30,10 +30,9 @@ function Post() {
         <article className="post">
             {post.cover && (
                 <figure className="post-cover">
-                    <img className="cover-bg" src={post.coverBg} alt="" />
                     <img
-                        className="cover-art"
-                        src={post.coverArt}
+                        className="cover-bg"
+                        src={post.cover}
                         alt=""
                         fetchpriority="high"
                     />

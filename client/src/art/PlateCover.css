@@ -1,0 +1,27 @@
+/* The cover's own ink. Kept out of the page stylesheets because the same drawing is rendered
+   to a file by scripts/plate-covers.mjs, where no page css is loaded. */
+.pl-cover {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.pl-line {
+    fill: none;
+    stroke: #27322e;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.pl-words {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.06em;
+    fill: #46544f;
+}
+.pl-hair {
+    stroke: #27322e;
+    stroke-width: 1.2;
+}
+.pl-rule line {
+    stroke: #8b9a95;
+    stroke-width: 1;
+}
