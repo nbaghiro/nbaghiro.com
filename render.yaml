@@ -9,9 +9,16 @@ services:
       plan: starter # always on. Free spun down after 15 idle minutes and showed Render's
       # waking-up page on the next visit, which is the first thing a phone saw at /ads.
       branch: main
-      # Deploy each push to main, but only after its GitHub checks (.github/workflows/ci.yml)
-      # pass. A failed check, or a commit with no checks at all, is not deployed.
-      autoDeployTrigger: checksPass
+      # Deploy each push to main. This was `checksPass`, which waits for the GitHub checks
+      # (.github/workflows/ci.yml), and Render repeatedly never created the deploy at all:
+      # CI green, commit on origin, no deploy and no failed attempt to retry. It happened on
+      # 2026-10-19, again on 2026-10-29, and four pushes running on 2026-11-20, each one
+      # needing `render deploys create` by hand. A missed webhook under checksPass is
+      # invisible from outside, since the site keeps answering 200 with the previous build.
+      # Every other service in this account is on `commit` and deploys reliably. A build that
+      # would have failed CI now reaches Render, where it fails the build instead and leaves
+      # the running version up.
+      autoDeployTrigger: commit
       # `--include=dev`: NODE_ENV=production below makes `npm ci` skip devDependencies, and the
       # client build needs vite from there.
       # Node version comes from "engines" in the root package.json (24.x).
