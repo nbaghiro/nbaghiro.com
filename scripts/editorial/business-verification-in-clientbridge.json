@@ -1,0 +1,17 @@
+{
+  "id": "business-verification-in-clientbridge",
+  "title": "Business verification in Clientbridge",
+  "products": [
+    "Clientbridge"
+  ],
+  "text": "When a business sets up payments in Clientbridge, we need to show what information is still needed, what Stripe is reviewing, and whether payments and payouts are available.\n\nWe use Stripe Connect’s embedded onboarding to collect the business and identity details. The owner stays inside Clientbridge, while Stripe handles the verification flow and can request additional information later.\n\nOur backend reads the account’s requirements and capability statuses separately. A business may be able to accept card payments while payouts are paused. A submitted document may still be under review. Closing the onboarding screen doesn’t confirm either outcome.\n\nWe also separate requests that need the owner’s attention from checks waiting on Stripe, so the interface can show a useful next step.\n\nAccount events keep that status updated, with a refresh path when events arrive late. The local record is a mirror of Stripe’s state, so payment requests still need to handle changes or restrictions.\n\nThe article covers the setup, public business-page checks, session permissions and how we keep verification status current:\nhttps://nbaghiro.com/blogs/business-verification-in-clientbridge",
+  "firstComment": "The full article: https://nbaghiro.com/blogs/business-verification-in-clientbridge",
+  "url": "https://nbaghiro.com/blogs/business-verification-in-clientbridge",
+  "cover": "/img/posts/business-verification-in-clientbridge-wide.webp",
+  "summary": "How Clientbridge handles business verification with Stripe Connect, including owner actions, pending review, payment readiness and payout issues.",
+  "mediaStatus": "Article visual ready",
+  "productMediaStatus": "Needs product visual",
+  "source": "Founder posts",
+  "media": [],
+  "status": "Ready with article diagram"
+}

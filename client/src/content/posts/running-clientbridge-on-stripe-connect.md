@@ -76,6 +76,8 @@ Each session keeps `disable_stripe_user_authentication` set to false. Stripe col
 
 Clientbridge learns about changes to an account from three v2 events: `requirements.updated`, `capability_status_updated` on the merchant configuration, and `account.closed`. Requirements updates include the minimum deadline, and the `card_payments` capability status decides whether the business can take card payments. A capability that is pending with no resolution needed is treated as Stripe's own review rather than a block on the business.
 
+The companion article on [business verification in Clientbridge](https://nbaghiro.com/blogs/business-verification-in-clientbridge) follows the owner’s setup, pending reviews, requirement deadlines and the distinction between payment and payout readiness.
+
 ## Taking a payment
 
 Clientbridge uses direct charges. A PaymentIntent is created on the business's account, not on the platform account, and carries an application fee:

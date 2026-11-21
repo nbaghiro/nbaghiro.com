@@ -1,0 +1,74 @@
+[
+  {
+    "id": "kyc-responsibilities",
+    "title": "Who handles each part",
+    "sub": "One connected account, with a distinct role for each participant.",
+    "cards": [
+      [
+        "Business owner",
+        "Provides business details",
+        "Responds to requests"
+      ],
+      [
+        "Stripe",
+        "Collects and reviews",
+        "Updates capabilities"
+      ],
+      [
+        "Clientbridge",
+        "Authorizes the session",
+        "Shows status and actions"
+      ]
+    ],
+    "note": "Stripe determines capability availability. Clientbridge keeps the owner informed.",
+    "flow": true
+  },
+  {
+    "id": "kyc-owner-states",
+    "title": "Different states, different next steps",
+    "sub": "Examples an owner can encounter; these are not a fixed sequence.",
+    "cards": [
+      [
+        "Information needed",
+        "Show the specific request",
+        "Open the collection flow"
+      ],
+      [
+        "Review in progress",
+        "Stripe is taking action",
+        "Refresh the account state"
+      ],
+      [
+        "Payouts paused",
+        "Cards may still be active",
+        "Explain the payout issue"
+      ]
+    ],
+    "note": "Read requirements, card payments and payouts separately. Readiness can change.",
+    "flow": false
+  },
+  {
+    "id": "kyc-status-refresh",
+    "title": "Refresh the account behind the status",
+    "sub": "Notifications, owner refresh and recovery can all trigger the read.",
+    "cards": [
+      [
+        "A change arrives",
+        "Verify the notification",
+        "Identify the account"
+      ],
+      [
+        "Read Stripe",
+        "Fetch current requirements",
+        "Read capability status"
+      ],
+      [
+        "Update Clientbridge",
+        "Lock the business record",
+        "Store the current view"
+      ]
+    ],
+    "note": "The local record is a mirror. A later payment request still depends on Stripe’s current state.",
+    "flow": true
+  }
+]

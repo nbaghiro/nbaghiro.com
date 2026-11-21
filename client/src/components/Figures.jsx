@@ -1,3 +1,4 @@
+import { BUSINESS_VERIFICATION_FIGURES } from "./figures/business-verification";
 import { FOUNDER_FOLLOWUP_FIGURES } from "./figures/founder-followups";
 import { SEARCH_PERMISSION_FIGURES } from "./figures/search-results-and-changing-permissions";
 import { FACTORY_FIGURES } from "./figures/when-software-factories-help";
@@ -2586,6 +2587,7 @@ export const FIGURES = {
     ...TENANT_ISOLATION_FIGURES,
     ...EXPORT_PERMISSION_FIGURES,
     ...SEARCH_PERMISSION_FIGURES,
+    ...BUSINESS_VERIFICATION_FIGURES,
     ...FOUNDER_FOLLOWUP_FIGURES,
     ...CALENDAR_SYNC_FIGURES,
     ...COLLAB_ORDER_FIGURES,

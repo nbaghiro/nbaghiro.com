@@ -3,6 +3,13 @@ import { Field } from "./actions";
 
 export const FOUNDER_POSTS = [
 {
+    "id": "business-verification-in-clientbridge",
+    "title": "Business verification in Clientbridge",
+    "text": "When a business sets up payments in Clientbridge, we need to show what information is still needed, what Stripe is reviewing, and whether payments and payouts are available.\n\nWe use Stripe Connect’s embedded onboarding to collect the business and identity details. The owner stays inside Clientbridge, while Stripe handles the verification flow and can request additional information later.\n\nOur backend reads the account’s requirements and capability statuses separately. A business may be able to accept card payments while payouts are paused. A submitted document may still be under review. Closing the onboarding screen doesn’t confirm either outcome.\n\nWe also separate requests that need the owner’s attention from checks waiting on Stripe, so the interface can show a useful next step.\n\nAccount events keep that status updated, with a refresh path when events arrive late. The local record is a mirror of Stripe’s state, so payment requests still need to handle changes or restrictions.\n\nThe article covers the setup, public business-page checks, session permissions and how we keep verification status current:\nhttps://nbaghiro.com/blogs/business-verification-in-clientbridge",
+    "url": "https://nbaghiro.com/blogs/business-verification-in-clientbridge",
+    "linkLabel": "Read the article"
+},
+{
     "id": "cancelling-an-ai-task",
     "title": "What happens when an AI task is cancelled",
     "text": "In FlowMaestro, a cancellation request has to reach the workflow and the work it is running. Stopping the updates in the browser is only one part of that process.\n\nA tool call may already have completed, or an external service may have accepted a request before the response was lost. The run needs to preserve what happened and reconcile anything still uncertain.\n\nThe design we’d use records the stop request, waits for the worker’s outcome and prevents new steps from starting. Completed work stays visible, and usage settlement follows the same guarded path as normal completion.\n\nThat gives the interface a useful distinction between “Stopping” and a confirmed result. It also avoids treating cancellation as proof that nothing happened or no usage was incurred.\n\nThe article covers the current cancellation mechanisms and a proposed approach to external effects, partial results and recovery:\nhttps://nbaghiro.com/blogs/cancelling-an-ai-task",

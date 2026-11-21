@@ -26,6 +26,7 @@ export const PICKS = {
     "what-account-deletion-needs-to-cover": 68,
     "search-results-and-changing-permissions": 29,
     // Clientbridge
+    "business-verification-in-clientbridge": 70,
     "when-a-slot-is-free": 40,
     "recurring-appointments-and-clock-changes": 77,
     "undoing-a-change-across-services": 97,
