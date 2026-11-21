@@ -12,11 +12,12 @@ export default function Shot() {
     const slug = params.get("slug");
     const w = Number(params.get("w") ?? 1200);
     const h = Number(params.get("h") ?? 800);
+    const words = params.get("words") === "1";
     const post = POSTS.find((p) => p.slug === slug);
     if (!post) return <main data-shot="missing" />;
     return (
         <main data-shot="ready" style={{ width: `${w}px`, height: `${h}px`, overflow: "hidden" }}>
-            <PhotoCover post={post} w={w} h={h} />
+            <PhotoCover post={post} w={w} h={h} words={words} />
         </main>
     );
 }
