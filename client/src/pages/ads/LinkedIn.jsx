@@ -103,7 +103,10 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
         <p className="lede">
             {kit && posts.length > 0 && "Profile & posts"}
             {kit && posts.length === 0 && "The profile itself"}
-            {!kit && `${posts.length} document posts`}
+            {!kit &&
+                (posts.every((p) => p.reel)
+                    ? `${posts.length} video posts`
+                    : `${posts.length} document posts`)}
         </p>
     );
 
@@ -343,7 +346,7 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
         const media = (
             <>
                 {post.reel && (
-                    <div className="reel inline">
+                    <div className={`reel inline${post.reel.wide ? " wide" : ""}`}>
                         <video
                             crossOrigin="anonymous"
                             src={url(post.reel.file)}
@@ -370,7 +373,15 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                             <DownloadButton
                                 url={url(post.reel.file)}
                                 name={`${post.slug}.mp4`}
+                                label={post.reel.feed ? "16:9 video" : undefined}
                             />
+                            {post.reel.feed && (
+                                <DownloadButton
+                                    url={url(post.reel.feed)}
+                                    name={`${post.slug}-4x5.mp4`}
+                                    label="4:5 video"
+                                />
+                            )}
                         </div>
                     </div>
                 )}
@@ -499,7 +510,13 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                 {!single && <Field label="Document title" text={post.documentTitle} />}
             </>
         );
-        const text = voices ? (
+        const text = post.options?.length ? (
+            <div className="caption-options">
+                {post.options.map((o) => (
+                    <Field key={o.label} label={o.label} text={o.text} count />
+                ))}
+            </div>
+        ) : voices ? (
             <div className="compare">
                 {voices.map((v) => (
                     <Field
@@ -546,7 +563,7 @@ export function LinkedIn({ manifest, url, theme, sel, setSel, themes, set }) {
                     <h2>{post.title}</h2>
                     <p className="meta">
                         {pages.length > 0 && `${pages.length} pages`}
-                        {!pages.length && !kit && "document"}
+                        {!pages.length && !kit && (post.reel ? "video" : "document")}
                         {themes.length > 1 && t
                             ? ` in ${themeName(manifest, t)}`
                             : ""}

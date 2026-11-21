@@ -628,6 +628,23 @@
 .ads .post .reel.inline video {
     width: 100%;
 }
+.ads .post .reel.inline.wide {
+    max-width: 760px;
+}
+.ads .post .reel.inline.wide video {
+    aspect-ratio: 16 / 9;
+}
+/* caption options for one post, two across on a wide screen */
+.ads .caption-options {
+    display: grid;
+    gap: 8px 28px;
+    max-width: 1100px;
+}
+@media (min-width: 1000px) {
+    .ads .caption-options {
+        grid-template-columns: 1fr 1fr;
+    }
+}
 /* the same post in several voices, read across on a wide screen, stacked on a phone */
 .ads .compare {
     display: grid;
