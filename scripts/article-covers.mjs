@@ -7,12 +7,15 @@
 // The crop is the point: the photograph fills the frame at whichever shape is asked for, so the
 // wide header and the 3:2 card are two crops of one picture rather than one letterboxed.
 //
-// The dev server must be running (pnpm dev in client/).
+// Nothing needs to be running: if no server answers on ORIGIN, this starts `vite preview` over
+// the built client and stops it again afterwards.
 //
-//   node scripts/article-covers.mjs            every piece
-//   node scripts/article-covers.mjs <slug>…    just these
-import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { chromium } from "/Users/naib/Documents/code/galleo/node_modules/playwright/index.mjs";
+//   npm run covers                  every piece
+//   npm run covers -- <slug>…       just these
+//   npm run covers -- --missing     only the ones with an image absent
+import { readdirSync, existsSync, mkdirSync } from "node:fs";
+import { spawn } from "node:child_process";
+import { chromium } from "playwright-core";
 import sharp from "sharp";
 
 const ORIGIN = process.env.ORIGIN ?? "http://localhost:5284";
@@ -30,11 +33,54 @@ const SIZES = [
     { suffix: "og", w: 1200, h: 627, words: true, jpeg: true },
 ];
 
-const only = process.argv.slice(2).filter((a) => !a.startsWith("-"));
+const args = process.argv.slice(2);
+const only = args.filter((a) => !a.startsWith("-"));
+const onlyMissing = args.includes("--missing");
+const lacks = (slug) =>
+    SIZES.some(({ suffix, jpeg }) => !existsSync(`${OUT}/${slug}-${suffix}.${jpeg ? "jpg" : "webp"}`));
 const slugs = readdirSync("client/src/content/posts")
     .filter((f) => f.endsWith(".md"))
     .map((f) => f.replace(/\.md$/, ""))
-    .filter((s) => only.length === 0 || only.includes(s));
+    .filter((s) => (only.length === 0 || only.includes(s)) && (!onlyMissing || lacks(s)));
+
+if (slugs.length === 0) {
+    console.log("every cover is already drawn");
+    process.exit(0);
+}
+
+const reachable = async (url) => {
+    try {
+        const res = await fetch(url, { signal: AbortSignal.timeout(1500) });
+        return res.ok;
+    } catch {
+        return false;
+    }
+};
+
+// reuse a dev server if one is up, otherwise serve the build for the length of the run
+let origin = ORIGIN;
+let server = null;
+if (!(await reachable(origin))) {
+    if (!existsSync("client/dist/index.html")) {
+        console.error("no server on " + origin + " and no build to serve: run npm run build first");
+        process.exit(1);
+    }
+    const port = 5399;
+    origin = `http://localhost:${port}`;
+    server = spawn("npx", ["vite", "preview", "--port", String(port), "--strictPort"], {
+        cwd: "client",
+        stdio: "ignore",
+    });
+    const until = Date.now() + 20000;
+    while (!(await reachable(origin))) {
+        if (Date.now() > until) {
+            server.kill();
+            throw new Error("the preview server did not come up");
+        }
+        await new Promise((r) => setTimeout(r, 300));
+    }
+    console.log(`serving the build on ${origin}`);
+}
 
 const browser = await chromium.launch({ channel: "chrome" });
 const page = await browser.newPage({ deviceScaleFactor: 1 });
@@ -42,7 +88,7 @@ let written = 0;
 for (const slug of slugs) {
     for (const { suffix, w, h, words, jpeg } of SIZES) {
         await page.setViewportSize({ width: w, height: h });
-        const url = `${ORIGIN}/art/shot?slug=${slug}&w=${w}&h=${h}${words ? "&words=1" : ""}`;
+        const url = `${origin}/art/shot?slug=${slug}&w=${w}&h=${h}${words ? "&words=1" : ""}`;
         await page.goto(url, { waitUntil: "networkidle" });
         const state = await page.getAttribute("main", "data-shot");
         if (state !== "ready") throw new Error(`${slug}: the shot page has no such piece`);
@@ -61,4 +107,5 @@ for (const slug of slugs) {
     }
 }
 await browser.close();
-console.log(`${written} covers written for ${slugs.length} pieces`);
+server?.kill();
+console.log(`${written} covers written for ${slugs.length} piece(s)`);
