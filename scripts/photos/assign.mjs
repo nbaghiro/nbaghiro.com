@@ -5,6 +5,7 @@
 // trunks for a piece about many attempts, flat calm water for one about arithmetic that has to
 // balance. Warm and saturated frames were left out, because the site's register is cool and grey.
 export const PICKS = {
+    "setting-up-a-new-mac-with-claude": 46,
     // LlamaTrade
     "what-a-backtest-predicts": 14,
     "sharing-datasets-between-backtests": 46,

@@ -1,0 +1,11 @@
+{
+  "id": "setting-up-a-new-mac-with-claude",
+  "title": "Setting up a new Mac with Claude, SSH and Bash",
+  "products": [
+    "Engineering"
+  ],
+  "text": "I moved my development setup to a new MacBook using a Bash script and a Claude Code session connected over SSH.\n\nThe script installed the baseline: tools, shell configuration, Claude instructions and skills. Claude then inspected the new machine and handled the parts specific to the move.\n\nThe biggest piece was preserving my local work. My repository list had 16 entries, but the code directory held 48 projects, including experiments, local branches, stashes and uncommitted changes. Copying the directory kept that state. Excluding dependencies and build caches reduced the transfer from about 96 GB to 33 GB.\n\nA different username on the new Mac meant updating absolute paths in configuration and repairing Git worktree references. Credentials moved separately over SSH, and Claude’s MCP configuration was merged without replacing the new machine’s sign-in state.\n\nAt the time of writing, every repository opened, but dependency installs were still running and builds hadn’t been checked yet.\n\nI wrote up the process, including what went wrong and what I’d change next time. Article in the comments.",
+  "firstComment": "The full article: https://nbaghiro.com/blogs/setting-up-a-new-mac-with-claude",
+  "url": "https://nbaghiro.com/blogs/setting-up-a-new-mac-with-claude",
+  "summary": "A repeatable setup script, an SSH migration and the checks still needed before retiring the old machine."
+}

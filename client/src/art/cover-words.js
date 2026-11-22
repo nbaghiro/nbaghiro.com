@@ -8,6 +8,7 @@
  * into the edge.
  */
 export const COVER_WORDS = {
+    "setting-up-a-new-mac-with-claude": "bringing the working state along",
     "business-verification-in-clientbridge": "verification over time",
     "a-comment-that-moves": "the anchor degrades",
     "a-language-for-portfolio-allocations": "a tree of allocations",

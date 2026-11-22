@@ -1,0 +1,50 @@
+[
+  {
+    "id": "mac-setup-phases",
+    "title": "One migration, three kinds of work",
+    "sub": "A repeatable baseline, a private transfer and explicit checks.",
+    "flow": true,
+    "cards": [
+      [
+        "Install the baseline",
+        "Brewfile and dotfiles",
+        "Tools, skills and settings"
+      ],
+      [
+        "Transfer local state",
+        "Projects and Git metadata",
+        "Selected credentials via SSH"
+      ],
+      [
+        "Check the destination",
+        "Paths and authentication",
+        "Dependencies and builds"
+      ]
+    ],
+    "note": "The script installs the baseline. The SSH session handles differences between machines."
+  },
+  {
+    "id": "mac-setup-checks",
+    "title": "Transferred is one stage of ready",
+    "sub": "The state recorded at the end of the migration notes.",
+    "flow": true,
+    "cards": [
+      [
+        "Files transferred",
+        "Configuration and projects",
+        "Local state copied"
+      ],
+      [
+        "Repositories opened",
+        "Worktree paths repaired",
+        "Git status ran successfully"
+      ],
+      [
+        "Builds still pending",
+        "Dependencies installing",
+        "Application checks remain"
+      ]
+    ],
+    "note": "Keep the old machine intact until the new environment has passed its working checks."
+  }
+]
