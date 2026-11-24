@@ -1,5 +1,5 @@
 title: One brokerage account, several strategies
-date: 2026-10-09
+date: 2026-09-10
 updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/one-account-many-strategies-wide.webp

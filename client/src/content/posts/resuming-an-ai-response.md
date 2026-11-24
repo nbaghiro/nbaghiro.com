@@ -1,5 +1,5 @@
 title: Resuming an AI response after a disconnect
-date: 2026-11-10
+date: 2026-06-25
 about: Engineering
 cover: /img/posts/resuming-an-ai-response-wide.webp
 card: /img/posts/resuming-an-ai-response-card.webp

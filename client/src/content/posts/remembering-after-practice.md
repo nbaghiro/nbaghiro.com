@@ -1,5 +1,5 @@
 title: Checking what a learner remembers later
-date: 2026-09-20
+date: 2025-12-11
 updated: 2026-11-03
 about: Learning
 category: Industry & practice

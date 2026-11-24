@@ -1,5 +1,5 @@
 title: What an agent is allowed to change
-date: 2026-09-15
+date: 2026-03-19
 updated: 2026-11-03
 about: AI systems
 category: Industry & practice

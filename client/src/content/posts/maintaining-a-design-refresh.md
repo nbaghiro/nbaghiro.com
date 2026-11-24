@@ -1,5 +1,5 @@
 title: Making a design refresh easier to maintain
-date: 2026-11-19
+date: 2026-11-21
 about: LlamaTrade
 cover: /img/posts/maintaining-a-design-refresh-wide.webp
 card: /img/posts/maintaining-a-design-refresh-card.webp

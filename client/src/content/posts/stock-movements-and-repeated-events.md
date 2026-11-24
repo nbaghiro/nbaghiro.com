@@ -1,5 +1,5 @@
 title: Keeping stock correct when events repeat
-date: 2026-11-09
+date: 2026-08-27
 about: Engineering
 cover: /img/posts/stock-movements-and-repeated-events-wide.webp
 card: /img/posts/stock-movements-and-repeated-events-card.webp

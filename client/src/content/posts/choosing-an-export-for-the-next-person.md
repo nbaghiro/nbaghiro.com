@@ -1,5 +1,5 @@
 title: Choosing an export for the next person
-date: 2026-09-27
+date: 2026-02-12
 updated: 2026-11-03
 about: Documents
 category: Industry & practice

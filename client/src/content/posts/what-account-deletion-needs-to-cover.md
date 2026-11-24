@@ -1,5 +1,5 @@
 title: What account deletion needs to cover
-date: 2026-11-19
+date: 2026-11-15
 about: Galleo
 cover: /img/posts/what-account-deletion-needs-to-cover-wide.webp
 card: /img/posts/what-account-deletion-needs-to-cover-card.webp

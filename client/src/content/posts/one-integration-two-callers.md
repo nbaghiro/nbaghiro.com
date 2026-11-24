@@ -1,5 +1,5 @@
 title: Sharing integrations between workflows and agents
-date: 2026-09-23
+date: 2026-06-04
 updated: 2026-11-03
 about: FlowMaestro
 cover: /img/posts/one-integration-two-callers-wide.webp

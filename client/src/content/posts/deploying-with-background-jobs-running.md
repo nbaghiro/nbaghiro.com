@@ -1,5 +1,5 @@
 title: Deploying while background jobs are running
-date: 2026-11-19
+date: 2026-10-13
 about: Engineering
 cover: /img/posts/deploying-with-background-jobs-running-wide.webp
 card: /img/posts/deploying-with-background-jobs-running-card.webp

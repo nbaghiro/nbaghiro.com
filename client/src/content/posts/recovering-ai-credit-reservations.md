@@ -1,5 +1,5 @@
 title: Recovering AI credit reservations after a crash
-date: 2026-11-10
+date: 2026-10-04
 about: Engineering
 cover: /img/posts/recovering-ai-credit-reservations-wide.webp
 card: /img/posts/recovering-ai-credit-reservations-card.webp

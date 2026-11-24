@@ -1,5 +1,5 @@
 title: Code execution in containers
-date: 2026-10-19
+date: 2026-06-18
 updated: 2026-11-03
 about: FlowMaestro
 cover: /img/posts/code-execution-in-containers-wide.webp

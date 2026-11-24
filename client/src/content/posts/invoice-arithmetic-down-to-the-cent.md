@@ -1,5 +1,5 @@
 title: Keeping invoice arithmetic consistent down to the cent
-date: 2026-11-09
+date: 2026-08-20
 about: Engineering
 cover: /img/posts/invoice-arithmetic-down-to-the-cent-wide.webp
 card: /img/posts/invoice-arithmetic-down-to-the-cent-card.webp

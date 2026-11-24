@@ -1,5 +1,5 @@
 title: When a payment times out
-date: 2026-09-13
+date: 2026-05-07
 updated: 2026-11-03
 about: Payments
 category: Industry & practice

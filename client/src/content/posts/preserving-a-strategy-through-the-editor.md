@@ -1,5 +1,5 @@
 title: Preserving a strategy through the editor
-date: 2026-10-20
+date: 2026-09-08
 updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/preserving-a-strategy-through-the-editor-wide.webp

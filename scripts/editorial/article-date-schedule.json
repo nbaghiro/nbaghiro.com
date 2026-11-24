@@ -1,0 +1,398 @@
+{
+  "reviewedOn": "2026-11-24",
+  "note": "Editorial date ordering requested by the site owner. Article prose and existing updated dates preserved.",
+  "articles": [
+    {
+      "slug": "remembering-after-practice",
+      "title": "Checking what a learner remembers later",
+      "previousDate": "2026-09-20",
+      "date": "2025-12-11",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "learning-after-ai-help",
+      "title": "What students can do after the help is removed",
+      "previousDate": "2026-09-25",
+      "date": "2026-01-15",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "choosing-an-export-for-the-next-person",
+      "title": "Choosing an export for the next person",
+      "previousDate": "2026-09-27",
+      "date": "2026-02-12",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "checking-pdf-reading-order",
+      "title": "Checking how a PDF is read",
+      "previousDate": "2026-09-29",
+      "date": "2026-03-05",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "what-an-agent-can-change",
+      "title": "What an agent is allowed to change",
+      "previousDate": "2026-09-15",
+      "date": "2026-03-19",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "checking-an-agents-results",
+      "title": "Checking whether an agent completed the task",
+      "previousDate": "2026-09-30",
+      "date": "2026-04-09",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "the-search-behind-a-backtest",
+      "title": "How many strategies were tested before this one",
+      "previousDate": "2026-09-18",
+      "date": "2026-04-23",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "when-a-payment-times-out",
+      "title": "When a payment times out",
+      "previousDate": "2026-09-13",
+      "date": "2026-05-07",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "what-a-refund-costs",
+      "title": "What a refund costs the business",
+      "previousDate": "2026-09-16",
+      "date": "2026-05-21",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "one-integration-two-callers",
+      "title": "Sharing integrations between workflows and agents",
+      "previousDate": "2026-09-23",
+      "date": "2026-06-04",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "deciding-what-runs-next",
+      "title": "Deciding what runs next in a workflow",
+      "previousDate": "2026-11-03",
+      "date": "2026-06-11",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "code-execution-in-containers",
+      "title": "Code execution in containers",
+      "previousDate": "2026-10-19",
+      "date": "2026-06-18",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "resuming-an-ai-response",
+      "title": "Resuming an AI response after a disconnect",
+      "previousDate": "2026-11-10",
+      "date": "2026-06-25",
+      "updated": null
+    },
+    {
+      "slug": "one-layout-engine",
+      "title": "One layout engine for decks, documents and websites",
+      "previousDate": "2026-09-04",
+      "date": "2026-07-02",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "a-comment-that-moves",
+      "title": "Keeping comments attached as text changes",
+      "previousDate": "2026-10-11",
+      "date": "2026-07-09",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "ordering-collaborative-edits",
+      "title": "Keeping collaborative edits in order",
+      "previousDate": "2026-11-10",
+      "date": "2026-07-16",
+      "updated": null
+    },
+    {
+      "slug": "permissions-before-cached-exports",
+      "title": "Checking permissions before serving a cached export",
+      "previousDate": "2026-11-10",
+      "date": "2026-07-23",
+      "updated": null
+    },
+    {
+      "slug": "when-a-slot-is-free",
+      "title": "Deciding whether a booking slot is free",
+      "previousDate": "2026-10-04",
+      "date": "2026-08-06",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "one-screen-writes-offline",
+      "title": "Offline reads and a queued working-week edit",
+      "previousDate": "2026-10-02",
+      "date": "2026-08-13",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "invoice-arithmetic-down-to-the-cent",
+      "title": "Keeping invoice arithmetic consistent down to the cent",
+      "previousDate": "2026-11-09",
+      "date": "2026-08-20",
+      "updated": null
+    },
+    {
+      "slug": "stock-movements-and-repeated-events",
+      "title": "Keeping stock correct when events repeat",
+      "previousDate": "2026-11-09",
+      "date": "2026-08-27",
+      "updated": null
+    },
+    {
+      "slug": "a-language-for-portfolio-allocations",
+      "title": "A language for portfolio allocations",
+      "previousDate": "2026-10-18",
+      "date": "2026-09-01",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "before-the-first-order",
+      "title": "How much history a strategy needs",
+      "previousDate": "2026-10-16",
+      "date": "2026-09-03",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "preserving-a-strategy-through-the-editor",
+      "title": "Preserving a strategy through the editor",
+      "previousDate": "2026-10-20",
+      "date": "2026-09-08",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "one-account-many-strategies",
+      "title": "One brokerage account, several strategies",
+      "previousDate": "2026-10-09",
+      "date": "2026-09-10",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "checking-ledger-balances-after-a-fill",
+      "title": "Checking ledger balances after a fill",
+      "previousDate": "2026-10-20",
+      "date": "2026-09-15",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "an-order-submitted-once",
+      "title": "Recovering an order after a restart",
+      "previousDate": "2026-10-18",
+      "date": "2026-09-17",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "sharing-datasets-between-backtests",
+      "title": "Sharing datasets between backtests",
+      "previousDate": "2026-11-09",
+      "date": "2026-09-22",
+      "updated": null
+    },
+    {
+      "slug": "serving-pages-on-customer-domains",
+      "title": "Serving pages on customer domains",
+      "previousDate": "2026-11-09",
+      "date": "2026-09-24",
+      "updated": null
+    },
+    {
+      "slug": "fetching-user-provided-urls",
+      "title": "Fetching a URL someone else controls",
+      "previousDate": "2026-11-10",
+      "date": "2026-09-27",
+      "updated": null
+    },
+    {
+      "slug": "tenant-isolation-in-postgresql",
+      "title": "Tenant isolation in PostgreSQL",
+      "previousDate": "2026-11-10",
+      "date": "2026-09-30",
+      "updated": null
+    },
+    {
+      "slug": "calendar-membership-and-incremental-sync",
+      "title": "Calendar membership and incremental sync",
+      "previousDate": "2026-11-10",
+      "date": "2026-10-01",
+      "updated": null
+    },
+    {
+      "slug": "recovering-ai-credit-reservations",
+      "title": "Recovering AI credit reservations after a crash",
+      "previousDate": "2026-11-10",
+      "date": "2026-10-04",
+      "updated": null
+    },
+    {
+      "slug": "making-stripe-subscriptions-repeatable",
+      "title": "Making Stripe subscriptions repeatable",
+      "previousDate": "2026-11-07",
+      "date": "2026-10-06",
+      "updated": null
+    },
+    {
+      "slug": "running-clientbridge-on-stripe-connect",
+      "title": "Running Clientbridge as a Stripe Connect platform",
+      "previousDate": "2026-10-29",
+      "date": "2026-10-08",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "checking-a-model-change",
+      "title": "What we check before changing an AI model",
+      "previousDate": "2026-11-19",
+      "date": "2026-10-11",
+      "updated": null
+    },
+    {
+      "slug": "deploying-with-background-jobs-running",
+      "title": "Deploying while background jobs are running",
+      "previousDate": "2026-11-19",
+      "date": "2026-10-13",
+      "updated": null
+    },
+    {
+      "slug": "map-on-one-canvas",
+      "title": "Moving Lumischool's map to WebGL",
+      "previousDate": "2026-09-08",
+      "date": "2026-10-16",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "every-version-checked",
+      "title": "Checking generated exercises before publication",
+      "previousDate": "2026-10-07",
+      "date": "2026-10-18",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "one-engine-every-game",
+      "title": "Rendering and testing Lumischool’s games",
+      "previousDate": "2026-10-14",
+      "date": "2026-10-21",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "measuring-a-notation-against-json",
+      "title": "Measuring a notation against JSON",
+      "previousDate": "2026-11-18",
+      "date": "2026-10-23",
+      "updated": null
+    },
+    {
+      "slug": "recurring-appointments-and-clock-changes",
+      "title": "A weekly appointment across a clock change",
+      "previousDate": "2026-09-21",
+      "date": "2026-10-26",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "terraform-and-pulumi",
+      "title": "Terraform and Pulumi across three projects",
+      "previousDate": "2026-11-03",
+      "date": "2026-10-28",
+      "updated": "2026-11-06"
+    },
+    {
+      "slug": "why-i-stopped-pursuing-a-software-factory",
+      "title": "Why I stopped pursuing a software factory",
+      "previousDate": "2026-09-11",
+      "date": "2026-10-30",
+      "updated": "2026-11-03"
+    },
+    {
+      "slug": "when-software-factories-help",
+      "title": "Where software factories are useful",
+      "previousDate": "2026-11-08",
+      "date": "2026-11-01",
+      "updated": null
+    },
+    {
+      "slug": "the-cost-of-switching",
+      "title": "The cost of switching the software a business runs on",
+      "previousDate": "2026-11-04",
+      "date": "2026-11-03",
+      "updated": "2026-11-05"
+    },
+    {
+      "slug": "when-shared-code-becomes-a-tool",
+      "title": "When shared code should become a separate tool",
+      "previousDate": "2026-11-19",
+      "date": "2026-11-05",
+      "updated": null
+    },
+    {
+      "slug": "mux-videojs-and-the-cost-of-video",
+      "title": "Mux, Video.js, and the cost of video",
+      "previousDate": "2026-11-08",
+      "date": "2026-11-08",
+      "updated": null
+    },
+    {
+      "slug": "cancelling-an-ai-task",
+      "title": "What happens when an AI task is cancelled",
+      "previousDate": "2026-11-19",
+      "date": "2026-11-10",
+      "updated": null
+    },
+    {
+      "slug": "undoing-a-change-across-services",
+      "title": "Undoing a change across services",
+      "previousDate": "2026-11-19",
+      "date": "2026-11-12",
+      "updated": null
+    },
+    {
+      "slug": "what-account-deletion-needs-to-cover",
+      "title": "What account deletion needs to cover",
+      "previousDate": "2026-11-19",
+      "date": "2026-11-15",
+      "updated": null
+    },
+    {
+      "slug": "what-a-backtest-predicts",
+      "title": "What a backtest predicts about a live run",
+      "previousDate": "2026-11-18",
+      "date": "2026-11-18",
+      "updated": null
+    },
+    {
+      "slug": "search-results-and-changing-permissions",
+      "title": "Search results after access changes",
+      "previousDate": "2026-11-19",
+      "date": "2026-11-19",
+      "updated": null
+    },
+    {
+      "slug": "business-verification-in-clientbridge",
+      "title": "Business verification in Clientbridge",
+      "previousDate": "2026-11-20",
+      "date": "2026-11-20",
+      "updated": null
+    },
+    {
+      "slug": "maintaining-a-design-refresh",
+      "title": "Making a design refresh easier to maintain",
+      "previousDate": "2026-11-19",
+      "date": "2026-11-21",
+      "updated": null
+    },
+    {
+      "slug": "setting-up-a-new-mac-with-claude",
+      "title": "Setting up a new Mac with Claude, SSH and Bash",
+      "previousDate": "2026-11-22",
+      "date": "2026-11-22",
+      "updated": null
+    }
+  ]
+}

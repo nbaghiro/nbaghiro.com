@@ -1,5 +1,5 @@
 title: Fetching a URL someone else controls
-date: 2026-11-10
+date: 2026-09-27
 about: Engineering
 cover: /img/posts/fetching-user-provided-urls-wide.webp
 card: /img/posts/fetching-user-provided-urls-card.webp

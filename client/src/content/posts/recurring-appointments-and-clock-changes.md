@@ -1,5 +1,5 @@
 title: A weekly appointment across a clock change
-date: 2026-09-21
+date: 2026-10-26
 updated: 2026-11-03
 about: Scheduling
 category: Industry & practice

@@ -1,5 +1,5 @@
 title: Serving pages on customer domains
-date: 2026-11-09
+date: 2026-09-24
 about: Engineering
 cover: /img/posts/serving-pages-on-customer-domains-wide.webp
 card: /img/posts/serving-pages-on-customer-domains-card.webp

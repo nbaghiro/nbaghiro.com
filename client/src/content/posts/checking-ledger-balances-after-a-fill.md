@@ -1,5 +1,5 @@
 title: Checking ledger balances after a fill
-date: 2026-10-20
+date: 2026-09-15
 updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/checking-ledger-balances-after-a-fill-wide.webp

@@ -1,5 +1,5 @@
 title: A language for portfolio allocations
-date: 2026-10-18
+date: 2026-09-01
 updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/a-language-for-portfolio-allocations-wide.webp

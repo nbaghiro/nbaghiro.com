@@ -1,5 +1,5 @@
 title: Terraform and Pulumi across three projects
-date: 2026-11-03
+date: 2026-10-28
 updated: 2026-11-06
 about: Infrastructure
 cover: /img/posts/terraform-and-pulumi-wide.webp

@@ -1,5 +1,5 @@
 title: Keeping collaborative edits in order
-date: 2026-11-10
+date: 2026-07-16
 about: Engineering
 cover: /img/posts/ordering-collaborative-edits-wide.webp
 card: /img/posts/ordering-collaborative-edits-card.webp

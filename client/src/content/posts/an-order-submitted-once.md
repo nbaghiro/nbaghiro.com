@@ -1,5 +1,5 @@
 title: Recovering an order after a restart
-date: 2026-10-18
+date: 2026-09-17
 updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/an-order-submitted-once-wide.webp

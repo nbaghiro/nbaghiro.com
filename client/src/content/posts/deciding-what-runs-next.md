@@ -1,5 +1,5 @@
 title: Deciding what runs next in a workflow
-date: 2026-11-03
+date: 2026-06-11
 updated: 2026-11-03
 about: FlowMaestro
 cover: /img/posts/deciding-what-runs-next-wide.webp

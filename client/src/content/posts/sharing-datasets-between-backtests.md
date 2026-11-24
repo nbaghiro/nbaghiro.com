@@ -1,5 +1,5 @@
 title: Sharing datasets between backtests
-date: 2026-11-09
+date: 2026-09-22
 about: Engineering
 cover: /img/posts/sharing-datasets-between-backtests-wide.webp
 card: /img/posts/sharing-datasets-between-backtests-card.webp

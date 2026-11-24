@@ -1,5 +1,5 @@
 title: What happens when an AI task is cancelled
-date: 2026-11-19
+date: 2026-11-10
 about: FlowMaestro
 cover: /img/posts/cancelling-an-ai-task-wide.webp
 card: /img/posts/cancelling-an-ai-task-card.webp

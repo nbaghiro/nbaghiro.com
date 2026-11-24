@@ -1,5 +1,5 @@
 title: What students can do after the help is removed
-date: 2026-09-25
+date: 2026-01-15
 updated: 2026-11-03
 about: Learning
 category: Industry & practice

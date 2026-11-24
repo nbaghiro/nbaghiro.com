@@ -1,5 +1,5 @@
 title: Measuring a notation against JSON
-date: 2026-11-18
+date: 2026-10-23
 about: Lumischool
 cover: /img/posts/measuring-a-notation-against-json-wide.webp
 card: /img/posts/measuring-a-notation-against-json-card.webp

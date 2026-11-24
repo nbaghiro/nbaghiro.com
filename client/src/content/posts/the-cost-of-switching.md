@@ -1,5 +1,5 @@
 title: The cost of switching the software a business runs on
-date: 2026-11-04
+date: 2026-11-03
 updated: 2026-11-05
 about: Building Clientbridge
 category: Industry & practice

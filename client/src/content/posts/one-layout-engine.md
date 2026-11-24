@@ -1,5 +1,5 @@
 title: One layout engine for decks, documents and websites
-date: 2026-09-04
+date: 2026-07-02
 updated: 2026-11-03
 about: Galleo
 cover: /img/posts/one-layout-engine-wide.webp

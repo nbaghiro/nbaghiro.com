@@ -1,5 +1,5 @@
 title: Tenant isolation in PostgreSQL
-date: 2026-11-10
+date: 2026-09-30
 about: Engineering
 cover: /img/posts/tenant-isolation-in-postgresql-wide.webp
 card: /img/posts/tenant-isolation-in-postgresql-card.webp

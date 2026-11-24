@@ -1,5 +1,5 @@
 title: Calendar membership and incremental sync
-date: 2026-11-10
+date: 2026-10-01
 about: Engineering
 cover: /img/posts/calendar-membership-and-incremental-sync-wide.webp
 card: /img/posts/calendar-membership-and-incremental-sync-card.webp

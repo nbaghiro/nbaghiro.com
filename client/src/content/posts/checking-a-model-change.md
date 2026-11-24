@@ -1,5 +1,5 @@
 title: What we check before changing an AI model
-date: 2026-11-19
+date: 2026-10-11
 about: Galleo
 cover: /img/posts/checking-a-model-change-wide.webp
 card: /img/posts/checking-a-model-change-card.webp

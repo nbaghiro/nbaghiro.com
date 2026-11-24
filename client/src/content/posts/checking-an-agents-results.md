@@ -1,5 +1,5 @@
 title: Checking whether an agent completed the task
-date: 2026-09-30
+date: 2026-04-09
 updated: 2026-11-03
 about: AI systems
 category: Industry & practice

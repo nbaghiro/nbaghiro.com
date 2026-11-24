@@ -1,5 +1,5 @@
 title: Checking permissions before serving a cached export
-date: 2026-11-10
+date: 2026-07-23
 about: Engineering
 cover: /img/posts/permissions-before-cached-exports-wide.webp
 card: /img/posts/permissions-before-cached-exports-card.webp

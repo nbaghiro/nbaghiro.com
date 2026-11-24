@@ -1,5 +1,5 @@
 title: When shared code should become a separate tool
-date: 2026-11-19
+date: 2026-11-05
 about: Engineering
 cover: /img/posts/when-shared-code-becomes-a-tool-wide.webp
 card: /img/posts/when-shared-code-becomes-a-tool-card.webp

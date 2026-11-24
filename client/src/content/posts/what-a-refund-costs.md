@@ -1,5 +1,5 @@
 title: What a refund costs the business
-date: 2026-09-16
+date: 2026-05-21
 updated: 2026-11-03
 about: Payments
 category: Industry & practice

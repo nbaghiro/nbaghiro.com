@@ -1,5 +1,5 @@
 title: Making Stripe subscriptions repeatable
-date: 2026-11-07
+date: 2026-10-06
 about: Engineering
 cover: /img/posts/making-stripe-subscriptions-repeatable-wide.webp
 card: /img/posts/making-stripe-subscriptions-repeatable-card.webp

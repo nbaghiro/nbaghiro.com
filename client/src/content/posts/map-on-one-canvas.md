@@ -1,5 +1,5 @@
 title: Moving Lumischool's map to WebGL
-date: 2026-09-08
+date: 2026-10-16
 updated: 2026-11-03
 about: Lumischool
 cover: /img/posts/map-on-one-canvas-wide.webp

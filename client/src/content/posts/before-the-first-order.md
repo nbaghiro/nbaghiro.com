@@ -1,5 +1,5 @@
 title: How much history a strategy needs
-date: 2026-10-16
+date: 2026-09-03
 updated: 2026-11-03
 about: LlamaTrade
 cover: /img/posts/before-the-first-order-wide.webp

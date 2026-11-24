@@ -1,5 +1,5 @@
 title: Undoing a change across services
-date: 2026-11-19
+date: 2026-11-12
 about: Clientbridge
 cover: /img/posts/undoing-a-change-across-services-wide.webp
 card: /img/posts/undoing-a-change-across-services-card.webp

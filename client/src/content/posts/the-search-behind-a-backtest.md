@@ -1,5 +1,5 @@
 title: How many strategies were tested before this one
-date: 2026-09-18
+date: 2026-04-23
 updated: 2026-11-03
 about: Research methods
 category: Industry & practice

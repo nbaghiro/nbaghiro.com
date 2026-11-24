@@ -1,5 +1,5 @@
 title: Running Clientbridge as a Stripe Connect platform
-date: 2026-10-29
+date: 2026-10-08
 updated: 2026-11-03
 about: Clientbridge
 cover: /img/posts/running-clientbridge-on-stripe-connect-wide.webp
