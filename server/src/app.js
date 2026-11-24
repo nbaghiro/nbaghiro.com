@@ -69,7 +69,16 @@ app.use("/api", (req, res) => {
 // Serve static files from React app in production
 if (process.env.NODE_ENV === "production") {
     const clientBuildPath = path.join(__dirname, "../../client/dist");
-    app.use(express.static(clientBuildPath));
+    app.use(express.static(clientBuildPath, {
+        setHeaders(res, file) {
+            if (file.endsWith(".html")) res.setHeader("Cache-Control", "no-cache");
+        },
+    }));
+    // An old page can request a chunk removed by a deployment. Never answer it with HTML.
+    app.use("/assets", (req, res) => {
+        res.setHeader("Cache-Control", "no-store");
+        res.status(404).type("text").send("Asset not found");
+    });
     // Missing images must not fall through to the SPA and return HTML with a 200.
     app.use("/img", (req, res) => res.sendStatus(404));
 
@@ -104,6 +113,7 @@ if (process.env.NODE_ENV === "production") {
 
     // Handle React routing - return all requests to React app
     app.get("*", (req, res) => {
+        res.setHeader("Cache-Control", "no-cache");
         const card = cardFor(req.path);
         if (!card) return res.sendFile(path.join(clientBuildPath, "index.html"));
         const tags = [
