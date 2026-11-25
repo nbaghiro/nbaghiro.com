@@ -1,3 +1,4 @@
+import { PRODUCT_STUDIO_FIGURES } from "./figures/product-studio";
 import { MAC_SETUP_FIGURES } from "./figures/mac-setup";
 import { BUSINESS_VERIFICATION_FIGURES } from "./figures/business-verification";
 import { FOUNDER_FOLLOWUP_FIGURES } from "./figures/founder-followups";
@@ -2588,6 +2589,7 @@ export const FIGURES = {
     ...TENANT_ISOLATION_FIGURES,
     ...EXPORT_PERMISSION_FIGURES,
     ...SEARCH_PERMISSION_FIGURES,
+    ...PRODUCT_STUDIO_FIGURES,
     ...MAC_SETUP_FIGURES,
     ...BUSINESS_VERIFICATION_FIGURES,
     ...FOUNDER_FOLLOWUP_FIGURES,

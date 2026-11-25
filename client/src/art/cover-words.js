@@ -8,6 +8,7 @@
  * into the edge.
  */
 export const COVER_WORDS = {
+    "finding-a-rhythm-across-multiple-products": "room for more than one idea",
     "setting-up-a-new-mac-with-claude": "bringing the working state along",
     "business-verification-in-clientbridge": "verification over time",
     "a-comment-that-moves": "the anchor degrades",

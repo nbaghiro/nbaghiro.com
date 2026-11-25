@@ -22,7 +22,7 @@
  },
  "an-order-submitted-once": {
   "id": "5gY6Q-69tEM",
-  "by": "𝕡𝕒𝕨𝕤 𝕒𝕟𝕕 𝕡𝕣𝕚𝕟𝕥𝕤",
+  "by": "\ud835\udd61\ud835\udd52\ud835\udd68\ud835\udd64 \ud835\udd52\ud835\udd5f\ud835\udd55 \ud835\udd61\ud835\udd63\ud835\udd5a\ud835\udd5f\ud835\udd65\ud835\udd64",
   "byLink": "https://unsplash.com/@paws_and_prints",
   "link": "https://unsplash.com/photos/buoy-in-the-calm-water-with-mountains-in-background-5gY6Q-69tEM",
   "group": "water"
@@ -43,7 +43,7 @@
  },
  "before-the-first-order": {
   "id": "NdgaNplmhnM",
-  "by": "Dawid Zawiła",
+  "by": "Dawid Zawi\u0142a",
   "byLink": "https://unsplash.com/@davealmine",
   "link": "https://unsplash.com/photos/bare-tree-in-a-foggy-landscape-NdgaNplmhnM",
   "group": "snow"
@@ -99,7 +99,7 @@
  },
  "cancelling-an-ai-task": {
   "id": "2OwzuwEWHnM",
-  "by": "𝕡𝕒𝕨𝕤 𝕒𝕟𝕕 𝕡𝕣𝕚𝕟𝕥𝕤",
+  "by": "\ud835\udd61\ud835\udd52\ud835\udd68\ud835\udd64 \ud835\udd52\ud835\udd5f\ud835\udd55 \ud835\udd61\ud835\udd63\ud835\udd5a\ud835\udd5f\ud835\udd65\ud835\udd64",
   "byLink": "https://unsplash.com/@paws_and_prints",
   "link": "https://unsplash.com/photos/misty-cliffs-overlook-the-choppy-ocean-waters-2OwzuwEWHnM",
   "group": "coast"
@@ -253,7 +253,7 @@
  },
  "resuming-an-ai-response": {
   "id": "VMlMN9OkAbU",
-  "by": "Alexander Höhn",
+  "by": "Alexander H\u00f6hn",
   "byLink": "https://unsplash.com/@allexander_h",
   "link": "https://unsplash.com/photos/misty-morning-over-a-dark-calm-lake-and-marsh-VMlMN9OkAbU",
   "group": "reeds"
@@ -390,5 +390,12 @@
   "byLink": "https://unsplash.com/@dkoplyk",
   "link": "https://unsplash.com/photos/tall-trees-reflected-in-still-water-on-a-foggy-day-Rzdvq5qQHE4",
   "group": "water"
+ },
+ "finding-a-rhythm-across-multiple-products": {
+  "id": "MnxOmh3t1vM",
+  "by": "Annie Kramer",
+  "byLink": "https://unsplash.com/@annie_kramer74",
+  "link": "https://unsplash.com/photos/birch-trees-in-a-dense-misty-forest-MnxOmh3t1vM",
+  "group": "birch"
  }
 }
