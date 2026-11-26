@@ -1,6 +1,4 @@
 import { Plate, frame, useNarrow } from "./plate";
-const ink = "#29463e",
-    colors = ["#d7e5dd", "#dee6ec", "#e9dccb", "#e0dfeb", "#cdded7"];
 function wrap(s, max) {
     const out = [""];
     for (const word of s.split(" ")) {
@@ -10,13 +8,12 @@ function wrap(s, max) {
     }
     return out;
 }
-function Text({ x, y, lines, size = 15, fill = ink }) {
+function Text({ x, y, lines, size = 15 }) {
     return (
         <text
             x={x}
             y={y}
-            fill={fill}
-            style={{ fontFamily: "inherit", fontSize: size }}
+            className={size >= 17 ? "fig-title" : size <= 14 ? "fig-sub" : "fig-note"}
         >
             {lines.map((t, i) => (
                 <tspan key={i} x={x} dy={i ? 21 : 0}>
@@ -26,7 +23,7 @@ function Text({ x, y, lines, size = 15, fill = ink }) {
         </text>
     );
 }
-function Box({ x, y, w, h = 116, title, body, num, color = 0 }) {
+function Box({ x, y, w, h = 116, title, body, num }) {
     return (
         <g>
             <rect
@@ -34,10 +31,8 @@ function Box({ x, y, w, h = 116, title, body, num, color = 0 }) {
                 y={y}
                 width={w}
                 height={h}
-                rx="9"
-                fill={colors[color % 5]}
-                stroke="#a6b9af"
-                strokeWidth=".7"
+                rx="2"
+                className="fig-ink"
             />
             {num && <Text x={x + 14} y={y + 23} lines={[num]} size={11} />}
             <Text
@@ -56,7 +51,7 @@ function Box({ x, y, w, h = 116, title, body, num, color = 0 }) {
     );
 }
 function Arrow({ d }) {
-    return <path d={d} fill="none" stroke="#688a7b" strokeWidth="1.4" />;
+    return <path d={d} className="fig-water" />;
 }
 function Sheet({ title, n, w, h, note, children }) {
     return (
@@ -117,7 +112,6 @@ function Loop() {
                             title={title}
                             body={body}
                             num={`0${i + 1}`}
-                            color={i}
                         />
                         {i < 4 && (
                             <Arrow
@@ -173,7 +167,6 @@ function Sources() {
                 h={95}
                 title="Shot plan"
                 body="What must this shot show?"
-                color={3}
             />
             {rows.map(([title, body], i) => {
                 const x = n ? 43 : 268,
@@ -187,7 +180,6 @@ function Sources() {
                             h={97}
                             title={title}
                             body={body}
-                            color={i}
                         />
                         <Arrow
                             d={
@@ -209,7 +201,6 @@ function Sources() {
                         h={97}
                         title="Source library"
                         body="Review the assets before assembly."
-                        color={4}
                     />
                 </>
             ) : (
@@ -222,7 +213,6 @@ function Sources() {
                         h={122}
                         title="Source library"
                         body="Files, provenance and review notes"
-                        color={4}
                     />
                 </>
             )}
@@ -259,7 +249,6 @@ function Jobs() {
                             title={title}
                             body={body}
                             num={`0${i + 1}`}
-                            color={i}
                         />
                         {i < 2 && (
                             <Arrow
@@ -278,10 +267,8 @@ function Jobs() {
                 y={n ? 518 : 265}
                 width={w - 48}
                 height={n ? 125 : 117}
-                rx="8"
-                fill="#f0e4d7"
-                stroke="#c6ad93"
-                strokeDasharray="4 4"
+                rx="2"
+                className="fig-mist dash"
             />
             <Text
                 x={40}
@@ -339,7 +326,6 @@ function Launch() {
                             num={`0${i + 1}`}
                             title={title}
                             body={body}
-                            color={i}
                         />
                         {i < 3 && (
                             <Arrow
@@ -410,7 +396,6 @@ function Lineage() {
                             title={title}
                             body={body}
                             num={`0${i + 1}`}
-                            color={i}
                         />
                         {i < 4 && (
                             <Arrow
@@ -426,7 +411,7 @@ function Lineage() {
             })}
             {!n && (
                 <>
-                    <path d="M27 300H793" stroke="#adc1b6" />
+                    <path d="M27 300H793" className="fig-mist" />
                     <Text
                         x={27}
                         y={328}
@@ -470,7 +455,6 @@ function Edit() {
                             title={title}
                             body={body}
                             num={`SHOT 0${i + 1}`}
-                            color={i}
                         />
                         {[0, 1, 2, 3, 4, 5, 6].map((j) => (
                             <rect
@@ -480,7 +464,7 @@ function Edit() {
                                 width="16"
                                 height="4"
                                 rx="1"
-                                fill="#7f9a8b"
+                                className="fig-chip"
                             />
                         ))}
                     </g>
@@ -494,7 +478,7 @@ function Edit() {
                         width="790"
                         height="18"
                         rx="3"
-                        fill="#cedfd3"
+                        className="fig-wash strong"
                     />
                     <rect
                         x="14"
@@ -502,7 +486,7 @@ function Edit() {
                         width="240"
                         height="10"
                         rx="3"
-                        fill="#b5c9d6"
+                        className="fig-pic"
                     />
                     <rect
                         x="284"
@@ -510,7 +494,7 @@ function Edit() {
                         width="240"
                         height="10"
                         rx="3"
-                        fill="#b5c9d6"
+                        className="fig-pic"
                     />
                     <rect
                         x="554"
@@ -518,7 +502,7 @@ function Edit() {
                         width="250"
                         height="10"
                         rx="3"
-                        fill="#b5c9d6"
+                        className="fig-pic"
                     />
                     <Text
                         x={14}
@@ -537,7 +521,6 @@ function Edit() {
                 h={87}
                 title="Export → watch → approve"
                 body="Approval belongs to this exact revision."
-                color={4}
             />
         </Sheet>
     );

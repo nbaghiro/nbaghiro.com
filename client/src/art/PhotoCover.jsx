@@ -1,4 +1,3 @@
-import DailiesCover from "./DailiesCover";
 import credits from "../data/photo-credits.json";
 import { COVER_WORDS } from "./cover-words";
 
@@ -11,9 +10,6 @@ import { COVER_WORDS } from "./cover-words";
  * to be in the pixels.
  */
 export default function PhotoCover({ post, w = 600, h = 400, words = false }) {
-    if (post.slug === "dailies-from-product-demo-to-ad-campaign") {
-        return <DailiesCover post={post} w={w} h={h} words={words} />;
-    }
     const has = Boolean(credits[post.slug]);
     const line = words ? (COVER_WORDS[post.slug] ?? "") : "";
     const pad = w * 0.062;
