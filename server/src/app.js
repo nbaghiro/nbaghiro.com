@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import path from "path";
 import { fileURLToPath } from "url";
 import apiRoutes from "./routes/api/index.js";
@@ -97,6 +98,15 @@ if (process.env.NODE_ENV === "production") {
     const esc = (v) =>
         String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+    // A changed cover needs a new URL even when a social crawler caches image bytes.
+    const imageVersions = new Map();
+    for (const slug of posts.keys()) {
+        const imageFile = path.join(clientBuildPath, "img", "posts", `${slug}-og.jpg`);
+        if (fs.existsSync(imageFile)) {
+            imageVersions.set(slug, createHash("sha256").update(fs.readFileSync(imageFile)).digest("hex").slice(0, 16));
+        }
+    }
+
     function cardFor(urlPath) {
         const m = /^\/blogs\/([a-z0-9-]+)\/?$/.exec(urlPath);
         const post = m && posts.get(m[1]);
@@ -106,7 +116,7 @@ if (process.env.NODE_ENV === "production") {
         return {
             title: post.title || "Naib Baghirov",
             description: post.summary || "",
-            image: `${ORIGIN}/img/posts/${m[1]}-og.jpg`,
+            image: `${ORIGIN}/img/posts/${m[1]}-og.jpg${imageVersions.has(m[1]) ? `?v=${imageVersions.get(m[1])}` : ""}`,
             url: `${ORIGIN}/blogs/${m[1]}`,
         };
     }
