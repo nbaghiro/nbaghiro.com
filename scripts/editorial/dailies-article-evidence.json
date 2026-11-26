@@ -1,0 +1,53 @@
+{
+  "slug": "dailies-from-product-demo-to-ad-campaign",
+  "reviewedOn": "2026-11-26",
+  "purpose": "Product-plan article. Distinguishes the existing seeded prototype from proposed production integrations and editorial extensions.",
+  "localEvidence": [
+    "dailies/AGENTS.md",
+    "dailies/README.md",
+    "dailies/.docs/plan.md",
+    "dailies/.docs/generation-architecture.md",
+    "dailies/apps/api/core/generations.ts",
+    "dailies/packages/generate/recipes.ts",
+    "dailies/packages/generate/engine.ts",
+    "dailies/packages/contract/take.ts",
+    "dailies/packages/contract/generation.ts",
+    "dailies/packages/render/ffmpeg.ts"
+  ],
+  "existing": [
+    "Six product areas, backed by seeded data",
+    "Persisted brief edits and keep/cut decisions",
+    "Postgres jobs and completed-step memo",
+    "Placeholder generation recipe; no connected models or ad platforms"
+  ],
+  "currentPlan": [
+    "One vertical clip via one provider before additional provider integrations",
+    "Plan, submit/check, poster, store",
+    "Spend approval and tracked costs",
+    "Kept creative to campaigns and organic; performance informing the next brief"
+  ],
+  "proposedExtensions": [
+    "Imported recordings and repeatable real-product capture",
+    "Versioned briefs, assets, compositions, exports and approvals",
+    "Caption, audio and multi-format composition beyond the deliberately small first recipe",
+    "External-request reconciliation, lease fencing and explicit launch operations",
+    "Capability-specific account connections and report provenance"
+  ],
+  "importantLimits": [
+    "A local step memo alone cannot ensure exactly-once external effects",
+    "TikTok Direct Post intended-use and audit requirements affect an internal-use tool",
+    "No unsupported API access, working provider integration, customer results or partnership claims",
+    "Platform attribution is not deduplicated first-party customer measurement",
+    "Local delayed spend monitoring is not an exact monetary stop guarantee"
+  ],
+  "primarySources": [
+    "https://developers.facebook.com/docs/marketing-api/reference/v27.0/",
+    "https://developers.facebook.com/docs/graph-api/overview/rate-limiting/",
+    "https://developers.facebook.com/docs/graph-api/reference/adaccount/insights/",
+    "https://business-api.tiktok.com/portal/docs/campaign-management/v1.3",
+    "https://business-api.tiktok.com/portal/docs/basic-reports/v1.3",
+    "https://developers.tiktok.com/docs/en/content-sharing-guidelines",
+    "https://developers.tiktok.com/docs/en/content-posting-api-reference-get-video-status"
+  ],
+  "art": "Original code-native SVG cover and six responsive SVG diagrams, rendered into committed social and article image assets. No third-party product screenshots or invented analytics."
+}

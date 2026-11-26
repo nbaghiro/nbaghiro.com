@@ -92,8 +92,9 @@ for (const slug of slugs) {
         await page.goto(url, { waitUntil: "networkidle" });
         const state = await page.getAttribute("main", "data-shot");
         if (state !== "ready") throw new Error(`${slug}: the shot page has no such piece`);
-        // the plates are fetched as images inside the svg, so wait for them rather than a timer
+        // Photo covers fetch images; original vector covers declare that they are self-contained.
         await page.waitForFunction(() => {
+            if (document.querySelector('[data-cover-kind="vector"]')) return true;
             const imgs = [...document.querySelectorAll("image")];
             return imgs.length > 0 && imgs.every((i) => i.getAttribute("href"));
         });
