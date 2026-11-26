@@ -8,7 +8,7 @@
  * into the edge.
  */
 export const COVER_WORDS = {
-    "dailies-from-product-demo-to-ad-campaign": "from the product to the next brief",
+    "planning-dailies-a-marketing-workflow": "from the product to the next brief",
     "finding-a-rhythm-across-multiple-products": "room for more than one idea",
     "setting-up-a-new-mac-with-claude": "bringing the working state along",
     "business-verification-in-clientbridge": "verification over time",

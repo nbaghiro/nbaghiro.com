@@ -1,8 +1,8 @@
 title: Planning Dailies, from product footage to ad campaigns
 date: 2026-11-26
 about: Dailies
-cover: /img/posts/dailies-from-product-demo-to-ad-campaign-wide.webp
-card: /img/posts/dailies-from-product-demo-to-ad-campaign-card.webp
+cover: /img/posts/planning-dailies-a-marketing-workflow-wide.webp
+card: /img/posts/planning-dailies-a-marketing-workflow-card.webp
 summary: The product plan for Dailies: real product recordings, generated video, creative review, ad-platform integrations and a useful record of what each marketing experiment teaches us.
 
 I have plenty of products to show and much less experience explaining them well.
