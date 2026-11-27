@@ -35,7 +35,7 @@ function State() {
         ["Context", ["Goal and decisions", "What was checked", "The next useful step"]],
         ["Processes", ["Agent, shell and jobs", "Remain on their host", "Reconnect or restart"]],
     ];
-    return <Canvas w={w} h={h} title="Three kinds of continuity" note={narrow ? ["Copying files does not move", "a running process."] : ["Each kind of state has its own handoff. Copying files does not move a running process."]}>
+    return <Canvas w={w} h={h} title="Three kinds of continuity" note={narrow ? ["Running processes remain", "on their original host."] : ["Files, context, and processes each need a separate handoff method."]}>
         {data.map(([title, lines], i) => <Panel key={title} x={narrow ? 14 : 14 + i * 268} y={narrow ? 65 + i * 161 : 78} w={narrow ? 308 : 256} title={title} lines={lines} number={`0${i + 1}`} />)}
     </Canvas>;
 }
@@ -47,7 +47,7 @@ function Handoff() {
         ["Transfer", ["Stage the file set", "Verify its contents"]],
         ["Continue", ["Acknowledge receipt", "Change the owner"]],
     ];
-    return <Canvas w={w} h={h} title="One active workspace" note={narrow ? ["If the handoff is uncertain,", "check ownership before writing."] : ["The source stays quiet until the handoff completes. A lost connection is not an ownership transfer."]}>
+    return <Canvas w={w} h={h} title="One active workspace" note={narrow ? ["If the handoff is uncertain,", "check ownership before writing."] : ["Keep source writers paused until the destination is verified and the handoff is acknowledged."]}>
         {steps.map(([title, lines], i) => {
             const x = narrow ? 28 : 14 + i * 202, y = narrow ? 65 + i * 164 : 85, bw = narrow ? 280 : 186;
             return <g key={title}>
@@ -77,7 +77,7 @@ function Message() {
 }
 function Jobs() {
     const narrow = useNarrow(), w = narrow ? 336 : 820, h = narrow ? 738 : 435;
-    return <Canvas w={w} h={h} title="Separate work, traceable results" note={narrow ? ["A result belongs to the snapshot", "the worker actually used."] : ["A passing job describes its input snapshot, not every edit made after the job began."]}>
+    return <Canvas w={w} h={h} title="Separate work, traceable results" note={narrow ? ["A result belongs to the snapshot", "the worker actually used."] : ["Each job result identifies the input snapshot used during that run."]}>
         <Panel x={14} y={70} w={narrow ? 308 : 365} h={164} title="Foreground Mac" number="01" lines={["Active project and agent", "Continue editing locally", "Review returned changes"]} />
         <Panel x={narrow ? 14 : 441} y={narrow ? 275 : 70} w={narrow ? 308 : 365} h={164} title="Background Mac" number="02" lines={["Isolated task workspace", "Build, test or render", "Record inputs and outputs"]} />
         <Arrow x1={narrow ? 168 : 379} y1={narrow ? 234 : 153} x2={narrow ? 168 : 441} y2={narrow ? 273 : 153} />

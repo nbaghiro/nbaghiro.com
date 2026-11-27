@@ -5,25 +5,25 @@ cover: /img/posts/continuing-a-project-across-two-macs-wide.webp
 card: /img/posts/continuing-a-project-across-two-macs-card.webp
 summary: How an SSH-based workflow lets me continue unfinished work on another Mac and send background tasks to a second machine, with a closer look at workspace handoffs, agent context, and result verification.
 
-I wanted to move between two Macs without making a commit just to carry unfinished work to the other machine. The useful state of a project includes more than its last commit: edits, new files, the question an agent is investigating, and the command that is still running.
+I wanted to move between two Macs without making a commit just to carry unfinished work to the other machine. Continuing the work also means carrying over edits, new files, the question an agent is investigating, and any commands still running.
 
 Claude helped me set up a workflow around SSH so I can continue across machines and let agent sessions exchange work. It also gives me somewhere else to run a demanding task while I keep using the computer in front of me.
 
-This follows the [earlier move to a new Mac](https://nbaghiro.com/blogs/setting-up-a-new-mac-with-claude). Installing the environment was one job. Keeping unfinished work usable across both machines is another.
+After [moving my development environment to the new Mac](https://nbaghiro.com/blogs/setting-up-a-new-mac-with-claude), I used Claude to help set up a workflow for continuing unfinished work on either machine.
 
-The technical distinction is between moving files, continuing a process, and handing context to another agent. They can feel like one action at the keyboard, but each has a different boundary. The commands and message records below are simplified examples of those mechanisms, rather than a transcript of my setup scripts.
+The workflow handles file transfers, running processes, and agent context separately because each needs a different method of preservation and verification. The commands and message records below are simplified examples of those mechanisms, rather than a transcript of my setup scripts.
 
 ## Three kinds of continuity
 
 A working directory contains the current files. An agent session contains the conversation and decisions. A running process contains state that may never have been written to disk.
 
-Copying the directory does not move the process. Copying a conversation does not install dependencies. Being able to reach the other Mac does not establish which copy is newer.
+A file transfer carries the directory contents, while running processes remain on their host. The destination also needs the project’s dependencies and a check that its files match the intended version.
 
-For the workflow to feel continuous, the next machine needs both the correct files and enough context to use them. Background work also needs a clear home: a particular machine, directory, and input revision.
+For the workflow to feel continuous, the next machine needs both the correct files and enough context to use them. Each background task also needs an identified machine, directory, and input revision.
 
 ![Three separate forms of continuity: project files, agent context, and running processes.](figure:two-macs-state)
 
-There are two useful ways to switch computers. One keeps execution on the original machine and changes where I connect from. The other transfers the workspace so execution can continue locally on the destination. It helps to make that choice explicit.
+Switching computers can mean reconnecting to work that continues on the original machine, or transferring the workspace to run it locally on the destination. The choice depends on whether I need to preserve a running process or work independently of the original host.
 
 ## Continue the same process over SSH
 
@@ -35,7 +35,7 @@ ssh -t work-mac 'tmux attach-session -t project'
 
 That command attaches to an existing session named `project`. The shell, agent, and working directory remain on `work-mac`. The laptop is another terminal into that environment. This is the behavior described in the [tmux getting-started guide](https://github.com/tmux/tmux/wiki/Getting-Started).
 
-It preserves the running conversation without trying to synchronize an agent's internal session files. It also preserves the limits of the host: it must remain reachable and awake. A detached terminal is not protection against a restart, a killed process, or a sleeping computer.
+The conversation continues in the existing process, so the agent’s internal session files can stay on that host. The host must remain reachable and awake. Reconnecting after a restart or process termination requires a separate recovery mechanism.
 
 For a browser preview, SSH can forward a local port to the host's development server:
 
@@ -47,13 +47,13 @@ The browser opens the local forwarded address, while the application runs on the
 
 This path is useful when the original machine already has the dependencies, containers, and long-running job in place. It does not provide offline work on the second machine.
 
-## Move the workspace when the work needs to move
+## Transfer the workspace for local execution
 
 Continuing locally on the other Mac needs a file handoff. The important property is that the transfer can include changes which have never been committed or pushed.
 
 A transfer plan starts by separating source state from machine state. Source files, new assets, and agreed project notes belong in the handoff. Installed dependencies, build caches, sockets, and temporary process files generally do not. Lockfiles travel with the source; dependencies are installed for the destination's operating system, architecture, and runtime versions.
 
-Ignored files need a policy of their own. Some are disposable output. Others are the only copy of a local experiment. A blanket rule that excludes everything Git ignores can silently omit useful work.
+The transfer rules also need to account for ignored files, which can include both disposable output and local experiments. Excluding everything Git ignores can omit work that needs to move with the project.
 
 A basic preview of a transfer might look like this:
 
@@ -68,17 +68,17 @@ rsync -an --itemize-changes \
   ./ work-mac:handoffs/project/incoming/
 ```
 
-This is a dry run into an incoming directory, not a complete synchronization protocol. Its exclusions are examples to adapt to the project. The `.git` and environment exclusions deliberately leave repository metadata and secrets for separate handling. It does not propagate deletions.
+This dry run previews the files that would be transferred into an incoming directory. A complete handoff also needs the comparison and verification steps described below. Its exclusions are examples to adapt to the project. The `.git` and environment exclusions deliberately leave repository metadata and secrets for separate handling. It does not propagate deletions.
 
 Rsync supports remote-shell transfers, partial-transfer retention, and delayed installation of updated files. Those options help with transport, but they do not make a whole directory replacement transactional or decide which machine owns an edit. The [rsync manual](https://download.samba.org/pub/rsync/rsync.1) documents those distinctions.
 
 ## A handoff needs a known starting point
 
-The dangerous case is two machines that have both changed since their last shared state. File modification times are insufficient to resolve that. A recently copied older file can have a newer timestamp, and clocks can disagree.
+When both machines have changed since their last shared state, the handoff needs to compare their contents. File modification times alone cannot resolve those changes reliably. A recently copied older file can have a newer timestamp, and clocks can disagree.
 
 The useful comparison has three versions: the last agreed snapshot, the source now, and the destination now. For each path, a content fingerprint shows which side changed. If only the source changed, it can advance the destination. If both changed differently, the transfer needs to stop for that path and preserve both versions.
 
-Deletions require the same treatment. A missing source file is not permission to erase a destination file that someone has since edited. A manifest needs to record removals as well as additions and modifications.
+Deletions require the same treatment. If a file was deleted on the source and edited on the destination, both changes need to be considered before applying the deletion. A manifest needs to record removals as well as additions and modifications.
 
 A safe ownership change follows a sequence:
 
@@ -90,11 +90,11 @@ A safe ownership change follows a sequence:
 
 ![Workspace handoff: pause writers, compare against the shared snapshot, stage and verify, then change the active machine.](figure:two-macs-handoff)
 
-The source must stay quiet until the decision completes. If the connection disappears during acknowledgment, neither side should infer that silence means it owns the workspace. Recovering requires checking the recorded handoff state.
+Writers on the source must remain paused until the handoff completes. If the connection drops during acknowledgment, the recorded handoff state needs to be checked before either machine resumes writing.
 
-This is also why two independent file watchers copying in opposite directions are not enough. A dependable switch has an owner and a completion condition. The agent can explain a conflict and help reconcile it; the underlying copy operation should not guess.
+Bidirectional file copying needs coordination to track the active writer and determine when the transfer is complete. Conflicting changes should be preserved for review, where an agent can help explain and reconcile them.
 
-## Git state is more than the visible files
+## Preserve the required Git state
 
 Two directories can contain identical source files and still have different Git state. The index records staged changes. The object database contains local commits and stashes. Branch references and `HEAD` describe the checkout. Untracked files sit outside that history.
 
@@ -102,15 +102,15 @@ There are two different handoff contracts. A source-only handoff recreates the f
 
 Linked worktrees add another complication. Their `.git` file points to metadata elsewhere, so copying the visible directory alone is incomplete. Paths and repository relationships need to be re-established on the destination. Git provides worktree repair operations for moved repositories and worktrees; the [worktree documentation](https://git-scm.com/docs/git-worktree) describes those relationships.
 
-None of this requires publishing an unfinished change to GitHub. A local commit is still available when useful, but switching machines does not have to depend on making one. Version history and workspace transport serve different purposes.
+The workspace can move directly between the machines, including uncommitted changes. Local commits remain useful for recording progress, but they are optional for the transfer itself.
 
 ## How sessions communicate across machines
 
-An SSH connection gives an agent a way to execute a remote command or transfer a file. It does not automatically connect two conversations or give them shared memory.
+SSH carries remote commands and files. Communication between agent sessions uses an additional interface to deliver tasks and context over that connection.
 
-Communication needs an explicit interface: a task description, a destination, an acknowledgment, and a way to retrieve results. A receiving session reads that information through its own tools. If it is already running interactively, a bridge or inbox consumer must deliver the task through a supported mechanism. Writing a file somewhere does not guarantee the session will notice it.
+Communication needs an explicit interface: a task description, a destination, an acknowledgment, and a way to retrieve results. A receiving session reads that information through its own tools. If it is already running interactively, a bridge or inbox consumer must deliver the task through a supported mechanism. For a file-based inbox, a consumer needs to detect and read incoming messages.
 
-A task record can make the boundary concrete:
+For example, a task record can include:
 
 ```json
 {
@@ -123,19 +123,19 @@ A task record can make the boundary concrete:
 }
 ```
 
-These names are illustrative. What matters is that the receiving worker knows which inputs to use, what it may change, and what counts as a result. The record can travel over SSH without a shared cloud workspace.
+The illustrative fields identify the worker’s inputs, permitted changes, and expected outputs. The record can travel over SSH without a shared cloud workspace.
 
 Claude Code also supports non-interactive execution and structured output through its CLI. That is useful for launching a bounded remote task, but it is distinct from continuing an existing interactive conversation. The [programmatic usage documentation](https://code.claude.com/docs/en/headless) covers that interface.
 
 ![A task moves from the active session to a remote inbox, runs against an identified snapshot, and returns artifacts for review.](figure:two-macs-message)
 
-For a session handoff, useful context includes the goal, decisions made, changed files, commands already run, failures still unresolved, and the next useful step. It should identify the workspace snapshot it describes. A clear summary attached to the wrong files is still a bad handoff.
+For a session handoff, useful context includes the goal, decisions made, changed files, commands already run, failures still unresolved, and the next useful step. It should identify the workspace snapshot it describes. Matching the context to that snapshot helps the receiving session interpret the files correctly.
 
-Raw conversation history can contain machine-specific paths, tool references, or credentials. Treating an entire agent configuration directory as interchangeable between two active installations creates more problems than a deliberate context handoff solves.
+Raw conversation history can contain machine-specific paths, tool references, or credentials. A context handoff needs to account for those references and keep each installation’s authentication and configuration separate.
 
-## Use the other Mac without creating a second editor of everything
+## Run background tasks in separate workspaces
 
-The second machine is useful for builds, test suites, browser runs, image rendering, and other work that would otherwise compete with the foreground session. The local load being moved is those tools and processes. A cloud-hosted model's inference does not become local merely because its CLI runs on another Mac.
+The second machine is useful for builds, test suites, browser runs, image rendering, and other work that would otherwise compete with the foreground session. This moves the local tools and processes to the second machine; model inference continues at the provider when the agent uses a cloud-hosted model.
 
 A background worker needs an isolated input snapshot. Letting it test a directory that is changing underneath it makes the result difficult to interpret. A successful test run describes the files it actually read, which may no longer match the current workspace.
 
@@ -147,22 +147,22 @@ A local Git worktree can isolate an editing task when its baseline is committed.
 
 Job identity also matters when the network drops. An SSH timeout means the caller stopped receiving an answer; it does not prove that the remote job stopped. Retrying the same task ID should first inspect the existing run. Otherwise a reconnect can launch another expensive build or apply an edit twice.
 
-A useful result includes the input fingerprint, tool versions, commands, exit codes, artifacts, and completion state. “Done” is not enough to distinguish a finished run from a partial result or an agent waiting for permission.
+A useful result includes the input fingerprint, tool versions, commands, exit codes, artifacts, and completion state. An explicit completion state distinguishes a finished run from a partial result or an agent waiting for permission.
 
-## Local files still have boundaries
+## Credentials, application data, and backups
 
-Keeping the workspace on my own machines removes the need to push unfinished code through a repository host merely to continue working. It does not mean every part of the workflow is offline. A cloud-backed coding agent may send selected context to its model provider, and development commands can call external services.
+The workspace stays on my own machines and can move between them without a push to a repository host. Cloud-backed agents may still send selected context to their model providers, and development commands can call external services.
 
-Credentials belong to each machine's setup. SSH host identities need to be verified, keys should be scoped to the intended access, and task payloads should be passed as data rather than interpolated into shell commands. Encryption protects the connection; it does not prevent a script from printing a secret into a log.
+Credentials belong to each machine's setup. SSH host identities need to be verified, keys should be scoped to the intended access, and task payloads should be passed as data rather than interpolated into shell commands. Scripts also need to keep secrets out of logs, independently of the connection’s encryption.
 
 Databases also need their own transfer method. Copying live database files or container volumes alongside source code is not a reliable application-state handoff. Use an application-supported export, a consistent database snapshot, or a shared development service with deliberate access rules.
 
-Finally, synchronization is not a backup. An accidental deletion can be faithfully transferred to the other computer. Independent, recoverable snapshots are still valuable.
+Independent backups provide recovery if an accidental deletion or unwanted change is transferred to both computers.
 
-## What makes the switch feel simple
+## Continuing work across machines
 
-Claude was useful in setting this up because the work crossed several boundaries: shell commands, SSH access, paths, repository state, and the information a second session needs to continue.
+Claude helped connect the shell commands, SSH access, paths, repository state, and session context needed for this workflow.
 
-The result I care about is straightforward. I can leave unfinished work unfinished, continue from another computer, and use the second machine for background tasks when the current one is busy.
+I can continue unfinished work from another computer and use the second machine for background tasks when the current one is busy.
 
-Underneath that experience, the important questions stay explicit: which machine owns the files, which snapshot a job used, where its result lives, and whether it is safe to continue. Getting those answers out of my head and into the workflow is what makes moving between machines practical.
+The workflow records the active machine, the snapshot each job used, and the location of its results. That information helps me and the agents continue without having to reconstruct the previous session’s state.
