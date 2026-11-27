@@ -1,3 +1,4 @@
+import { TWO_MACS_FIGURES } from "./figures/two-macs";
 import { DAILIES_FIGURES } from "./figures/dailies-plan";
 import { PRODUCT_STUDIO_FIGURES } from "./figures/product-studio";
 import { MAC_SETUP_FIGURES } from "./figures/mac-setup";
@@ -2583,6 +2584,7 @@ export function OutboxWeek() {
 }
 
 export const FIGURES = {
+    ...TWO_MACS_FIGURES,
     ...PARITY_FIGURES,
     ...NOTATION_FIGURES,
     ...SSE_RESUME_FIGURES,

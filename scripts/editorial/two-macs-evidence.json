@@ -1,0 +1,12 @@
+{
+  "slug": "continuing-a-project-across-two-macs",
+  "basis": "User confirms a working SSH-based two-Mac setup, created with Claude, including unfinished workspace continuation and cross-machine agent communication/background tasks.",
+  "scope": "Explains engineering mechanisms and correctness requirements. Commands, task records, tmux, and rsync are illustrative, not asserted to be an audited inventory of the user's implementation. No claims of implemented fencing, exact transcript sync, or measured speedups.",
+  "sources": [
+    "https://man.openbsd.org/ssh",
+    "https://github.com/tmux/tmux/wiki/Getting-Started",
+    "https://download.samba.org/pub/rsync/rsync.1",
+    "https://git-scm.com/docs/git-worktree",
+    "https://code.claude.com/docs/en/headless"
+  ]
+}

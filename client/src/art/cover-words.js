@@ -8,6 +8,7 @@
  * into the edge.
  */
 export const COVER_WORDS = {
+    "continuing-a-project-across-two-macs": "the work comes with you",
     "planning-dailies-a-marketing-workflow": "from the product to the next brief",
     "finding-a-rhythm-across-multiple-products": "room for more than one idea",
     "setting-up-a-new-mac-with-claude": "bringing the working state along",

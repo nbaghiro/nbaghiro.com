@@ -1,0 +1,14 @@
+I used Claude to help set up a way to continue a project across two Macs without committing and pushing unfinished work just to switch computers.
+
+The files are only part of it. I also want to carry over what the agent was working on, what it has already checked, and what needs to happen next.
+
+SSH gives the machines a way to exchange files and run commands. The useful part is the coordination around that: knowing which copy is current, keeping two sessions from overwriting each other, and making sure a result belongs to the version of the project that was tested.
+
+It also lets me send background work to the other Mac. A build, test run, or rendering task can run there while I keep working on the machine in front of me. The sessions can exchange task details and bring the results back for review.
+
+I’ve enjoyed making the machines I already have work together this way. Being able to leave a task unfinished and pick it up elsewhere makes switching much less disruptive.
+
+I wrote up the technical details, including the difference between moving a workspace and reconnecting to a running session. Link in the first comment.
+
+FIRST COMMENT
+The article: https://nbaghiro.com/blogs/continuing-a-project-across-two-macs

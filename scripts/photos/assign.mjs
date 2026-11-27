@@ -5,6 +5,7 @@
 // trunks for a piece about many attempts, flat calm water for one about arithmetic that has to
 // balance. Warm and saturated frames were left out, because the site's register is cool and grey.
 export const PICKS = {
+    "continuing-a-project-across-two-macs": 3,
     "planning-dailies-a-marketing-workflow": 96,
     "finding-a-rhythm-across-multiple-products": 27,
     "setting-up-a-new-mac-with-claude": 46,
